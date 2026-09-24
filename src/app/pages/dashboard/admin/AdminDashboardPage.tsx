@@ -1,8 +1,8 @@
-import Header from "../../components/Header/Header";
-import Navbar from "../../components/Navbar/Navbar";
-import Footer from "../../components/Footer/Footer";
-import { adminNav } from "../../config/adminNav";
-import "./AdminDashboardPage.css";
+import Header from "../../../components/Header/Header";
+import Navbar from "../../../components/Navbar/Navbar";
+import Footer from "../../../components/Footer/Footer";
+import { adminNav } from "../../../config/adminNav";
+import "../DashboardPage.css";
 
 
 export default function AdminDashboardPage() {
