@@ -1,17 +1,13 @@
 import { useRef, useState, type FocusEvent, type MouseEvent } from "react";
 import { ChevronRight, Info } from "lucide-react";
-import type { NavItem } from "./types";
+import type { NavbarProps } from "./types";
 import "./Navbar.css";
 
 const REACH = 110;
 const MAX_SCALE = 0.34;
 const MAX_SLIDE = 6;
 
-type NavbarProps = {
-  items: NavItem[];
-  defaultActive?: string;
-  onNavigate?: (label: string) => void;
-};
+
 
 export default function Navbar({ items, defaultActive, onNavigate }: NavbarProps) {
   const [openSections, setOpenSections] = useState<string[]>([]);

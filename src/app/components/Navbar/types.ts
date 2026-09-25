@@ -13,3 +13,9 @@ export type NavItem = {
   info?: boolean;
   children?: NavChild[];
 };
+
+export type NavbarProps = {
+  items: NavItem[];
+  defaultActive?: string;
+  onNavigate?: (label: string) => void;
+};

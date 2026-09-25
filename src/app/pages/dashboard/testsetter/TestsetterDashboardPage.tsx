@@ -1,7 +1,7 @@
 import Header from "../../../components/Header/Header";
 import Navbar from "../../../components/Navbar/Navbar";
 import Footer from "../../../components/Footer/Footer";
-import { testsetterNav } from "../../../config/testsetterNav";
+import { testsetterNav } from "../../../config/dashboard/testsetterNav";
 import "../DashboardPage.css";
 
 

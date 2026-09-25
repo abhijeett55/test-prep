@@ -1,7 +1,7 @@
 import Header from "../../../components/Header/Header";
 import Navbar from "../../../components/Navbar/Navbar";
 import Footer from "../../../components/Footer/Footer";
-import { teacherNav } from "../../../config/teacherNav";
+import { teacherNav } from "../../../config/dashboard/teacherNav";
 import "../DashboardPage.css";
 
 

@@ -11,7 +11,7 @@ import {
   Users,
   Sparkles,
 } from "lucide-react";
-import type { NavItem } from "../components/Navbar/types";
+import type { NavItem } from "../../components/Navbar/types";
 
 export const providerNav: NavItem[] = [
   { label: "Dashboard", icon: LayoutGrid, info: true },
