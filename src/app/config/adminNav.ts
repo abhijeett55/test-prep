@@ -1,48 +1,76 @@
 import {
-  GraduationCap, Home, LayoutGrid, CreditCard, BarChart3,
-  Calendar, Ticket, Mail, DollarSign, Printer, Upload, Users, Sparkles,
+  GraduationCap,
+  LayoutGrid,
+  UserCog,
+  Users2,
+  BarChart3,
+  Megaphone,
+  CreditCard,
+  Users,
+  Sparkles,
 } from "lucide-react";
 import type { NavItem } from "../components/Navbar/types";
 
 export const adminNav: NavItem[] = [
   { label: "Dashboard", icon: LayoutGrid },
-  { label: "Admission", icon: GraduationCap },
-  { label: "Home", icon: Home },
+    {
+    label: "User Management",
+    icon: UserCog,
+    children: [
+      { label: "Teachers" },
+      { label: "Test Setters" },
+      { label: "Students" },
+      { label: "Role Assignment", info: true },
+    ],
+  },
   {
-    label: "Purchase Product",
+    label: "Student Management",
+    icon: GraduationCap,
+    children: [
+      { label: "Enrollment" },
+      { label: "Fee Status", info: true },
+      { label: "Batch Transfers" },
+    ],
+  },
+  {
+    label: "Billing & Subscription",
     icon: CreditCard,
     children: [
-      { label: "Assigned Package List", info: true },
-      { label: "OMR Packages", info: true },
-      { label: "Package Bulk Assign", info: true },
-      { label: "Package Request Approval" },
-      { label: "Package Transaction", info: true },
-      { label: "Print PDF Packages", info: true },
-      { label: "Product Catalog", info: true },
-      { label: "Self Practice Packages", info: true },
-      { label: "Test Series Packages", info: true },
-      { label: "Package Utilization Report", info: true },
+      { label: "Current Plan" },
+      { label: "Seats & Usage", info: true },
+      { label: "Invoices" },
     ],
   },
   {
-    label: "Reports",
-    icon: BarChart3,
-    children: [{ label: "Report Summary" }, { label: "Download Reports" }],
-  },
-  { label: "My Scheduled Test", icon: Calendar },
-  {
-    label: "Test Series",
-    icon: Ticket,
+    label: "Announcements",
+    icon: Megaphone,
     children: [
-      { label: "Package Transactions", info: true },
-      { label: "Packages", info: true },
-      { label: "Schedule / Download Question Paper", info: true },
+      { label: "New Announcement", info: true },
+      { label: "Institute-wide" },
+      { label: "Batch-specific" },
     ],
   },
-  { label: "Contact Support", icon: Mail, info: true },
-  { label: "ATM", icon: DollarSign, info: true },
-  { label: "Print Paper", icon: Printer, info: true },
-  { label: "Question Bulk Upload", icon: Upload, info: true },
+ 
+  {
+    label: "Reports & Analytics",
+    icon: BarChart3,
+    children: [
+      { label: "Institute-wide Performance" },
+      { label: "Batch Comparison" },
+      { label: "Teacher Comparison" },
+    ],
+  },
+ 
+  {
+    label: "Batch Management",
+    icon: Users2,
+    children: [
+      { label: "Create Batch", info: true },
+      { label: "All Batches" },
+      { label: "Assign Teachers" },
+      { label: "Map Students to Batch" },
+    ],
+  },
   {
     label: "My Account",
     icon: Users,

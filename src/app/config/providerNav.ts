@@ -1,45 +1,91 @@
 import {
   LayoutGrid,
-  Package,
-  CreditCard,
-  Users,
+  Building2,
+  UsersRound,
+  ShieldCheck,
   BarChart3,
-  Mail,
+  SlidersHorizontal,
+  ScrollText,
+  Plug,
+  LifeBuoy,
+  Users,
   Sparkles,
 } from "lucide-react";
 import type { NavItem } from "../components/Navbar/types";
 
 export const providerNav: NavItem[] = [
-  { label: "Dashboard", icon: LayoutGrid },
+  { label: "Dashboard", icon: LayoutGrid, info: true },
+
   {
-    label: "My Packages",
-    icon: Package,
+    label: "Institute Management",
+    icon: Building2,
     children: [
-      { label: "Create Package", info: true },
-      { label: "Published Packages" },
-      { label: "Draft Packages" },
-      { label: "Package Requests" },
+      { label: "Onboard Institute", info: true },
+      { label: "All Institutes" },
+      { label: "Suspended Institutes" },
+      { label: "Pending Admin Approvals", badge: "New" },
     ],
   },
+
   {
-    label: "Sales",
-    icon: CreditCard,
+    label: "Global User Management",
+    icon: UsersRound,
     children: [
-      { label: "Transactions", info: true },
-      { label: "Payouts", info: true },
+      { label: "Search Users" },
+      { label: "All Institutes' Users" },
+      { label: "Impersonate for Support", info: true },
     ],
   },
-  { label: "Students", icon: Users },
+
   {
-    label: "Reports",
+    label: "Content Governance",
+    icon: ShieldCheck,
+    children: [
+      { label: "Pending Question Banks", badge: "New" },
+      { label: "Approved Content" },
+      { label: "Quality / Plagiarism Checks", info: true },
+    ],
+  },
+
+  {
+    label: "Analytics & Reports",
     icon: BarChart3,
-    children: [{ label: "Sales Report" }, { label: "Download Reports" }],
+    children: [
+      { label: "Platform Usage" },
+      { label: "Revenue", info: true },
+      { label: "Churn" },
+    ],
   },
-  { label: "Contact Support", icon: Mail, info: true },
+
+  {
+    label: "System Configuration",
+    icon: SlidersHorizontal,
+    children: [
+      { label: "Global Settings" },
+      { label: "Feature Flags", info: true },
+      { label: "Exam Pattern Templates" },
+    ],
+  },
+
+  { label: "Audit Logs", icon: ScrollText, info: true },
+
+  {
+    label: "API / Integrations",
+    icon: Plug,
+    children: [
+      { label: "Payment Gateways" },
+      { label: "SMS / Email Providers" },
+      { label: "API Keys", info: true },
+    ],
+  },
+
+  { label: "Support Tickets", icon: LifeBuoy, badge: "New" },
+
   {
     label: "My Account",
     icon: Users,
     children: [{ label: "Profile" }, { label: "Change Password" }],
   },
+
   { label: "Explore Whats New", icon: Sparkles },
 ];

@@ -12,10 +12,9 @@
   position: relative;
   flex-shrink: 0;
   width: var(--nav-w);
-  height: 100vh;
+  align-self: stretch;
 }
 
-/* The rail floats over the page when it expands, so content never jumps */
 .sidebar {
   position: absolute;
   top: 0;
@@ -29,6 +28,7 @@
   border-right: 1px solid var(--nav-line);
   overflow: hidden;
   font-family: inherit;
+  /*border-radius: 0 0 16px 0;*/
   transition: width 280ms var(--nav-ease), box-shadow 280ms var(--nav-ease);
 }
 
@@ -40,6 +40,7 @@
 .sidebar-nav {
   position: relative;
   flex: 1;
+  min-height: 0;  
   padding: 14px 10px;
   overflow-x: hidden;
   overflow-y: auto;
@@ -47,7 +48,6 @@
   scrollbar-color: var(--nav-line) transparent;
 }
 
-/* Highlight that slides to the row under the mouse */
 .sidebar-pill {
   position: absolute;
   left: 10px;
@@ -67,8 +67,6 @@
   position: relative;
   margin-bottom: 2px;
 }
-
-/* ---------- Top-level rows ---------- */
 
 .sidebar-item {
   position: relative;
@@ -178,8 +176,6 @@
   font-weight: 600;
 }
 
-/* ---------- Submenu ---------- */
-
 .sidebar-submenu {
   display: grid;
   grid-template-rows: 0fr;
@@ -200,7 +196,6 @@
   padding: 2px 0 4px;
 }
 
-/* Thin guide line running through the radio dots */
 .sidebar-submenu-inner::before {
   content: "";
   position: absolute;
@@ -271,8 +266,6 @@
   background: var(--nav-accent);
   transform: translateY(-50%) scale(1.15);
 }
-
-/* ---------- Motion + small screens ---------- */
 
 @media (prefers-reduced-motion: reduce) {
   .sidebar,

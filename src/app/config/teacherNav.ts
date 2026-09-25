@@ -2,6 +2,7 @@ import {
   LayoutGrid,
   GraduationCap,
   Calendar,
+  CalendarClock,
   ClipboardList,
   BarChart3,
   Printer,
@@ -29,6 +30,24 @@ export const teacherNav: NavItem[] = [
       { label: "Create Test", info: true },
       { label: "Scheduled Tests" },
       { label: "Completed Tests" },
+    ],
+  },
+  {
+    label: "Schedule Test",
+    icon: CalendarClock,
+    children: [
+      { label: "Assign from Question Bank", info: true },
+      { label: "Scheduled Tests" },
+      { label: "Set Date & Duration" },
+    ],
+  },
+  {
+    label: "Student Performance",
+    icon: BarChart3,
+    children: [
+      { label: "Batch-wise Analytics" },
+      { label: "Weak Topics" },
+      { label: "Attempt History" },
     ],
   },
   { label: "My Scheduled Test", icon: Calendar },

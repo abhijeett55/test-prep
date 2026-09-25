@@ -1,3 +1,17 @@
+html,
+body,
+#root {
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: none !important;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 .dashboard-page {
   display: flex;
   flex-direction: column;
@@ -8,7 +22,8 @@
 .dashboard-body {
   display: flex;
   flex: 1;
-  align-items: flex-start;
+  align-items: stretch;
+  min-height: 0;
 }
 
 .dashboard-content {
@@ -17,7 +32,6 @@
   align-items: center;
   justify-content: center;
   padding: 40px;
-  min-height: calc(100vh - 60px);
 }
 
 .dashboard-placeholder {
