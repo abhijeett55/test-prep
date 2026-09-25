@@ -1,4 +1,4 @@
-.teachers-page {
+.default-page {
   --ink: #172033;
   --muted: #6b7488;
   --line: #e6e9f0;
@@ -15,7 +15,7 @@
 }
 
 
-.teachers-empty {
+.default-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,7 +30,7 @@
 
 /* ---------- Panel wrapping the whole table area ---------- */
 
-.teachers-panel {
+.default-panel {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -48,7 +48,7 @@
 
 /* ---------- Toolbar: entries + search ---------- */
 
-.teachers-toolbar {
+.default-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -107,22 +107,22 @@
 
 /* ---------- Table ---------- */
 
-.teachers-table-wrap {
+.default-table-wrap {
   overflow-x: auto;
 }
 
-.teachers-table {
+.default-table {
   width: 100%;
   min-width: 880px;
   border-collapse: collapse;
   font-size: 13.5px;
 }
 
-.teachers-table thead {
+.default-table thead {
   background: #f7f8fc;
 }
 
-.teachers-table th {
+.default-table th {
   padding: 12px 16px;
   text-align: left;
   font-size: 12px;
@@ -134,22 +134,22 @@
   white-space: nowrap;
 }
 
-.teachers-table td {
+.default-table td {
   padding: 13px 16px;
   border-bottom: 1px solid var(--line);
   color: var(--ink);
   white-space: nowrap;
 }
 
-.teachers-table tbody tr:last-child td {
+.default-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.teachers-table tbody tr:nth-child(even) {
+.default-table tbody tr:nth-child(even) {
   background: #fbfbfe;
 }
 
-.teachers-table tbody tr:hover {
+.default-table tbody tr:hover {
   background: var(--accent-tint);
 }
 
@@ -221,7 +221,7 @@
 
 /* ---------- Footer note ---------- */
 
-.teachers-toolbar {
+.default-toolbar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -232,7 +232,7 @@
   flex-wrap: wrap;
 }
 
-.teachers-footer {
+.default-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -243,14 +243,14 @@
   flex-wrap: wrap;
 }
 
-.teachers-footer-note {
+.default-footer-note {
   font-size: 12.5px;
   color: var(--muted);
 }
 
 
 @media (max-width: 640px) {
-  .teachers-toolbar {
+  .default-toolbar {
     flex-direction: column;
     align-items: stretch;
   }

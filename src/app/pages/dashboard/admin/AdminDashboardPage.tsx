@@ -26,7 +26,7 @@ import "../DashboardPage.css";
 
 const ROUTES: Record<string, string> = {
   Teachers: "/dashboard/admin/user-management/teachers",
-  "Test Setters": "/dashboard/admin/user-management/test-setters",
+  TestSetters: "/dashboard/admin/user-management/test-setters",
   Students: "/dashboard/admin/user-management/students",
 };
 

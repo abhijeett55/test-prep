@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Plus, Search, Pencil, Eye, X } from "lucide-react";
-import TeacherForm from "../../../../config/nav-user/teacher/TeacherForm";
+import StudentForm from "../../../../config/nav-user/student/StudentForm";
 import type { FormValues, Option } from "../../../../components/FormLayout/types";
 import "./DefaultPage.css";
 
@@ -17,89 +17,124 @@ const subjects: Option[] = [
   { id: "sub-4", name: "Biology" },
 ];
 
-type TeacherRow = {
+const statuses: Option[] = [
+  { id: "ACTIVE", name: "Active" },
+  { id: "INACTIVE", name: "Inactive" },
+  { id: "BLOCKED", name: "Blocked" },
+];
+
+type StudentRow = {
   id: string;
   name: string;
   email: string;
   institute: string;
   subject: string;
-  employeeCode: string;
+  status: string;
+  address: string;
+  fatherName: string;
+  fatherPhone: string;
+  motherName: string;
+  motherPhone: string;
   joinedDate: string;
 };
 
-const MOCK_TEACHERS: TeacherRow[] = [
+const MOCK_STUDENTS: StudentRow[] = [
   {
-    id: "t-1",
-    name: "Ravi Sharma",
-    email: "ravi.sharma@example.com",
+    id: "s-1",
+    name: "Aarav Kapoor",
+    email: "aarav.kapoor@example.com",
     institute: "Allen Career Institute",
     subject: "Physics",
-    employeeCode: "EMP-1042",
+    status: "Active",
+    address: "Sector 12, Noida",
+    fatherName: "Rajesh Kapoor",
+    fatherPhone: "98100-11111",
+    motherName: "Sunita Kapoor",
+    motherPhone: "98100-22222",
     joinedDate: "12-Jan-2025",
   },
   {
-    id: "t-2",
-    name: "Ananya Iyer",
-    email: "ananya.iyer@example.com",
+    id: "s-2",
+    name: "Diya Nair",
+    email: "diya.nair@example.com",
     institute: "Physics Wallah",
     subject: "Chemistry",
-    employeeCode: "EMP-1088",
+    status: "Active",
+    address: "MG Road, Kochi",
+    fatherName: "Suresh Nair",
+    fatherPhone: "94470-33333",
+    motherName: "Lakshmi Nair",
+    motherPhone: "94470-44444",
     joinedDate: "03-Mar-2025",
   },
   {
-    id: "t-3",
-    name: "Karan Mehta",
-    email: "karan.mehta@example.com",
+    id: "s-3",
+    name: "Ishaan Verma",
+    email: "ishaan.verma@example.com",
     institute: "Aakash Institute",
     subject: "Mathematics",
-    employeeCode: "EMP-1103",
+    status: "Inactive",
+    address: "Civil Lines, Jaipur",
+    fatherName: "Anil Verma",
+    fatherPhone: "98290-55555",
+    motherName: "Pooja Verma",
+    motherPhone: "98290-66666",
     joinedDate: "22-Jun-2024",
   },
 ];
 
 const ENTRY_OPTIONS = [10, 25, 50];
 
-export default function TeachersPage() {
+export default function StudentsPage() {
   const [showForm, setShowForm] = useState(false);
-  const [teachers, setTeachers] = useState<TeacherRow[]>(MOCK_TEACHERS);
+  const [students, setStudents] = useState<StudentRow[]>(MOCK_STUDENTS);
   const [search, setSearch] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
 
   // Holds the form values while the confirmation card is open.
   // Nothing is added to the table until the user confirms.
-  const [pendingTeacher, setPendingTeacher] = useState<FormValues | null>(null);
+  const [pendingStudent, setPendingStudent] = useState<FormValues | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return teachers;
-    return teachers.filter(
-      (t) =>
-        t.name.toLowerCase().includes(q) ||
-        t.email.toLowerCase().includes(q) ||
-        t.institute.toLowerCase().includes(q) ||
-        t.subject.toLowerCase().includes(q)
+    if (!q) return students;
+    return students.filter(
+      (s) =>
+        s.name.toLowerCase().includes(q) ||
+        s.email.toLowerCase().includes(q) ||
+        s.institute.toLowerCase().includes(q) ||
+        s.subject.toLowerCase().includes(q)
     );
-  }, [teachers, search]);
+  }, [students, search]);
 
   const visible = filtered.slice(0, entriesPerPage);
 
   // Form submit no longer commits directly — it stages the values
   // and opens the confirmation card.
   const handleFormSubmit = async (values: FormValues) => {
-    setPendingTeacher(values);
+    setPendingStudent(values);
   };
 
-  const cancelPendingTeacher = () => setPendingTeacher(null);
+  const cancelPendingStudent = () => setPendingStudent(null);
 
-  const confirmPendingTeacher = () => {
-    if (!pendingTeacher) return;
-    const newTeacher: TeacherRow = {
+  const confirmPendingStudent = () => {
+    if (!pendingStudent) return;
+    const instituteName = institutes.find((i) => i.id === pendingStudent.institute_id)?.name ?? "";
+    const subjectName = subjects.find((s) => s.id === pendingStudent.subject_ids)?.name ?? "";
+    const statusName = statuses.find((s) => s.id === pendingStudent.status)?.name ?? "";
+
+    const newStudent: StudentRow = {
       id: crypto.randomUUID(),
-      name: pendingTeacher.fullName ?? "",
-      email: pendingTeacher.email ?? "",
-      institute: institutes.find((i) => i.id === pendingTeacher.institute_id)?.name ?? "",
-      subject: subjects.find((s) => s.id === pendingTeacher.subject_id)?.name ?? "",
-      employeeCode: pendingTeacher.employee_code ?? "",
+      name: `${pendingStudent.firstName ?? ""} ${pendingStudent.LastName ?? ""}`.trim(),
+      email: pendingStudent.email ?? "",
+      institute: instituteName,
+      subject: subjectName,
+      status: statusName,
+      address: pendingStudent.address ?? "",
+      fatherName: `${pendingStudent.fatherFirstName ?? ""} ${pendingStudent.fatherLastName ?? ""}`.trim(),
+      fatherPhone: pendingStudent.fatherPhone ?? "",
+      motherName: `${pendingStudent.motherFirstName ?? ""} ${pendingStudent.motherLastName ?? ""}`.trim(),
+      motherPhone: pendingStudent.motherPhone ?? "",
       joinedDate: new Date().toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
@@ -107,47 +142,49 @@ export default function TeachersPage() {
       }),
     };
 
-    setTeachers((prev) => [...prev, newTeacher]);
-    setPendingTeacher(null);
+    setStudents((prev) => [...prev, newStudent]);
+    setPendingStudent(null);
     setShowForm(false);
   };
 
-  const pendingInstituteName = pendingTeacher
-    ? institutes.find((i) => i.id === pendingTeacher.institute_id)?.name ?? "—"
+  const pendingInstituteName = pendingStudent
+    ? institutes.find((i) => i.id === pendingStudent.institute_id)?.name ?? "—"
     : "";
-  const pendingSubjectName = pendingTeacher
-    ? subjects.find((s) => s.id === pendingTeacher.subject_id)?.name ?? "—"
+  const pendingSubjectName = pendingStudent
+    ? subjects.find((s) => s.id === pendingStudent.subject_ids)?.name ?? "—"
+    : "";
+  const pendingStatusName = pendingStudent
+    ? statuses.find((s) => s.id === pendingStudent.status)?.name ?? "—"
     : "";
 
   return (
     <div className="default-page">
       {showForm ? (
-        <TeacherForm
+        <StudentForm
           institutes={institutes}
           subjects={subjects}
+          statuses={statuses}
           onSubmit={handleFormSubmit}
           onCancel={() => setShowForm(false)}
         />
-      ) : teachers.length === 0 ? (
+      ) : students.length === 0 ? (
         <div className="default-empty">
-          <p>No teachers added yet.</p>
+          <p>No students added yet.</p>
           <button type="button" className="add-button" onClick={() => setShowForm(true)}>
             <Plus size={16} strokeWidth={2.4} />
-            Add your first teacher
+            Add your first student
           </button>
         </div>
       ) : (
         <div className="default-panel">
-          <div className="section-bar">All Teachers</div>
+          <div className="section-bar">All Students</div>
 
           <div className="default-toolbar">
-            
-
             <div className="search-control">
               <Search size={15} strokeWidth={2} />
               <input
                 type="text"
-                placeholder="Search teachers…"
+                placeholder="Search students…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -163,21 +200,21 @@ export default function TeachersPage() {
                   <th>Email</th>
                   <th>Institute</th>
                   <th>Subject</th>
-                  <th>Employee Code</th>
+                  <th>Status</th>
                   <th>Joined</th>
                   <th className="col-actions">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {visible.map((t, i) => (
-                  <tr key={t.id}>
+                {visible.map((s, i) => (
+                  <tr key={s.id}>
                     <td className="col-sno">{i + 1}</td>
-                    <td className="cell-name">{t.name}</td>
-                    <td>{t.email}</td>
-                    <td>{t.institute}</td>
-                    <td>{t.subject}</td>
-                    <td>{t.employeeCode}</td>
-                    <td>{t.joinedDate}</td>
+                    <td className="cell-name">{s.name}</td>
+                    <td>{s.email}</td>
+                    <td>{s.institute}</td>
+                    <td>{s.subject}</td>
+                    <td>{s.status}</td>
+                    <td>{s.joinedDate}</td>
                     <td className="col-actions">
                       <button type="button" className="icon-button" title="Edit">
                         <Pencil size={15} strokeWidth={2} />
@@ -191,8 +228,8 @@ export default function TeachersPage() {
 
                 {visible.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="no-results">
-                      No teachers match "{search}".
+                    <td colSpan={8} className="no-results">
+                      No students match "{search}".
                     </td>
                   </tr>
                 )}
@@ -217,28 +254,28 @@ export default function TeachersPage() {
             </label>
 
             <div className="default-footer-note">
-              Showing {visible.length} of {filtered.length} teacher{filtered.length === 1 ? "" : "s"}
+              Showing {visible.length} of {filtered.length} student{filtered.length === 1 ? "" : "s"}
             </div>
           </div>
         </div>
       )}
 
       {/* Floating action button — bottom-right, only when the form isn't already open */}
-      {!showForm && teachers.length > 0 && (
+      {!showForm && students.length > 0 && (
         <button type="button" className="add-button-fab" onClick={() => setShowForm(true)}>
           <Plus size={18} strokeWidth={2.6} />
-          <span>Add Teacher</span>
+          <span>Add Student</span>
         </button>
       )}
 
       {/* Confirmation card — replaces a generic browser confirm() */}
-      {pendingTeacher && (
+      {pendingStudent && (
         <div className="confirm-overlay" role="dialog" aria-modal="true">
           <div className="confirm-card">
             <button
               type="button"
               className="confirm-close"
-              onClick={cancelPendingTeacher}
+              onClick={cancelPendingStudent}
               aria-label="Close"
             >
               <X size={16} strokeWidth={2.2} />
@@ -248,7 +285,7 @@ export default function TeachersPage() {
               <Plus size={20} strokeWidth={2.4} />
             </div>
 
-            <h3 className="confirm-title">Add this teacher?</h3>
+            <h3 className="confirm-title">Add this student?</h3>
             <p className="confirm-subtitle">
               Please confirm the details before adding them to the list.
             </p>
@@ -256,11 +293,11 @@ export default function TeachersPage() {
             <div className="confirm-details">
               <div className="confirm-row">
                 <span>Name</span>
-                <strong>{pendingTeacher.fullName || "—"}</strong>
+                <strong>{`${pendingStudent.firstName ?? ""} ${pendingStudent.LastName ?? ""}`.trim() || "—"}</strong>
               </div>
               <div className="confirm-row">
                 <span>Email</span>
-                <strong>{pendingTeacher.email || "—"}</strong>
+                <strong>{pendingStudent.email || "—"}</strong>
               </div>
               <div className="confirm-row">
                 <span>Institute</span>
@@ -271,17 +308,37 @@ export default function TeachersPage() {
                 <strong>{pendingSubjectName}</strong>
               </div>
               <div className="confirm-row">
-                <span>Employee Code</span>
-                <strong>{pendingTeacher.employee_code || "—"}</strong>
+                <span>Status</span>
+                <strong>{pendingStatusName}</strong>
+              </div>
+              <div className="confirm-row">
+                <span>Father's Name</span>
+                <strong>{`${pendingStudent.fatherFirstName ?? ""} ${pendingStudent.fatherLastName ?? ""}`.trim() || "—"}</strong>
+              </div>
+              <div className="confirm-row">
+                <span>Father's Phone</span>
+                <strong>{pendingStudent.fatherPhone || "—"}</strong>
+              </div>
+              <div className="confirm-row">
+                <span>Mother's Name</span>
+                <strong>{`${pendingStudent.motherFirstName ?? ""} ${pendingStudent.motherLastName ?? ""}`.trim() || "—"}</strong>
+              </div>
+              <div className="confirm-row">
+                <span>Mother's Phone</span>
+                <strong>{pendingStudent.motherPhone || "—"}</strong>
+              </div>
+              <div className="confirm-row">
+                <span>Address</span>
+                <strong>{pendingStudent.address || "—"}</strong>
               </div>
             </div>
 
             <div className="confirm-actions">
-              <button type="button" className="confirm-btn-secondary" onClick={cancelPendingTeacher}>
+              <button type="button" className="confirm-btn-secondary" onClick={cancelPendingStudent}>
                 Cancel
               </button>
-              <button type="button" className="confirm-btn-primary" onClick={confirmPendingTeacher}>
-                Yes, add teacher
+              <button type="button" className="confirm-btn-primary" onClick={confirmPendingStudent}>
+                Yes, add student
               </button>
             </div>
           </div>

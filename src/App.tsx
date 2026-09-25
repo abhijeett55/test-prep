@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './app/pages/login/LoginPage';
 import AdminDashboardPage from "./app/pages/dashboard/admin/AdminDashboardPage";
 import TeachersPage from "./app/pages/dashboard/admin/user-management/TeachersPage";
+import StudentsPage from "./app/pages/dashboard/admin/user-management/StudentsPage";
 import TeacherDashboardPage from "./app/pages/dashboard/teacher/TeacherDashboardPage";
 import TestsetterDashboardPage from "./app/pages/dashboard/testsetter/TestsetterDashboardPage";
 import ProviderDashboardPage from "./app/pages/dashboard/provider/ProviderDashboardPage";
@@ -14,6 +15,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element= {<LoginPage />} />
         <Route path="/dashboard/admin/user-management/teachers" element={<TeachersPage />} />
+        <Route path="/dashboard/admin/user-management/students" element={<StudentsPage />} />
         <Route path="/dashboard/admin/*" element={<AdminDashboardPage />} />
         <Route path="/dashboard/teacher/*" element={<TeacherDashboardPage/>} />
         <Route path="/dashboard/testsetter/*" element={<TestsetterDashboardPage/>} />
