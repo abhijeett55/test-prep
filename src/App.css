@@ -1,0 +1,9 @@
+/* Reset of Vite's scaffold defaults, which capped #root at 1280px and
+   centered it — fine for the starter demo page, wrong for a full-bleed
+   dashboard app shell. */
+#root {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  text-align: initial;
+}

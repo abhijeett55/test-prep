@@ -1,0 +1,99 @@
+/*.default-page {
+  --ink: #172033;
+  --muted: #6b7488;
+  --line: #e6e9f0;
+  --accent: #3b4cca;
+  --accent-tint: #e8ebfd;
+  --bar: #1e2a5e;
+  --success: #1a8f5a;
+  --success-tint: #e5f7ee;
+  --danger: #b3413a;
+  --danger-tint: #fbeae8;
+
+  display: block;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 32px 48px;
+  box-sizing: border-box;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+@media (max-width: 900px) {
+  .default-page {
+    padding: 20px 16px 36px;
+  }
+}
+
+/* ---------- Overall page shell ---------- */*/
+
+/*.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f5f9;
+}
+
+/* ---------- Body row: sidebar + main content ---------- */
+
+.dashboard-body {
+  max-width: 860px;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0; /* allows children to scroll instead of pushing page height */
+}
+
+/* ---------- Main content area (where routed pages render) ---------- */
+
+.dashboard-content {
+  flex: 1 1 auto;
+  min-width: 0;   /* prevents table overflow from blowing out the layout */
+  min-height: 0;
+  overflow-y: auto;
+  background: #f4f5f9;
+}*/
+
+.default-page {
+  --ink: #172033;
+  --muted: #6b7488;
+  --line: #e6e9f0;
+  --accent: #3b4cca;
+  --accent-tint: #e8ebfd;
+  --bar: #1e2a5e;
+  --success: #1a8f5a;
+  --success-tint: #e5f7ee;
+  --danger: #b3413a;
+  --danger-tint: #fbeae8;
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 28px 32px 48px;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+@media (max-width: 900px) {
+  .default-page {
+    padding: 20px 16px 36px;
+  }
+}
+
+.default-panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.default-table-wrap {
+  flex: 1 1 auto;
+  overflow-x: auto;
+  overflow-y: auto;
+}

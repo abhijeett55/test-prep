@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
+import { useAuth } from "../../api/AuthContext";
+import { ROLE_HOME_PATH } from "../../api/roleRouting";
 
 function Ribbon() {
   return (
@@ -44,7 +46,6 @@ function Ribbon() {
           <path d="M640 -40 C880 210 920 570 740 1040 L950 1040 L950 -40 Z" fill="url(#r4)" />
         </g>
 
-        {/* fine highlight streaks */}
         <g fill="none" stroke="#fff" strokeLinecap="round" opacity="0.55">
           <path d="M230 -20 C410 230 450 580 300 1020" strokeWidth="1.2" />
           <path d="M370 -20 C570 230 610 580 450 1020" strokeWidth="1.6" />
@@ -65,49 +66,68 @@ const EyeIcon = ({ off }: { off: boolean }) => (
 );
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
+  const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+ 
   const navigate = useNavigate();
-  const canSubmit = username.trim() !== "" && password !== "";
+  const { login } = useAuth();
+  const canSubmit = userId.trim() !== "" && password !== "" && !submitting;
 
-  const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-
-    console.log({ username, password, rememberMe });
-    navigate("/dashboard");
+ 
+    setError(null);
+    setSubmitting(true);
+    try {
+      const user = await login(userId, password);
+      navigate(ROLE_HOME_PATH[user.role]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      const detail = err?.response?.data?.detail;
+      setError(detail ?? "Something went wrong — please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
-
-  return (
+    return (
     <div className="login-page">
       <Ribbon />
-
-      
-
+ 
+      <header className="login-header">
+        <h1 className="app-title">TestPrep</h1>
+      </header>
+ 
       <main className="login-main">
-
         <section className="login-card" aria-label="Sign in">
           <div className="login-card-body">
-            <header className="login-header"> <h2>Test Prep</h2> </header>
             <form className="login-form" onSubmit={handleSubmit}>
+              {error && (
+                <p className="form-error" role="alert">
+                  {error}
+                </p>
+              )}
+ 
               <div className="field">
-                <label htmlFor="username">Username</label>
+                <label htmlFor="userId">User ID</label>
                 <input
-                  id="username"
+                  id="userId"
                   type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
                   autoComplete="username"
                   autoFocus
                   required
                 />
               </div>
-
+ 
               <div className="field">
                 <label htmlFor="password">Password</label>
-
+ 
                 <div className="input-wrap">
                   <input
                     id="password"
@@ -127,7 +147,7 @@ export default function LoginPage() {
                   </button>
                 </div>
               </div>
-
+ 
               <label className="remember">
                 <input
                   type="checkbox"
@@ -137,17 +157,17 @@ export default function LoginPage() {
                 <span className="checkbox" aria-hidden="true" />
                 <span>Remember me on this device</span>
               </label>
-
+ 
               <button type="submit" className="primary-button" disabled={!canSubmit}>
-                Login
+                {submitting ? "Signing in…" : "Login"}
               </button>
             </form>
           </div>
         </section>
       </main>
-
+ 
       <footer className="login-footer">
-        <span>© 2026 Test Prep</span>
+        <span>© 2026 Test-Prep</span>
         <a href="/privacy">Privacy &amp; terms</a>
       </footer>
     </div>

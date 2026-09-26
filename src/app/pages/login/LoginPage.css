@@ -25,7 +25,6 @@
   box-sizing: border-box;
 }
 
-/* ---------- Ribbon ---------- */
 .ribbon {
   position: absolute;
   top: 0;
@@ -68,8 +67,6 @@
   -webkit-backdrop-filter: blur(10px);
 }
 
-
-/* ---------- Main / card ---------- */
 .login-main {
   position: relative;
   z-index: 1;
@@ -96,7 +93,6 @@
   padding: 40px;
 }
 
-/* ---------- Form ---------- */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -170,7 +166,6 @@
   background: rgba(79, 107, 255, 0.07);
 }
 
-/* ---------- Remember me ---------- */
 .remember {
   position: relative;
   display: inline-flex;
@@ -220,7 +215,6 @@
   box-shadow: 0 0 0 4px var(--brand-tint);
 }
 
-/* ---------- Primary button ---------- */
 .primary-button {
   height: 46px;
   border: none;
@@ -256,7 +250,6 @@
   outline-offset: 2px;
 }
 
-/* ---------- Page footer ---------- */
 .login-footer {
   position: relative;
   z-index: 2;
@@ -277,7 +270,6 @@
   text-decoration: underline;
 }
 
-/* ---------- Responsive ---------- */
 @media (max-width: 900px) {
   .ribbon {
     width: 100%;

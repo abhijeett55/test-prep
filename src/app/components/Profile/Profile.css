@@ -1,0 +1,170 @@
+.profile-page {
+  max-width: 860px;
+  padding: 24px 32px 64px;
+}
+
+.profile-breadcrumb {
+  color: #6b5fdb;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.profile-heading {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 28px;
+}
+
+.profile-section {
+  border-top: 1px solid #e6e8eb;
+  padding: 24px 0;
+}
+
+.profile-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-section-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.profile-section-subtitle {
+  color: #6b7280;
+  font-size: 13px;
+  margin: 4px 0 16px;
+}
+
+.profile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  border: 1px solid #e6e8eb;
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.profile-edit-button,
+.profile-primary-button,
+.profile-danger-button,
+.profile-row-action {
+  border: 1px solid #d8dbe0;
+  background: #fff;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.profile-danger-button {
+  background: #f56c6c;
+  border-color: #f56c6c;
+  color: #fff;
+}
+
+.profile-rows {
+  margin-top: 18px;
+}
+
+.profile-row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  padding: 14px 0;
+  border-bottom: 1px solid #f1f2f4;
+}
+
+.profile-row:last-child {
+  border-bottom: none;
+}
+
+.profile-row-label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.profile-row-value {
+  font-size: 14px;
+  color: #1f2430;
+}
+
+.sessions-table-wrap {
+  overflow-x: auto;
+}
+
+.sessions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.sessions-table th {
+  text-align: left;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e6e8eb;
+}
+
+.sessions-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f2f4;
+  color: #4b5563;
+}
+
+.cell-strong {
+  font-weight: 600;
+  color: #1f2430;
+}
+
+.cell-current {
+  color: #6b5fdb;
+  text-align: right;
+}
+
+.google-account-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.google-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.google-avatar-fallback {
+  background: #6b5fdb;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.google-account-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.google-account-email {
+  font-size: 13px;
+  color: #6b7280;
+}

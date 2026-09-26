@@ -14,16 +14,16 @@ import {
 import type { NavItem } from "../../components/Navbar/types";
 
 export const providerNav: NavItem[] = [
-  { label: "Dashboard", icon: LayoutGrid, info: true },
+  { label: "Dashboard", icon: LayoutGrid, path: "/dashboard/provider", info: true },
 
   {
     label: "Institute Management",
     icon: Building2,
     children: [
-      { label: "Onboard Institute", info: true },
-      { label: "All Institutes" },
-      { label: "Suspended Institutes" },
-      { label: "Pending Admin Approvals", badge: "New" },
+      { label: "Onboard Institute", path: "/dashboard/provider/institute-management/onboard", info: true },
+      { label: "All Institutes", path: "/dashboard/provider/institute-management/all" },
+      { label: "Suspended Institutes", path: "/dashboard/provider/institute-management/suspended" },
+      { label: "Pending Admin Approvals", path: "/dashboard/provider/institute-management/pending-admin-approvals", badge: "New" },
     ],
   },
 
@@ -31,9 +31,9 @@ export const providerNav: NavItem[] = [
     label: "Global User Management",
     icon: UsersRound,
     children: [
-      { label: "Search Users" },
-      { label: "All Institutes' Users" },
-      { label: "Impersonate for Support", info: true },
+      { label: "Search Users", path: "/dashboard/provider/global-user-management/search" },
+      { label: "All Institutes' Users", path: "/dashboard/provider/global-user-management/all-institutes-users" },
+      { label: "Impersonate for Support", path: "/dashboard/provider/global-user-management/impersonate", info: true },
     ],
   },
 
@@ -41,9 +41,9 @@ export const providerNav: NavItem[] = [
     label: "Content Governance",
     icon: ShieldCheck,
     children: [
-      { label: "Pending Question Banks", badge: "New" },
-      { label: "Approved Content" },
-      { label: "Quality / Plagiarism Checks", info: true },
+      { label: "Pending Question Banks", path: "/dashboard/provider/content-governance/pending-question-banks", badge: "New" },
+      { label: "Approved Content", path: "/dashboard/provider/content-governance/approved-content" },
+      { label: "Quality / Plagiarism Checks", path: "/dashboard/provider/content-governance/quality-checks", info: true },
     ],
   },
 
@@ -51,9 +51,9 @@ export const providerNav: NavItem[] = [
     label: "Analytics & Reports",
     icon: BarChart3,
     children: [
-      { label: "Platform Usage" },
-      { label: "Revenue", info: true },
-      { label: "Churn" },
+      { label: "Platform Usage", path: "/dashboard/provider/analytics/platform-usage" },
+      { label: "Revenue", path: "/dashboard/provider/analytics/revenue", info: true },
+      { label: "Churn", path: "/dashboard/provider/analytics/churn" },
     ],
   },
 
@@ -61,31 +61,34 @@ export const providerNav: NavItem[] = [
     label: "System Configuration",
     icon: SlidersHorizontal,
     children: [
-      { label: "Global Settings" },
-      { label: "Feature Flags", info: true },
-      { label: "Exam Pattern Templates" },
+      { label: "Global Settings", path: "/dashboard/provider/system-configuration/global-settings" },
+      { label: "Feature Flags", path: "/dashboard/provider/system-configuration/feature-flags", info: true },
+      { label: "Exam Pattern Templates", path: "/dashboard/provider/system-configuration/exam-pattern-templates" },
     ],
   },
 
-  { label: "Audit Logs", icon: ScrollText, info: true },
+  { label: "Audit Logs", icon: ScrollText, path: "/dashboard/provider/audit-logs", info: true },
 
   {
     label: "API / Integrations",
     icon: Plug,
     children: [
-      { label: "Payment Gateways" },
-      { label: "SMS / Email Providers" },
-      { label: "API Keys", info: true },
+      { label: "Payment Gateways", path: "/dashboard/provider/integrations/payment-gateways" },
+      { label: "SMS / Email Providers", path: "/dashboard/provider/integrations/sms-email-providers" },
+      { label: "API Keys", path: "/dashboard/provider/integrations/api-keys", info: true },
     ],
   },
 
-  { label: "Support Tickets", icon: LifeBuoy, badge: "New" },
+  { label: "Support Tickets", icon: LifeBuoy, path: "/dashboard/provider/support-tickets", badge: "New" },
 
   {
     label: "My Account",
     icon: Users,
-    children: [{ label: "Profile" }, { label: "Change Password" }],
+    children: [
+      { label: "Profile", path: "/dashboard/provider/profile" },
+      { label: "Change Password", path: "/dashboard/provider/change-password" },
+    ],
   },
 
-  { label: "Explore Whats New", icon: Sparkles },
+  { label: "Explore Whats New", icon: Sparkles, path: "/dashboard/provider/whats-new" },
 ];

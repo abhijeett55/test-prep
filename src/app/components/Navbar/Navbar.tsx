@@ -1,13 +1,12 @@
 import { useRef, useState, type FocusEvent, type MouseEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChevronRight, Info } from "lucide-react";
-import type { NavbarProps } from "./types";
+import type { NavbarProps, NavChild, NavItem } from "./types";
 import "./Navbar.css";
 
 const REACH = 110;
 const MAX_SCALE = 0.34;
 const MAX_SLIDE = 6;
-
-
 
 export default function Navbar({ items, defaultActive, onNavigate }: NavbarProps) {
   const [openSections, setOpenSections] = useState<string[]>([]);
@@ -17,12 +16,16 @@ export default function Navbar({ items, defaultActive, onNavigate }: NavbarProps
 
   const navRef = useRef<HTMLElement>(null);
   const pillRef = useRef<HTMLSpanElement>(null);
+  const navigate = useNavigate();
 
   const expanded = hovered || focused;
 
-  const select = (label: string) => {
-    setActive(label);
-    onNavigate?.(label);
+  // Now takes the item/child itself (not just its label) so it can read `path`.
+  // Navigates directly — the parent no longer needs a label-switch to route.
+  const select = (entry: NavItem | NavChild) => {
+    setActive(entry.label);
+    if (entry.path) navigate(entry.path);
+    onNavigate?.(entry.label);
   };
 
   const toggle = (label: string) => {
@@ -117,7 +120,7 @@ export default function Navbar({ items, defaultActive, onNavigate }: NavbarProps
                     childActive ? "has-active" : ""
                   }`}
                   onClick={() =>
-                    hasChildren ? toggle(item.label) : select(item.label)
+                    hasChildren ? toggle(item.label) : select(item)
                   }
                 >
                   <span className="sidebar-item-icon">
@@ -153,7 +156,7 @@ export default function Navbar({ items, defaultActive, onNavigate }: NavbarProps
                           className={`sidebar-subitem ${
                             active === child.label ? "active" : ""
                           }`}
-                          onClick={() => select(child.label)}
+                          onClick={() => select(child)}
                         >
                           <span className="sidebar-radio" />
                           <span className="sidebar-subitem-label">
