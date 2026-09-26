@@ -3,13 +3,12 @@
   flex-direction: column;
   min-height: 100vh;
   background: #f7f8fa;
-  /*max-width: 2100px;*/
 }
 
 .dashboard-body {
   display: flex;
   flex: 1;
-  min-height: 0; /* lets dashboard-content scroll instead of pushing the page */
+  min-height: 0;
 }
 
 .dashboard-content {
@@ -19,11 +18,6 @@
   overflow-y: auto;
 }
 
-/* Pages like TeachersPage/StudentsPage were originally built as
-   standalone full-screen routes and likely still center themselves
-   with something like `display: flex; min-height: 100vh;`. Now that
-   they render inside this flex content area instead of the whole
-   viewport, force them to fill it instead of floating in the middle. */
 .dashboard-content > * {
   display: block;
   width: 100%;

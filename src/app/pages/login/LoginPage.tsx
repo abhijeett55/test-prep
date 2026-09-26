@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
-import { useAuth } from "../../api/AuthContext";
-import { ROLE_HOME_PATH } from "../../api/roleRouting";
+import { useAuth } from "../../config/auth/AuthContext";
+import { ROLE_HOME_PATH } from "../../api/auth/roleRouting";
 
 function Ribbon() {
   return (

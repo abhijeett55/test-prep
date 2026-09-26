@@ -10,8 +10,8 @@ import {
   fetchCurrentUser,
   logout as apiLogout,
   type CurrentUser,
-} from "./auth";
-import { tokenStorage } from "./client";
+} from "../../api/auth/auth";
+import { tokenStorage } from "../../api/auth/client";
 
 type AuthContextValue = {
   user: CurrentUser | null;
