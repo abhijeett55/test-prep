@@ -45,6 +45,14 @@ export const studentFormConfig: FormConfig = {
           optionsKey: "statuses",
           emptyOptionLabel: "Select status",
         },
+        // NEW: mirrors the `placeholder` column on the Student model.
+        // Rename `name`/`label` once you decide what this field actually holds.
+        {
+          name: "placeholder",
+          label: "Placeholder",
+          type: "text",
+          placeholder: "TBD — rename once defined",
+        },
       ],
     },
     {

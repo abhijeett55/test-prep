@@ -1,16 +1,23 @@
-name: CI
+name: test-prep
 
 on:
   push:
     branches: [main, develop, dev-abhijeet]
+
   pull_request:
     branches: [main, develop]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -28,3 +35,24 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # Upload Vite dist/ folder to GitHub Pages
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

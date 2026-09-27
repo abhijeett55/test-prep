@@ -1,4 +1,4 @@
-.dashboard-body {
+/*.dashboard-body {
   max-width: 860px;
   display: flex;
   flex: 1 1 auto;
@@ -11,7 +11,7 @@
   min-height: 0;
   overflow-y: auto;
   background: #f4f5f9;
-}
+}*/
 
 .default-page {
   --ink: #172033;
