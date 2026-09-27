@@ -2,10 +2,12 @@ name: testprep
 
 on:
   push:
-    branches: [main, develop, dev-abhijeet]
+    branches:
+      - develop
 
   pull_request:
-    branches: [main, develop]
+    branches:
+      - develop
 
 permissions:
   contents: read
