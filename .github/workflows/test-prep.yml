@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+
   pull_request:
     branches:
       - develop
@@ -14,9 +15,14 @@ permissions:
   id-token: write
 
 jobs:
+  build-and-deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
 
-  build-and-test:
     runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout code
@@ -37,6 +43,14 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Verify build
+        run: |
+          echo "===== DIST FILES ====="
+          find dist -maxdepth 2 -type f
+
+          echo "===== DIST INDEX.HTML ====="
+          cat dist/index.html
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
@@ -45,17 +59,6 @@ jobs:
         with:
           path: ./dist
 
-  deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
-
-    needs: build-and-test
-    runs-on: ubuntu-latest
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
