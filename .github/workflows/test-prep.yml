@@ -42,6 +42,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Configure SPA fallback
+        run: cp dist/index.html dist/404.html
+
       - name: Verify build
         run: |
           echo "===== DIST FILES ====="
@@ -49,6 +52,9 @@ jobs:
 
           echo "===== DIST INDEX.HTML ====="
           cat dist/index.html
+
+          echo "===== DIST 404.HTML ====="
+          cat dist/404.html
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
