@@ -7,7 +7,7 @@ import { AuthProvider } from './app/config/auth/AuthContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/test-prep">
       <AuthProvider>
         <App />
       </AuthProvider>
