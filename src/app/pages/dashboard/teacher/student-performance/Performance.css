@@ -1,0 +1,149 @@
+.perf-page {
+  padding: 24px 32px;
+  background: #f7f8fb;
+  min-height: 100%;
+  font-family: inherit;
+}
+
+.perf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.perf-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2430;
+}
+
+.perf-header p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Summary cards */
+.perf-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.perf-card {
+  background: #fff;
+  border: 1px solid #eceef3;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+
+.perf-card-label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.perf-card-value {
+  margin-top: 6px;
+  font-size: 26px;
+  font-weight: 600;
+  color: #1f2430;
+}
+
+/* Table */
+.perf-table-container {
+  background: #fff;
+  border: 1px solid #eceef3;
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.perf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.perf-table th {
+  text-align: left;
+  padding: 14px 20px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #6b7280;
+  background: #fafbfd;
+  border-bottom: 1px solid #eceef3;
+  white-space: nowrap;
+}
+
+.perf-table td {
+  padding: 14px 20px;
+  color: #374151;
+  border-bottom: 1px solid #f1f2f6;
+}
+
+.perf-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.perf-table tbody tr:hover {
+  background: #f9faff;
+}
+
+.perf-id {
+  font-weight: 600;
+  color: #3f4fcf;
+}
+
+.perf-strong {
+  font-weight: 500;
+  color: #1f2430;
+}
+
+/* Badges */
+.perf-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #eef0fc;
+  color: #3f4fcf;
+}
+
+.perf-badge.success { background: #e7f6ec; color: #1e8a4c; }
+.perf-badge.danger  { background: #fdeaea; color: #c62f2f; }
+.perf-badge.warning { background: #fff4e0; color: #b7791f; }
+
+/* Progress bar */
+.perf-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 140px;
+}
+
+.perf-progress-track {
+  flex: 1;
+  height: 6px;
+  background: #eceef3;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.perf-progress-fill {
+  height: 100%;
+  background: #3f4fcf;
+  border-radius: 999px;
+}
+
+.perf-progress-fill.low { background: #e05252; }
+.perf-progress-fill.mid { background: #e0a030; }
+
+.perf-progress-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  min-width: 36px;
+}

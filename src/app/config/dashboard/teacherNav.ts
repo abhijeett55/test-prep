@@ -18,6 +18,7 @@ export const teacherNav: NavItem[] = [
     label: "My Classes",
     icon: GraduationCap,
     children: [
+      { label: "Courses List", path: "/dashboard/teacher/my-classes/course-list"},
       { label: "Class List", path: "/dashboard/teacher/my-classes/class-list" },
       { label: "Student List", path: "/dashboard/teacher/my-classes/student-list" },
       { label: "Assign Students", path: "/dashboard/teacher/my-classes/assign-students", info: true },
@@ -27,9 +28,9 @@ export const teacherNav: NavItem[] = [
     label: "Tests",
     icon: ClipboardList,
     children: [
-      { label: "Create Test", path: "/dashboard/teacher/tests/create", info: true },
-      { label: "Scheduled Tests", path: "/dashboard/teacher/tests/scheduled" },
-      { label: "Completed Tests", path: "/dashboard/teacher/tests/completed" },
+      { label: "Create Test", path: "/dashboard/teacher/tests/test-create", info: true },
+      { label: "Scheduled Tests", path: "/dashboard/teacher/tests/test-scheduled" },
+      { label: "Completed Tests", path: "/dashboard/teacher/tests/test-completed" },
     ],
   },
   {
@@ -50,7 +51,7 @@ export const teacherNav: NavItem[] = [
       { label: "Attempt History", path: "/dashboard/teacher/student-performance/attempt-history" },
     ],
   },
-  { label: "My Scheduled Test", icon: Calendar, path: "/dashboard/teacher/my-scheduled-test" },
+  { label: "My Scheduled Test", icon: Calendar, path: "/dashboard/teacher/my-scheduled-tests" },
   {
     label: "Reports",
     icon: BarChart3,

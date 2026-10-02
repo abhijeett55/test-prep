@@ -24,8 +24,6 @@ const statuses: Option[] = [
   { id: "BLOCKED", name: "Blocked" },
 ];
 
-// Mirrors app/models/student.py (Student SQLAlchemy model) field-for-field,
-// plus a UI-friendly `subject` label until the form supports multi-select.
 type StudentRow = {
   id: string;
   name: string;
@@ -38,11 +36,11 @@ type StudentRow = {
   fatherPhone: string;
   motherName: string;
   motherPhone: string;
-  ipAddress: string; // sourced from form field `ip_address`
+  ipAddress: string;
   latitude: string;
   longitude: string;
   placeholder: string;
-  joinedDate: string; // maps to created_at
+  joinedDate: string;
 };
 
 const MOCK_STUDENTS: StudentRow[] = [

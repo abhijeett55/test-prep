@@ -10,6 +10,7 @@ export const teacherFormConfig: FormConfig = {
       fields: [
         { name: "fullName", label: "Full name", type: "text", required: true },
         { name: "email", label: "Email", type: "email", required: true },
+        { name: "teacher_id", label: "Teacher ID", type: "text", required: true },
       ],
     },
     {
@@ -36,34 +37,6 @@ export const teacherFormConfig: FormConfig = {
           label: "Qualification",
           type: "text",
           placeholder: "e.g. M.Sc. Physics",
-        },
-      ],
-    },
-    {
-      title: "Device & location",
-      geoDetect: {
-        ipField: "ip_address",
-        latField: "latitude",
-        lngField: "longitude",
-      },
-      fields: [
-        {
-          name: "ip_address",
-          label: "IP address",
-          type: "text",
-          placeholder: "Auto-filled on detect",
-        },
-        {
-          name: "latitude",
-          label: "Latitude",
-          type: "text",
-          placeholder: "Auto-filled on detect",
-        },
-        {
-          name: "longitude",
-          label: "Longitude",
-          type: "text",
-          placeholder: "Auto-filled on detect",
         },
       ],
     },

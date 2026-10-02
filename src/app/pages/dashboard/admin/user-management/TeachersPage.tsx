@@ -24,7 +24,7 @@ type TeacherRow = {
   institute: string;
   subject: string;
   employeeCode: string;
-  joinedDate: string;
+  teacherId: string;
 };
 
 const MOCK_TEACHERS: TeacherRow[] = [
@@ -35,7 +35,7 @@ const MOCK_TEACHERS: TeacherRow[] = [
     institute: "Allen Career Institute",
     subject: "Physics",
     employeeCode: "EMP-1042",
-    joinedDate: "12-Jan-2025",
+    teacherId: "TCH-001",
   },
   {
     id: "t-2",
@@ -44,7 +44,7 @@ const MOCK_TEACHERS: TeacherRow[] = [
     institute: "Physics Wallah",
     subject: "Chemistry",
     employeeCode: "EMP-1088",
-    joinedDate: "03-Mar-2025",
+    teacherId: "TCH-002",
   },
   {
     id: "t-3",
@@ -53,10 +53,9 @@ const MOCK_TEACHERS: TeacherRow[] = [
     institute: "Aakash Institute",
     subject: "Mathematics",
     employeeCode: "EMP-1103",
-    joinedDate: "22-Jun-2024",
+    teacherId: "TCH-003",
   },
 ];
-
 const ENTRY_OPTIONS = [10, 25, 50];
 
 export default function TeachersPage() {
@@ -65,26 +64,23 @@ export default function TeachersPage() {
   const [search, setSearch] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
 
-  // Holds the form values while the confirmation card is open.
-  // Nothing is added to the table until the user confirms.
+  
   const [pendingTeacher, setPendingTeacher] = useState<FormValues | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return teachers;
     return teachers.filter(
-      (t) =>
-        t.name.toLowerCase().includes(q) ||
-        t.email.toLowerCase().includes(q) ||
-        t.institute.toLowerCase().includes(q) ||
-        t.subject.toLowerCase().includes(q)
-    );
+    (t) =>
+      t.name.toLowerCase().includes(q) ||
+      t.email.toLowerCase().includes(q) ||
+      t.institute.toLowerCase().includes(q) ||
+      t.subject.toLowerCase().includes(q) ||
+      t.teacherId.toLowerCase().includes(q)
+  );
   }, [teachers, search]);
 
   const visible = filtered.slice(0, entriesPerPage);
-
-  // Form submit no longer commits directly — it stages the values
-  // and opens the confirmation card.
   const handleFormSubmit = async (values: FormValues) => {
     setPendingTeacher(values);
   };
@@ -100,11 +96,7 @@ export default function TeachersPage() {
       institute: institutes.find((i) => i.id === pendingTeacher.institute_id)?.name ?? "",
       subject: subjects.find((s) => s.id === pendingTeacher.subject_id)?.name ?? "",
       employeeCode: pendingTeacher.employee_code ?? "",
-      joinedDate: new Date().toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }),
+      teacherId: pendingTeacher.teacher_id ?? "",
     };
 
     setTeachers((prev) => [...prev, newTeacher]);
@@ -164,7 +156,7 @@ export default function TeachersPage() {
                   <th>Institute</th>
                   <th>Subject</th>
                   <th>Employee Code</th>
-                  <th>Joined</th>
+                  <th>Teacher ID</th>
                   <th className="col-actions">Actions</th>
                 </tr>
               </thead>
@@ -177,7 +169,7 @@ export default function TeachersPage() {
                     <td>{t.institute}</td>
                     <td>{t.subject}</td>
                     <td>{t.employeeCode}</td>
-                    <td>{t.joinedDate}</td>
+                    <td>{t.teacherId}</td>
                     <td className="col-actions">
                       <button type="button" className="icon-button" title="Edit">
                         <Pencil size={15} strokeWidth={2} />
@@ -191,7 +183,7 @@ export default function TeachersPage() {
 
                 {visible.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="no-results">
+                    <td colSpan={8} className="no-results">
                       No teachers match "{search}".
                     </td>
                   </tr>
@@ -223,7 +215,7 @@ export default function TeachersPage() {
         </div>
       )}
 
-      {/* Floating action button — bottom-right, only when the form isn't already open */}
+      {/* Floating action button */}
       {!showForm && teachers.length > 0 && (
         <button type="button" className="add-button-fab" onClick={() => setShowForm(true)}>
           <Plus size={18} strokeWidth={2.6} />
@@ -231,7 +223,7 @@ export default function TeachersPage() {
         </button>
       )}
 
-      {/* Confirmation card — replaces a generic browser confirm() */}
+      {/* Confirmation card */}
       {pendingTeacher && (
         <div className="confirm-overlay" role="dialog" aria-modal="true">
           <div className="confirm-card">
@@ -273,6 +265,10 @@ export default function TeachersPage() {
               <div className="confirm-row">
                 <span>Employee Code</span>
                 <strong>{pendingTeacher.employee_code || "—"}</strong>
+              </div>
+              <div className="confirm-row">
+                <span>Teacher ID</span>
+                <strong>{pendingTeacher.teacher_id || "—"}</strong>
               </div>
             </div>
 
