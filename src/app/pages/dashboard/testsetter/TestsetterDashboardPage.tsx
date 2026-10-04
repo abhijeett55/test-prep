@@ -8,7 +8,7 @@ import "../DashboardPage.css";
 export default function TestsetterDashboardPage() {
   return (
     <div className="dashboard-page">
-      <Header title="Test Setter Panel" />
+      <Header title="Test Setter Panel" userId="TS-1001" role="Test Setter" />
 
       <div className="dashboard-body">
         <Navbar items={testsetterNav} defaultActive="Dashboard" />

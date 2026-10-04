@@ -3,6 +3,7 @@ import Header from "../../../components/Header/Header";
 import Navbar from "../../../components/Navbar/Navbar";
 import Footer from "../../../components/Footer/Footer";
 import { teacherNav } from "../../../config/dashboard/teacherNav";
+import ProfilePage from "../../profile/ProfilePage";
 import CoursesPage from "./my-classes/CoursesPage";
 import ClassPage from "./my-classes/ClassPage";
 import StudentPage from "./my-classes/StudentPage";
@@ -27,7 +28,7 @@ import "../DashboardPage.css";
 export default function TeacherDashboardPage() {
   return (
     <div className="dashboard-page">
-      <Header title="Teacher Panel" />
+      <Header title="Teacher Panel" userId="T-1001" role="Teacher" />
 
       <div className="dashboard-body">
         <Navbar items={teacherNav} defaultActive="Dashboard" />
@@ -55,6 +56,7 @@ export default function TeacherDashboardPage() {
             <Route path="tests/test-create" element={<CreateTests />} />
             <Route path="tests/test-completed" element={<CompletedTests />} />
             <Route path="tests/test-scheduled" element={<ScheduledTests />} />
+            <Route path="profile" element={<ProfilePage />} />
             <Route path="*" element={<Navigate to="/dashboard/teacher" replace />} />
           </Routes>
         </main>

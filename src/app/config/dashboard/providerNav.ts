@@ -20,9 +20,9 @@ export const providerNav: NavItem[] = [
     label: "Institute Management",
     icon: Building2,
     children: [
-      { label: "Onboard Institute", path: "/dashboard/provider/institute-management/onboard", info: true },
-      { label: "All Institutes", path: "/dashboard/provider/institute-management/all" },
-      { label: "Suspended Institutes", path: "/dashboard/provider/institute-management/suspended" },
+      { label: "Onboard Institute", path: "/dashboard/provider/institute-management/onboard-institutes", info: true },
+      { label: "All Institutes", path: "/dashboard/provider/institute-management/all-institutes" },
+      { label: "Suspended Institutes", path: "/dashboard/provider/institute-management/suspended-institutes" },
       { label: "Pending Admin Approvals", path: "/dashboard/provider/institute-management/pending-admin-approvals", badge: "New" },
     ],
   },
@@ -31,9 +31,9 @@ export const providerNav: NavItem[] = [
     label: "Global User Management",
     icon: UsersRound,
     children: [
-      { label: "Search Users", path: "/dashboard/provider/global-user-management/search" },
-      { label: "All Institutes' Users", path: "/dashboard/provider/global-user-management/all-institutes-users" },
-      { label: "Impersonate for Support", path: "/dashboard/provider/global-user-management/impersonate", info: true },
+      { label: "Search Users", path: "/dashboard/provider/institute-management/search" },
+      { label: "All Institutes' Users", path: "/dashboard/provider/institute-management/all-institutes-users" },
+      { label: "Impersonate for Support", path: "/dashboard/provider/institute-management/impersonate", info: true },
     ],
   },
 

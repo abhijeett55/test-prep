@@ -1,40 +1,71 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Header.css";
 
-export type HeaderLink = {
-  label: string;
-  href: string;
-};
-
 type HeaderProps = {
-  /** Text next to the logo, e.g. "Online Exam" or "Admin Panel" */
+  /** Text next to the logo, e.g. "Teacher Panel" */
   title?: string;
   /** Where the logo links to */
   homeHref?: string;
-  /** Top navigation links. Each dashboard passes its own. */
-  links?: HeaderLink[];
-  /**
-   * Right side of the header (user name, logout, etc).
-   * Leave it out to show the default Sign In / Sign Up buttons.
-   * Pass `null` to show nothing.
-   */
-  actions?: ReactNode;
+  /** Shown in the top-right, e.g. "24MCA10070" */
+  userId: string;
+  /** Shown in brackets after the id, e.g. "STUDENT" */
+  role?: string;
+  /** Profile photo. Falls back to the first letter of userId. */
+  avatarUrl?: string;
+  onSignOut?: () => void;
 };
-
-const defaultLinks: HeaderLink[] = [
-  { label: "Home", href: "/dashboard" },
-  { label: "Reports", href: "/dashboard/reports" },
-  { label: "Test Series", href: "/dashboard/tests" },
-  { label: "Support", href: "/dashboard/support" },
-  { label: "My Account", href: "/dashboard/account" },
-];
 
 export default function Header({
   title = "Online Exam",
   homeHref = "/dashboard",
-  links = defaultLinks,
-  actions,
+  userId,
+  role,
+  avatarUrl,
+  onSignOut,
 }: HeaderProps) {
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const navigate = useNavigate();
+  const handleSignOut = () => {
+      setOpen(false);
+      // clear token/session here
+      onSignOut?.();
+      navigate("/login");
+    };
+
+
+
+  // close the dropdown when clicking outside or pressing Escape
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    
+    
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, []);
+
+  const avatar = (className: string) =>
+    avatarUrl ? (
+      <img src={avatarUrl} alt={userId} className={className} />
+    ) : (
+      <span className={`${className} account-avatar-fallback`}>
+        {userId.charAt(0).toUpperCase()}
+      </span>
+    );
+
   return (
     <header className="header">
       <a href={homeHref} className="logo">
@@ -51,26 +82,34 @@ export default function Header({
         <span className="logo-text">{title}</span>
       </a>
 
-      {links.length > 0 && (
-        <nav>
-          <ul className="nav-links">
-            {links.map((link) => (
-              <li key={link.href}>
-                <a href={link.href}>{link.label}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
+      <div className="account" ref={menuRef}>
+        <button
+          className="account-trigger"
+          onClick={() => setOpen((o) => !o)}
+          aria-haspopup="menu"
+          aria-expanded={open}
+        >
+          {avatar("account-avatar")}
+          <span className="account-id">
+            {userId}
+            {role && ` (${role.toUpperCase()})`}
+          </span>
+          <span className={`account-caret ${open ? "open" : ""}`} />
+        </button>
 
-      <div className="header-actions">
-        {actions === undefined ? (
-          <>
-            <button className="signin">Sign In</button>
-            <button className="signup">Sign Up</button>
-          </>
-        ) : (
-          actions
+        {open && (
+          <div className="account-menu" role="menu">
+            <div className="account-menu-top">{avatar("account-avatar-lg")}</div>
+            <div className="account-menu-body">
+              <button
+                className="account-signout"
+                role="menuitem"
+                onClick={handleSignOut}
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </header>

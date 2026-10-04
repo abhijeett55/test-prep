@@ -30,7 +30,7 @@ const mockGoogleAccount: ConnectedAccount = {
   onConnectToggle: () => {},
 };
 
-export default function AdminProfilePage() {
+export default function ProfilePage() {
   // Role-specific section — swapped out per role.
   const accessSection: ProfileSection = {
     title: "Access",

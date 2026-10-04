@@ -5,13 +5,13 @@ import Footer from "../../../components/Footer/Footer";
 import { adminNav } from "../../../config/dashboard/adminNav";
 import TeachersPage from "./user-management/TeachersPage";
 import StudentsPage from "./user-management/StudentsPage";
-import AdminProfilePage from "../../profile/AdminProfilePage";
+import ProfilePage from "../../profile/ProfilePage";
 import "./AdminDashboardPage.css";
 
 export default function AdminDashboardPage() {
   return (
     <div className="dashboard-page">
-      <Header title="Admin Panel" />
+      <Header title="Admin Panel" userId="A-1001" role="Admin" />
 
       <div className="dashboard-body">
         <Navbar items={adminNav} defaultActive="Dashboard" />
@@ -23,7 +23,7 @@ export default function AdminDashboardPage() {
 
             <Route path="user-management/teachers" element={<TeachersPage />} />
             <Route path="user-management/students" element={<StudentsPage />} />
-            <Route path="profile" element={<AdminProfilePage />} />
+            <Route path="profile" element={<ProfilePage />} />
             <Route path="*" element={<Navigate to="/dashboard/admin" replace />} />
           </Routes>
         </main>
