@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import { useAuth } from "../../config/auth/AuthContext";
 import { ROLE_HOME_PATH } from "../../api/auth/roleRouting";
+import { errorMessage } from "../../api/client";
 
 function Ribbon() {
   return (
@@ -65,43 +66,43 @@ const EyeIcon = ({ off }: { off: boolean }) => (
   </svg>
 );
 
-export default function LoginPage() {
+export default function AdminLoginPage() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
- 
+
   const navigate = useNavigate();
   const { login } = useAuth();
   const canSubmit = userId.trim() !== "" && password !== "" && !submitting;
 
-    const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
- 
+
     setError(null);
     setSubmitting(true);
     try {
-      const user = await login(userId, password);
+      const user = await login("admin", userId, password);   // ← role added
       navigate(ROLE_HOME_PATH[user.role]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      const detail = err?.response?.data?.detail;
-      setError(detail ?? "Something went wrong — please try again.");
-    } finally {
+    } catch (err) {
+      setError(errorMessage(err));
+    }finally {
       setSubmitting(false);
     }
   };
-    return (
+
+  return (
     <div className="login-page">
       <Ribbon />
- 
+
       <header className="login-header">
         <h1 className="app-title">TestPrep</h1>
       </header>
- 
+
       <main className="login-main">
         <section className="login-card" aria-label="Sign in">
           <div className="login-card-body">
@@ -111,7 +112,7 @@ export default function LoginPage() {
                   {error}
                 </p>
               )}
- 
+
               <div className="field">
                 <label htmlFor="userId">User ID</label>
                 <input
@@ -124,10 +125,10 @@ export default function LoginPage() {
                   required
                 />
               </div>
- 
+
               <div className="field">
                 <label htmlFor="password">Password</label>
- 
+
                 <div className="input-wrap">
                   <input
                     id="password"
@@ -147,7 +148,7 @@ export default function LoginPage() {
                   </button>
                 </div>
               </div>
- 
+
               <label className="remember">
                 <input
                   type="checkbox"
@@ -157,7 +158,7 @@ export default function LoginPage() {
                 <span className="checkbox" aria-hidden="true" />
                 <span>Remember me on this device</span>
               </label>
- 
+
               <button type="submit" className="primary-button" disabled={!canSubmit}>
                 {submitting ? "Signing in…" : "Login"}
               </button>
@@ -165,7 +166,7 @@ export default function LoginPage() {
           </div>
         </section>
       </main>
- 
+
       <footer className="login-footer">
         <span>© 2026 Test-Prep</span>
         <a href="/privacy">Privacy &amp; terms</a>

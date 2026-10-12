@@ -1,37 +1,50 @@
-import { apiClient, tokenStorage } from "./client";
+import { client } from "../client";
+import type { TokenResponse } from "../types";
+import {
+  ROLE_API_SEGMENT,
+  ROLE_ID_FIELD,
+  type Role,
+} from "./roleRouting";
 
-export type Role = "admin" | "teacher" | "testsetter" | "provider";
+/**
+ * POST /{segment}/login
+ * Body: { [idField]: userId, password }
+ * baseURL already carries /api/v1.
+ */
+export async function login(
+  role: Role,
+  userId: string,
+  password: string
+): Promise<TokenResponse> {
+  const segment = ROLE_API_SEGMENT[role];
+  const idField = ROLE_ID_FIELD[role];
 
-export type TokenResponse = {
-  access_token: string;
-  refresh_token: string;
-  role: Role;
-};
+  const { data } = await client.post<TokenResponse>(
+    `/${segment}/login`,
+    { [idField]: userId, password }
+  );
+  return data;
+}
 
-
-export type CurrentUser = {
-  id: string;
-  user_id: string;
-  role: Role;
-  is_active: boolean;
-  full_name: string | null;
-  institute_id: string | null;
-};
-
-
-export async function login(userId: string, password: string): Promise<TokenResponse> {
-  const res = await apiClient.post<TokenResponse>("/auth/login", {
-    user_id: userId,
-    password,
+/**
+ * POST /{segment}/change-password
+ * Requires a valid token — the route uses `get_{role}_allow_temp`.
+ */
+export async function changePassword(
+  role: Role,
+  current: string,
+  next: string
+): Promise<void> {
+  const segment = ROLE_API_SEGMENT[role];
+  await client.post(`/${segment}/change-password`, {
+    current_password: current,
+    new_password: next,
   });
-  return res.data;
 }
 
-export async function fetchCurrentUser(): Promise<CurrentUser> {
-  const res = await apiClient.get<CurrentUser>("/auth/me");
-  return res.data;
-}
-
-export function logout(): void {
-  tokenStorage.clear();
+/** GET /{segment}/me */
+export async function getMe<T = unknown>(role: Role): Promise<T> {
+  const segment = ROLE_API_SEGMENT[role];
+  const { data } = await client.get<T>(`/${segment}/me`);
+  return data;
 }

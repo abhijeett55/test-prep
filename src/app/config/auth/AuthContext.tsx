@@ -2,70 +2,86 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
   type ReactNode,
 } from "react";
-import {
-  login as apiLogin,
-  fetchCurrentUser,
-  logout as apiLogout,
-  type CurrentUser,
-} from "../../api/auth/auth";
-import { tokenStorage } from "../../api/auth/client";
+import { TOKEN_KEY, USER_KEY } from "../../../app/api/client";
+import { login as apiLogin } from "../../../app/api/auth/auth";
+import type { Role } from "../../../app/api/auth/roleRouting";
 
-type AuthContextValue = {
-  user: CurrentUser | null;
+export interface AuthUser {
+  id: string;
+  role: Role;
+  full_name: string;
+  must_change_password: boolean;
+}
+
+interface AuthContextValue {
+  user: AuthUser | null;
   loading: boolean;
-  login: (userId: string, password: string) => Promise<CurrentUser>;
+  login: (role: Role, userId: string, password: string) => Promise<AuthUser>;
   logout: () => void;
-};
+}
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<CurrentUser | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    const existingToken = tokenStorage.getAccess();
-    if (!existingToken) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setLoading(false);
-      return;
-    }
 
-    fetchCurrentUser()
-      .then(setUser)
-      .catch(() => {
-        tokenStorage.clear();
-        setUser(null);
-      })
-      .finally(() => setLoading(false));
+  // Restore from localStorage on mount.
+  useEffect(() => {
+    const raw = localStorage.getItem(USER_KEY);
+    if (raw) {
+      try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setUser(JSON.parse(raw) as AuthUser);
+      } catch {
+        localStorage.removeItem(USER_KEY);
+        localStorage.removeItem(TOKEN_KEY);
+      }
+    }
+    setLoading(false);
   }, []);
 
-  const login = async (userId: string, password: string) => {
-    const tokenResponse = await apiLogin(userId, password);
-    tokenStorage.set(tokenResponse.access_token, tokenResponse.refresh_token);
-    const currentUser = await fetchCurrentUser();
-    setUser(currentUser);
-    return currentUser;
-  };
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      user,
+      loading,
 
-  const logout = () => {
-    apiLogout();
-    setUser(null);
-  };
+      async login(role, userId, password) {
+        // 👇 single call — API layer handles the role → endpoint mapping
+        const data = await apiLogin(role, userId, password);
 
-  return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+        localStorage.setItem(TOKEN_KEY, data.access_token);
+
+        const authUser: AuthUser = {
+          id: userId,
+          role,
+          full_name: data.full_name,
+          must_change_password: data.must_change_password,
+        };
+        localStorage.setItem(USER_KEY, JSON.stringify(authUser));
+        setUser(authUser);
+        return authUser;
+      },
+
+      logout() {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        setUser(null);
+      },
+    }),
+    [user, loading]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function useAuth(): AuthContextValue {
+export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
+  if (!ctx) throw new Error("useAuth must be inside <AuthProvider>");
   return ctx;
 }

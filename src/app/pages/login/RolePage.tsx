@@ -15,7 +15,6 @@ interface RoleCard {
   label: string;
   description: string;
   icon: LucideIcon;
-  /** where the card's button goes. Change to e.g. "/login/admin" when you add per-role login */
   path: string;
 }
 

@@ -3,7 +3,6 @@ import Header from "../../../components/Header/Header";
 import Navbar from "../../../components/Navbar/Navbar";
 import Footer from "../../../components/Footer/Footer";
 import { teacherNav } from "../../../config/dashboard/teacherNav";
-import ProfilePage from "../../profile/ProfilePage";
 import CoursesPage from "./my-classes/CoursesPage";
 import ClassPage from "./my-classes/ClassPage";
 import StudentPage from "./my-classes/StudentPage";
@@ -11,6 +10,8 @@ import StudentPage from "./my-classes/StudentPage";
 import AttemptHistory from "./student-performance/AttemptHistory";
 import WeakTopics from "./student-performance/WeakTopics";
 import BatchAnalytics from "./student-performance/BatchAnalytics";
+import ProfilePage from "../../account/ProfilePage";
+import ChangePasswordPage from "../../account/ChangePasswordPage";
 
 import ClassPerformance from "./reports/ClassPerformance";
 import StudentPerformance from "./reports/StudentPerformance";
@@ -52,11 +53,13 @@ export default function TeacherDashboardPage() {
             <Route path="reports/download" element={<DownloadReports />} />
             
             <Route path="my-scheduled-tests" element={<MyScheduledTests />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="change-password" element={<ChangePasswordPage />} />
 
             <Route path="tests/test-create" element={<CreateTests />} />
             <Route path="tests/test-completed" element={<CompletedTests />} />
             <Route path="tests/test-scheduled" element={<ScheduledTests />} />
-            <Route path="profile" element={<ProfilePage />} />
+            
             <Route path="*" element={<Navigate to="/dashboard/teacher" replace />} />
           </Routes>
         </main>

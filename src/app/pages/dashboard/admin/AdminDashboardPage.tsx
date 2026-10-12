@@ -5,7 +5,13 @@ import Footer from "../../../components/Footer/Footer";
 import { adminNav } from "../../../config/dashboard/adminNav";
 import TeachersPage from "./user-management/TeachersPage";
 import StudentsPage from "./user-management/StudentsPage";
-import ProfilePage from "../../profile/ProfilePage";
+import TestsetterPage from "./user-management/TestsetterPage";
+
+import Enrollment from "./student-management/Enrollment";
+import FeeStatus from "./student-management/FeeStatus";
+import BatchTransfer from "./student-management/BatchTransfer";
+import ProfilePage from "../../account/ProfilePage";
+import ChangePasswordPage from "../../account/ChangePasswordPage";
 import "./AdminDashboardPage.css";
 
 export default function AdminDashboardPage() {
@@ -18,12 +24,16 @@ export default function AdminDashboardPage() {
 
         <main className="dashboard-content">
           <Routes>
-            {/* / -> renders at /dashboard/admin itself */}
             <Route index element={<div>Admin dashboard overview — build me</div>} />
 
             <Route path="user-management/teachers" element={<TeachersPage />} />
+            <Route path="user-management/testsetters" element={<TestsetterPage />} />
             <Route path="user-management/students" element={<StudentsPage />} />
+            <Route path="student-management/enrollment" element={<Enrollment />} />
+            <Route path="student-management/fee-status" element={<FeeStatus />} />
+            <Route path="student-management/batch-transfer" element={<BatchTransfer />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="change-password" element={<ChangePasswordPage />} />
             <Route path="*" element={<Navigate to="/dashboard/admin" replace />} />
           </Routes>
         </main>

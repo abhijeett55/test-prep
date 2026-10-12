@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Plus, Search, Pencil, Eye, X } from "lucide-react";
 import StudentForm from "../../../../config/nav-user/student/StudentForm";
 import type { FormValues, Option } from "../../../../components/FormLayout/types";
-import { createStudent } from "../../../../api/student/students";
+// import { createStudent } from "../../../../api/student/students";
 import "./DefaultPage.css";
 
 const institutes: Option[] = [

@@ -18,9 +18,8 @@ export const adminNav: NavItem[] = [
     icon: UserCog,
     children: [
       { label: "Teachers", path: "/dashboard/admin/user-management/teachers" },
-      { label: "Test Setters", path: "/dashboard/admin/user-management/test-setters" },
+      { label: "Test Setters", path: "/dashboard/admin/user-management/testsetters" },
       { label: "Students", path: "/dashboard/admin/user-management/students" },
-      { label: "Role Assignment", path: "/dashboard/admin/user-management/role-assignment", info: true },
     ],
   },
   {
@@ -29,7 +28,7 @@ export const adminNav: NavItem[] = [
     children: [
       { label: "Enrollment", path: "/dashboard/admin/student-management/enrollment" },
       { label: "Fee Status", path: "/dashboard/admin/student-management/fee-status", info: true },
-      { label: "Batch Transfers", path: "/dashboard/admin/student-management/batch-transfers" },
+      { label: "Batch Transfers", path: "/dashboard/admin/student-management/batch-transfer" },
     ],
   },
   {

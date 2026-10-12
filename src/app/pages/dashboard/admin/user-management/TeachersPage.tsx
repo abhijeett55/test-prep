@@ -1,115 +1,165 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus, Search, Pencil, Eye, X } from "lucide-react";
 import TeacherForm from "../../../../config/nav-user/teacher/TeacherForm";
-import type { FormValues, Option } from "../../../../components/FormLayout/types";
+import type { FormValues } from "../../../../components/FormLayout/types";
+import {
+  getTeacherOptions,
+  listTeachers,
+  createTeacher,
+  type TeacherCreate,
+} from "../../../../api/auth/teacher/teacher";
+import type {
+  TeacherOptionsResponse,
+  TeacherRow,
+} from "../../../../api/types";
+import { errorMessage } from "../../../../api/client";
 import "./DefaultPage.css";
 
-const institutes: Option[] = [
-  { id: "inst-1", name: "Allen Career Institute" },
-  { id: "inst-2", name: "Physics Wallah" },
-  { id: "inst-3", name: "Aakash Institute" },
-];
-
-const subjects: Option[] = [
-  { id: "sub-1", name: "Physics" },
-  { id: "sub-2", name: "Chemistry" },
-  { id: "sub-3", name: "Mathematics" },
-  { id: "sub-4", name: "Biology" },
-];
-
-type TeacherRow = {
-  id: string;
-  name: string;
-  email: string;
-  institute: string;
-  subject: string;
-  employeeCode: string;
-  teacherId: string;
-};
-
-const MOCK_TEACHERS: TeacherRow[] = [
-  {
-    id: "t-1",
-    name: "Ravi Sharma",
-    email: "ravi.sharma@example.com",
-    institute: "Allen Career Institute",
-    subject: "Physics",
-    employeeCode: "EMP-1042",
-    teacherId: "TCH-001",
-  },
-  {
-    id: "t-2",
-    name: "Ananya Iyer",
-    email: "ananya.iyer@example.com",
-    institute: "Physics Wallah",
-    subject: "Chemistry",
-    employeeCode: "EMP-1088",
-    teacherId: "TCH-002",
-  },
-  {
-    id: "t-3",
-    name: "Karan Mehta",
-    email: "karan.mehta@example.com",
-    institute: "Aakash Institute",
-    subject: "Mathematics",
-    employeeCode: "EMP-1103",
-    teacherId: "TCH-003",
-  },
-];
 const ENTRY_OPTIONS = [10, 25, 50];
+
+/** FormValues (all strings) → TeacherCreate payload. */
+function toPayload(v: FormValues): TeacherCreate {
+  const trim = (s?: string) => (s ?? "").trim();
+  const nullable = (s?: string) => trim(s) || null;
+
+  return {
+    teacher_id: trim(v.teacher_id),
+    full_name: trim(v.fullName),
+    email: nullable(v.email),
+    phone: nullable(v.phone),
+    institute_id: v.institute_id || null,
+    employee_code: nullable(v.employee_code),
+    qualification: nullable(v.qualification),
+    ip_address: nullable(v.ip_address),
+    latitude: nullable(v.latitude),
+    longitude: nullable(v.longitude),
+    subject_ids: v.subject_id ? [v.subject_id] : [],
+  };
+}
 
 export default function TeachersPage() {
   const [showForm, setShowForm] = useState(false);
-  const [teachers, setTeachers] = useState<TeacherRow[]>(MOCK_TEACHERS);
+
+  const [options, setOptions] = useState<TeacherOptionsResponse | null>(null);
+  const [teachers, setTeachers] = useState<TeacherRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
   const [search, setSearch] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
 
-  
   const [pendingTeacher, setPendingTeacher] = useState<FormValues | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  /* ---------- initial fetch: options + teachers in parallel ---------- */
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setLoadError(null);
+      try {
+        const [opts, rows] = await Promise.all([
+          getTeacherOptions(),
+          listTeachers(),
+        ]);
+        if (!cancelled) {
+          setOptions(opts);
+          setTeachers(rows);
+        }
+      } catch (err) {
+        if (!cancelled) setLoadError(errorMessage(err));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return teachers;
     return teachers.filter(
-    (t) =>
-      t.name.toLowerCase().includes(q) ||
-      t.email.toLowerCase().includes(q) ||
-      t.institute.toLowerCase().includes(q) ||
-      t.subject.toLowerCase().includes(q) ||
-      t.teacherId.toLowerCase().includes(q)
-  );
+      (t) =>
+        t.name.toLowerCase().includes(q) ||
+        (t.email ?? "").toLowerCase().includes(q) ||
+        (t.phone ?? "").toLowerCase().includes(q) ||
+        t.institute.toLowerCase().includes(q) ||
+        t.subject.toLowerCase().includes(q) ||
+        (t.employee_code ?? "").toLowerCase().includes(q) ||
+        t.teacher_id.toLowerCase().includes(q) ||
+        (t.qualification ?? "").toLowerCase().includes(q)
+    );
   }, [teachers, search]);
 
   const visible = filtered.slice(0, entriesPerPage);
+
+  /* ---------- form → confirmation → POST ---------- */
+
   const handleFormSubmit = async (values: FormValues) => {
     setPendingTeacher(values);
+    setSaveError(null);
   };
 
-  const cancelPendingTeacher = () => setPendingTeacher(null);
-
-  const confirmPendingTeacher = () => {
-    if (!pendingTeacher) return;
-    const newTeacher: TeacherRow = {
-      id: crypto.randomUUID(),
-      name: pendingTeacher.fullName ?? "",
-      email: pendingTeacher.email ?? "",
-      institute: institutes.find((i) => i.id === pendingTeacher.institute_id)?.name ?? "",
-      subject: subjects.find((s) => s.id === pendingTeacher.subject_id)?.name ?? "",
-      employeeCode: pendingTeacher.employee_code ?? "",
-      teacherId: pendingTeacher.teacher_id ?? "",
-    };
-
-    setTeachers((prev) => [...prev, newTeacher]);
+  const cancelPendingTeacher = () => {
+    if (saving) return;
     setPendingTeacher(null);
-    setShowForm(false);
+    setSaveError(null);
   };
 
-  const pendingInstituteName = pendingTeacher
-    ? institutes.find((i) => i.id === pendingTeacher.institute_id)?.name ?? "—"
-    : "";
-  const pendingSubjectName = pendingTeacher
-    ? subjects.find((s) => s.id === pendingTeacher.subject_id)?.name ?? "—"
-    : "";
+  const confirmPendingTeacher = async () => {
+    if (!pendingTeacher || saving) return;
+    setSaving(true);
+    setSaveError(null);
+
+    try {
+      const { temp_password, ...row } = await createTeacher(
+        toPayload(pendingTeacher)
+      );
+      // temp_password is the teacher's first-login credential.
+      // Surface it (toast / banner) before dropping it.
+      void temp_password;
+
+      setTeachers((prev) => [...prev, row]);
+      setPendingTeacher(null);
+      setShowForm(false);
+    } catch (err) {
+      setSaveError(errorMessage(err));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const lookupName = (
+    id: string | undefined,
+    list: { id: string; name: string }[]
+  ) => list.find((o) => o.id === id)?.name ?? "—";
+
+  /* ---------- render ---------- */
+
+  if (loading) {
+    return (
+      <div className="default-page">
+        <div className="default-empty">Loading teachers…</div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="default-page">
+        <div className="default-empty">
+          <p>{loadError}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!options) return null;
+
+  const { institutes, subjects } = options;
 
   return (
     <div className="default-page">
@@ -123,7 +173,11 @@ export default function TeachersPage() {
       ) : teachers.length === 0 ? (
         <div className="default-empty">
           <p>No teachers added yet.</p>
-          <button type="button" className="add-button" onClick={() => setShowForm(true)}>
+          <button
+            type="button"
+            className="add-button"
+            onClick={() => setShowForm(true)}
+          >
             <Plus size={16} strokeWidth={2.4} />
             Add your first teacher
           </button>
@@ -133,8 +187,6 @@ export default function TeachersPage() {
           <div className="section-bar">All Teachers</div>
 
           <div className="default-toolbar">
-            
-
             <div className="search-control">
               <Search size={15} strokeWidth={2} />
               <input
@@ -153,10 +205,12 @@ export default function TeachersPage() {
                   <th className="col-sno">Sr. No.</th>
                   <th>Name</th>
                   <th>Email</th>
+                  <th>Phone</th>
                   <th>Institute</th>
                   <th>Subject</th>
                   <th>Employee Code</th>
                   <th>Teacher ID</th>
+                  <th>Qualification</th>
                   <th className="col-actions">Actions</th>
                 </tr>
               </thead>
@@ -165,11 +219,13 @@ export default function TeachersPage() {
                   <tr key={t.id}>
                     <td className="col-sno">{i + 1}</td>
                     <td className="cell-name">{t.name}</td>
-                    <td>{t.email}</td>
-                    <td>{t.institute}</td>
-                    <td>{t.subject}</td>
-                    <td>{t.employeeCode}</td>
-                    <td>{t.teacherId}</td>
+                    <td>{t.email || "—"}</td>
+                    <td>{t.phone || "—"}</td>
+                    <td>{t.institute || "—"}</td>
+                    <td>{t.subject || "—"}</td>
+                    <td>{t.employee_code || "—"}</td>
+                    <td>{t.teacher_id}</td>
+                    <td>{t.qualification || "—"}</td>
                     <td className="col-actions">
                       <button type="button" className="icon-button" title="Edit">
                         <Pencil size={15} strokeWidth={2} />
@@ -183,7 +239,7 @@ export default function TeachersPage() {
 
                 {visible.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="no-results">
+                    <td colSpan={10} className="no-results">
                       No teachers match "{search}".
                     </td>
                   </tr>
@@ -209,21 +265,24 @@ export default function TeachersPage() {
             </label>
 
             <div className="default-footer-note">
-              Showing {visible.length} of {filtered.length} teacher{filtered.length === 1 ? "" : "s"}
+              Showing {visible.length} of {filtered.length} teacher
+              {filtered.length === 1 ? "" : "s"}
             </div>
           </div>
         </div>
       )}
 
-      {/* Floating action button */}
       {!showForm && teachers.length > 0 && (
-        <button type="button" className="add-button-fab" onClick={() => setShowForm(true)}>
+        <button
+          type="button"
+          className="add-button-fab"
+          onClick={() => setShowForm(true)}
+        >
           <Plus size={18} strokeWidth={2.6} />
           <span>Add Teacher</span>
         </button>
       )}
 
-      {/* Confirmation card */}
       {pendingTeacher && (
         <div className="confirm-overlay" role="dialog" aria-modal="true">
           <div className="confirm-card">
@@ -232,6 +291,7 @@ export default function TeachersPage() {
               className="confirm-close"
               onClick={cancelPendingTeacher}
               aria-label="Close"
+              disabled={saving}
             >
               <X size={16} strokeWidth={2.2} />
             </button>
@@ -247,37 +307,73 @@ export default function TeachersPage() {
 
             <div className="confirm-details">
               <div className="confirm-row">
-                <span>Name</span>
+                <span>Full name</span>
                 <strong>{pendingTeacher.fullName || "—"}</strong>
+              </div>
+              <div className="confirm-row">
+                <span>Teacher ID</span>
+                <strong>{pendingTeacher.teacher_id || "—"}</strong>
               </div>
               <div className="confirm-row">
                 <span>Email</span>
                 <strong>{pendingTeacher.email || "—"}</strong>
               </div>
               <div className="confirm-row">
+                <span>Phone</span>
+                <strong>{pendingTeacher.phone || "—"}</strong>
+              </div>
+              <div className="confirm-row">
                 <span>Institute</span>
-                <strong>{pendingInstituteName}</strong>
+                <strong>
+                  {lookupName(pendingTeacher.institute_id, institutes)}
+                </strong>
               </div>
               <div className="confirm-row">
                 <span>Subject</span>
-                <strong>{pendingSubjectName}</strong>
+                <strong>
+                  {lookupName(pendingTeacher.subject_id, subjects)}
+                </strong>
               </div>
               <div className="confirm-row">
-                <span>Employee Code</span>
+                <span>Employee code</span>
                 <strong>{pendingTeacher.employee_code || "—"}</strong>
               </div>
               <div className="confirm-row">
-                <span>Teacher ID</span>
-                <strong>{pendingTeacher.teacher_id || "—"}</strong>
+                <span>Qualification</span>
+                <strong>{pendingTeacher.qualification || "—"}</strong>
+              </div>
+              <div className="confirm-row">
+                <span>IP address</span>
+                <strong>{pendingTeacher.ip_address || "—"}</strong>
+              </div>
+              <div className="confirm-row">
+                <span>Coordinates</span>
+                <strong>
+                  {pendingTeacher.latitude && pendingTeacher.longitude
+                    ? `${pendingTeacher.latitude}, ${pendingTeacher.longitude}`
+                    : "—"}
+                </strong>
               </div>
             </div>
 
+            {saveError && <p className="detect-error">{saveError}</p>}
+
             <div className="confirm-actions">
-              <button type="button" className="confirm-btn-secondary" onClick={cancelPendingTeacher}>
+              <button
+                type="button"
+                className="confirm-btn-secondary"
+                onClick={cancelPendingTeacher}
+                disabled={saving}
+              >
                 Cancel
               </button>
-              <button type="button" className="confirm-btn-primary" onClick={confirmPendingTeacher}>
-                Yes, add teacher
+              <button
+                type="button"
+                className="confirm-btn-primary"
+                onClick={confirmPendingTeacher}
+                disabled={saving}
+              >
+                {saving ? "Adding…" : "Yes, add teacher"}
               </button>
             </div>
           </div>

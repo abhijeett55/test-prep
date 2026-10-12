@@ -9,7 +9,8 @@ import AdminDashboardPage from "./app/pages/dashboard/admin/AdminDashboardPage";
 import TeacherDashboardPage from "./app/pages/dashboard/teacher/TeacherDashboardPage";
 import TestsetterDashboardPage from "./app/pages/dashboard/testsetter/TestsetterDashboardPage";
 import ProviderDashboardPage from "./app/pages/dashboard/provider/ProviderDashboardPage";
-// import ProtectedRoute from "./app/components/ProtectedRoute/ProtectedRoute";
+import ProtectedRoute from "./app/components/ProtectedRoute/ProtectedRoute";
+
 
 export default function App() {
   return (
@@ -22,34 +23,35 @@ export default function App() {
       <Route
         path="/dashboard/admin/*"
         element={
-          // <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute>
             <AdminDashboardPage />
-          // </ProtectedRoute>
+          </ProtectedRoute>
         }
       />
+      
 
       <Route
         path="/dashboard/teacher/*"
         element={
-          // <ProtectedRoute allowedRoles={["teacher"]}>
+          <ProtectedRoute>
             <TeacherDashboardPage />
-          // </ProtectedRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/dashboard/testsetter/*"
         element={
-          // <ProtectedRoute allowedRoles={["testsetter"]}>
+          <ProtectedRoute>
             <TestsetterDashboardPage />
-          // </ProtectedRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/dashboard/provider/*"
         element={
-          // <ProtectedRoute allowedRoles={["provider"]}>
+          <ProtectedRoute>
             <ProviderDashboardPage />
-          // </ProtectedRoute>
+          </ProtectedRoute>
         }
       />
 

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import { useAuth } from "../../config/auth/AuthContext";
 import { ROLE_HOME_PATH } from "../../api/auth/roleRouting";
+import { errorMessage } from "../../api/client";
 
 function Ribbon() {
   return (
@@ -76,24 +77,23 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const canSubmit = userId.trim() !== "" && password !== "" && !submitting;
-
-    const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
- 
+
     setError(null);
     setSubmitting(true);
     try {
-      const user = await login(userId, password);
+      const user = await login("teacher", userId, password);
       navigate(ROLE_HOME_PATH[user.role]);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      const detail = err?.response?.data?.detail;
-      setError(detail ?? "Something went wrong — please try again.");
-    } finally {
+    } catch (err) {
+      setError(errorMessage(err));
+    } 
+    finally {
       setSubmitting(false);
     }
   };
+    
     return (
     <div className="login-page">
       <Ribbon />
