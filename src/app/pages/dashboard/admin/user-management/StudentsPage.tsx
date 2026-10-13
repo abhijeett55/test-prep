@@ -100,6 +100,27 @@ const MOCK_STUDENTS: StudentRow[] = [
   },
 ];
 
+async function createStudent(v: FormValues) {
+  return {
+    id: `s-${Date.now()}`,
+    full_name: `${v.firstName ?? ""} ${v.LastName ?? ""}`.trim(),
+    email: v.email ?? "",
+    self_phone: v.phone ?? "",
+    institute_id: v.institute_id,
+    status: v.status,
+    address: v.address ?? "",
+    father_name: `${v.fatherFirstName ?? ""} ${v.fatherLastName ?? ""}`.trim(),
+    father_phone: v.fatherPhone ?? "",
+    mother_name: `${v.motherFirstName ?? ""} ${v.motherLastName ?? ""}`.trim(),
+    mother_phone: v.motherPhone ?? "",
+    ip_address: v.ip_address ?? "",
+    latitude: v.latitude ?? null,
+    longitude: v.longitude ?? null,
+    placeholder: v.placeholder ?? "",
+    created_at: new Date().toISOString(),
+  };
+}
+
 const ENTRY_OPTIONS = [10, 25, 50];
 
 export default function StudentsPage() {
