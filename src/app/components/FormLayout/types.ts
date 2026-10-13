@@ -1,6 +1,6 @@
 export type Option = { id: string; name: string };
 
-export type FieldType = "text" | "email" | "select";
+export type FieldType = "text" | "email" | "select" | "textarea";
 
 export type FieldConfig = {
   name: string;

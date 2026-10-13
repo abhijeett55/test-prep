@@ -30,7 +30,24 @@ export interface AdminProfile {
   institute_id: string | null;
 }
 
+
 export interface InstituteProfile {
+  id: string;
+  institute_id: string;
+  institute_name: string;
+  code: string;
+  email: string;
+  phone: string | null;
+  address: string | null;
+  status: string;
+  ip_address: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InstituteRow {
   id: string;
   institute_id: string;
   institute_name: string;
@@ -41,6 +58,10 @@ export interface InstituteProfile {
   status: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface InstituteCreated extends InstituteRow {
+  temp_password: string;
 }
 
 export interface TeacherRow {

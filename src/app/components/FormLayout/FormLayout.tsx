@@ -111,7 +111,8 @@ export default function FormLayout({
 
           <div className="form-layout-grid">
             {section.fields.map((field) => (
-              <div className="field" key={field.name}>
+              <div className={`field${field.type === "textarea" ? " full" : ""}`}
+                key={field.name}>
                 <label htmlFor={field.name}>{field.label}</label>
 
                 {field.type === "select" ? (

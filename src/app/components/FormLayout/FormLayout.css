@@ -6,12 +6,11 @@
   --accent-tint: #e8ebfd;
   --danger: #c0392b;
 
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 32px;
+  width: 100%;                 /* fill the parent */
+  padding: 24px 28px;          /* was 32px all around */
   background: #ffffff;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 12px;
   font-family: inherit;
   color: var(--ink);
   box-sizing: border-box;
@@ -22,19 +21,19 @@
 }
 
 .form-layout-title {
-  margin: 0 0 24px;
-  font-size: 20px;
+  margin: 0 0 20px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.3px;
 }
 
 .form-layout-section {
-  padding-bottom: 20px;
+  padding-bottom: 18px;
 }
 
 .form-layout-section h3 {
-  margin: 0 0 14px;
-  font-size: 13px;
+  margin: 0 0 12px;
+  font-size: 12.5px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -45,7 +44,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .section-header-row h3 {
@@ -54,66 +53,93 @@
 
 .section-divider {
   height: 1px;
-  margin: 4px 0 16px;
+  margin: 4px 0 14px;
   background: var(--line);
 }
+
+/* ---------- Grid ---------- */
 
 .form-layout-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px 18px;
+  gap: 14px 16px;
+}
+
+/* Span a field across both columns (e.g. long text, address, IP) */
+.field.full {
+  grid-column: 1 / -1;
+}
+
+.form-full-bleed {
+  margin: 0 -24px;          /* cancel the parent's horizontal padding */
 }
 
 .field {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;                /* prevents overflow from long inputs */
 }
 
 .field label {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 500;
   color: var(--ink);
 }
 
 .form-layout input,
-.form-layout select {
-  height: 42px;
+.form-layout select,
+.form-layout textarea {
+  width: 100%;
+  height: 40px;
   padding: 0 12px;
   border: 1px solid #d5d9e6;
   border-radius: 8px;
   background: #fff;
   color: var(--ink);
   font: inherit;
-  font-size: 14px;
+  font-size: 13.5px;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+.form-layout textarea {
+  height: auto;
+  min-height: 72px;
+  padding: 10px 12px;
+  resize: vertical;
+  line-height: 1.4;
+}
+
 .form-layout input:hover,
-.form-layout select:hover {
+.form-layout select:hover,
+.form-layout textarea:hover {
   border-color: #bcc2d6;
 }
 
 .form-layout input:focus,
-.form-layout select:focus {
+.form-layout select:focus,
+.form-layout textarea:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-tint);
 }
 
-.form-layout input::placeholder {
+.form-layout input::placeholder,
+.form-layout textarea::placeholder {
   color: #a3aabb;
 }
 
+/* ---------- Detect button ---------- */
+
 .detect-button {
-  height: 32px;
+  height: 30px;
   padding: 0 12px;
   border: 1px solid var(--accent);
   border-radius: 7px;
   background: var(--accent-tint);
   color: var(--accent);
   font: inherit;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s ease;
@@ -129,27 +155,29 @@
 }
 
 .detect-error {
-  margin: -6px 0 12px;
+  margin: -4px 0 10px;
   font-size: 12.5px;
   color: var(--danger);
 }
+
+/* ---------- Actions ---------- */
 
 .form-layout-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 4px;
-  padding-top: 20px;
+  margin-top: 8px;
+  padding-top: 18px;
   border-top: 1px solid var(--line);
 }
 
 .primary-button,
 .secondary-button {
-  height: 42px;
+  height: 40px;
   padding: 0 20px;
   border-radius: 8px;
   font: inherit;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s ease, box-shadow 0.15s ease;
@@ -181,9 +209,9 @@
   background: #fafbff;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
   .form-layout {
-    padding: 22px;
+    padding: 20px;
   }
 
   .form-layout-grid {
