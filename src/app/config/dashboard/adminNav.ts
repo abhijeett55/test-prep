@@ -5,14 +5,16 @@ import {
   Users2,
   BarChart3,
   Megaphone,
-  CreditCard,
   Users,
-  Sparkles,
+  BookOpen,
+  Library,
+  Building2,
 } from "lucide-react";
 import type { NavItem } from "../../components/Navbar/types";
 
 export const adminNav: NavItem[] = [
   { label: "Dashboard", icon: LayoutGrid, path: "/dashboard/admin" },
+
   {
     label: "User Management",
     icon: UserCog,
@@ -22,33 +24,59 @@ export const adminNav: NavItem[] = [
       { label: "Students", path: "/dashboard/admin/user-management/students" },
     ],
   },
+
   {
     label: "Student Management",
     icon: GraduationCap,
     children: [
       { label: "Enrollment", path: "/dashboard/admin/student-management/enrollment" },
-      { label: "Fee Status", path: "/dashboard/admin/student-management/fee-status", info: true },
+      { label: "Fee Status", path: "/dashboard/admin/student-management/fee-status" },
       { label: "Batch Transfers", path: "/dashboard/admin/student-management/batch-transfer" },
     ],
   },
+
   {
-    label: "Billing & Subscription",
-    icon: CreditCard,
+    label: "Courses",
+    icon: BookOpen,
     children: [
-      { label: "Current Plan", path: "/dashboard/admin/billing/current-plan" },
-      { label: "Seats & Usage", path: "/dashboard/admin/billing/seats-usage", info: true },
-      { label: "Invoices", path: "/dashboard/admin/billing/invoices" },
+      { label: "All Courses", path: "/dashboard/admin/courses/all" },
+      { label: "Create Course", path: "/dashboard/admin/courses/create" },
+      { label: "Available Catalog", path: "/dashboard/admin/courses/catalog" },
+      { label: "Course Enrollments", path: "/dashboard/admin/courses/enrollments" },
     ],
   },
+
+  {
+    label: "Subjects",
+    icon: Library,
+    children: [
+      { label: "All Subjects", path: "/dashboard/admin/subjects/all" },
+      { label: "Create Subject", path: "/dashboard/admin/subjects/create" },
+      { label: "Assign to Courses", path: "/dashboard/admin/subjects/assign" },
+    ],
+  },
+
+  {
+    label: "Batch Management",
+    icon: Users2,
+    children: [
+      { label: "Create Batch", path: "/dashboard/admin/batch-management/create" },
+      { label: "All Batches", path: "/dashboard/admin/batch-management/all" },
+      { label: "Assign Teachers", path: "/dashboard/admin/batch-management/assign-teachers" },
+      { label: "Map Students to Batch", path: "/dashboard/admin/batch-management/map-students" },
+    ],
+  },
+
   {
     label: "Announcements",
     icon: Megaphone,
     children: [
-      { label: "New Announcement", path: "/dashboard/admin/announcements/new", info: true },
+      { label: "New Announcement", path: "/dashboard/admin/announcements/new" },
       { label: "Institute-wide", path: "/dashboard/admin/announcements/institute-wide" },
       { label: "Batch-specific", path: "/dashboard/admin/announcements/batch-specific" },
     ],
   },
+
   {
     label: "Reports & Analytics",
     icon: BarChart3,
@@ -56,18 +84,20 @@ export const adminNav: NavItem[] = [
       { label: "Institute-wide Performance", path: "/dashboard/admin/reports/institute-performance" },
       { label: "Batch Comparison", path: "/dashboard/admin/reports/batch-comparison" },
       { label: "Teacher Comparison", path: "/dashboard/admin/reports/teacher-comparison" },
+      { label: "Course Performance", path: "/dashboard/admin/reports/course-performance" },
     ],
   },
+
   {
-    label: "Batch Management",
-    icon: Users2,
+    label: "Institute",
+    icon: Building2,
     children: [
-      { label: "Create Batch", path: "/dashboard/admin/batch-management/create", info: true },
-      { label: "All Batches", path: "/dashboard/admin/batch-management/all" },
-      { label: "Assign Teachers", path: "/dashboard/admin/batch-management/assign-teachers" },
-      { label: "Map Students to Batch", path: "/dashboard/admin/batch-management/map-students" },
+      { label: "Profile", path: "/dashboard/admin/institute/profile" },
+      { label: "Departments", path: "/dashboard/admin/institute/departments" },
+      { label: "Settings", path: "/dashboard/admin/institute/settings" },
     ],
   },
+
   {
     label: "My Account",
     icon: Users,
@@ -76,5 +106,4 @@ export const adminNav: NavItem[] = [
       { label: "Change Password", path: "/dashboard/admin/change-password" },
     ],
   },
-  { label: "Explore Whats New", icon: Sparkles, path: "/dashboard/admin/whats-new" },
 ];

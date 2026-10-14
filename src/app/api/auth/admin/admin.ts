@@ -16,20 +16,26 @@ export interface AdminCreated extends AdminProfile {
   temp_password: string;
 }
 
-/** GET /api/v1/admins/options  (admin only) */
+/** GET /admins/options — baseURL carries /api/v1 */
 export async function getAdminOptions(): Promise<OptionsResponse> {
-  const { data } = await client.get<OptionsResponse>("/api/v1/admins/options");
+  const { data } = await client.get<OptionsResponse>("/admins/options");
   return data;
 }
 
-/** GET /api/v1/admins  (admin only) */
+/** GET /admins */
 export async function listAdmins(): Promise<AdminProfile[]> {
-  const { data } = await client.get<AdminProfile[]>("/api/v1/admins");
+  const { data } = await client.get<AdminProfile[]>("/admins");
   return data;
 }
 
-/** POST /api/v1/admins  (admin only) — returns the one-time temp password */
+/** POST /admins — returns the one-time temp password */
 export async function createAdmin(payload: AdminCreate): Promise<AdminCreated> {
-  const { data } = await client.post<AdminCreated>("/api/v1/admins", payload);
+  const { data } = await client.post<AdminCreated>("/admins", payload);
+  return data;
+}
+
+/** GET /admins/me — the caller's own profile */
+export async function getMe(): Promise<AdminProfile> {
+  const { data } = await client.get<AdminProfile>("/admins/me");
   return data;
 }

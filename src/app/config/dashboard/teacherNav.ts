@@ -29,7 +29,7 @@ export const teacherNav: NavItem[] = [
     icon: ClipboardList,
     children: [
       { label: "Create Test", path: "/dashboard/teacher/tests/test-create", info: true },
-      { label: "Scheduled Tests", path: "/dashboard/teacher/tests/test-scheduled" },
+      { label: "Upcoming Tests", path: "/dashboard/teacher/tests/upcoming-test" },
       { label: "Completed Tests", path: "/dashboard/teacher/tests/test-completed" },
     ],
   },

@@ -12,7 +12,7 @@ const PROFILE_FIELDS: Record<Role, Field[]> = {
     { key: "full_name",    label: "Full Name" },
     { key: "email",        label: "Email" },
     { key: "phone",        label: "Phone" },
-    { key: "institute",    label: "Institute" },
+    { key: "institute_id", label: "Institute ID" },
   ],
   institute: [
     { key: "institute_id",   label: "Institute ID" },
@@ -38,7 +38,6 @@ const PROFILE_FIELDS: Record<Role, Field[]> = {
     { key: "email",         label: "Email" },
     { key: "phone",         label: "Phone" },
     { key: "employee_code", label: "Employee Code" },
-    { key: "institute",     label: "Institute" },
   ],
   testsetter: [
     { key: "testsetter_id", label: "Test Setter ID" },
@@ -65,10 +64,14 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!user) return;
+    setData(null);
+    setErr(null);
+
     const segment = ROLE_API_SEGMENT[user.role];
 
+    // baseURL already carries /api/v1 — do NOT add it here.
     client
-      .get(`/api/v1/${segment}/me`)
+      .get(`/${segment}/me`)
       .then((r) => setData(r.data))
       .catch((e) => setErr(errorMessage(e)));
   }, [user]);
@@ -85,7 +88,6 @@ export default function ProfilePage() {
       </header>
 
       {err && <p className="profile-error">{err}</p>}
-
       {!data && !err && <p className="profile-loading">Loading…</p>}
 
       {data && (
