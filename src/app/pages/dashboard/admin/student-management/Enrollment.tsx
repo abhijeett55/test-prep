@@ -1,41 +1,47 @@
 import { useState } from "react";
 import Card, { CardRow } from "../../../../components/Card/Card";
+import { useApi } from "../../../../hooks/useApi";
+import {
+  listEnrollmentRequests,
+  decideEnrollmentRequest,
+} from "../../../../api/auth/admin/students";
+import { errorMessage } from "../../../../api/client";
 import "./Performance.css";
 
-interface EnrollmentRequest {
-  id: string;
-  name: string;
-  email: string;
-  className: string;
-  appliedOn: string;
+function formatDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString(undefined, {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return iso;
+  }
 }
 
-const initialRequests: EnrollmentRequest[] = [
-  { id: "ENR-001", name: "Aarav Sharma", email: "aarav.sharma@example.com", className: "Class 10 - A", appliedOn: "02 Oct 2026" },
-  { id: "ENR-002", name: "Diya Verma", email: "diya.verma@example.com", className: "Class 10 - B", appliedOn: "01 Oct 2026" },
-  { id: "ENR-003", name: "Rohan Patel", email: "rohan.patel@example.com", className: "Class 9 - A", appliedOn: "29 Sep 2026" },
-  { id: "ENR-004", name: "Ananya Singh", email: "ananya.singh@example.com", className: "Class 9 - B", appliedOn: "27 Sep 2026" },
-];
-
 export default function Enrollment() {
-  const [requests, setRequests] = useState(initialRequests);
-  const [approved, setApproved] = useState(0);
-  const [rejected, setRejected] = useState(0);
+  const { data, loading, error, reload } = useApi(listEnrollmentRequests);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  const remove = (id: string) => setRequests((r) => r.filter((x) => x.id !== id));
-
-  const approve = (id: string) => {
-    // TODO: call approve-enrollment API
-    setApproved((n) => n + 1);
-    remove(id);
+  const decide = async (id: string, status: "APPROVED" | "REJECTED") => {
+    if (status === "REJECTED" && !window.confirm("Reject this enrollment request?")) {
+      return;
+    }
+    setBusyId(id);
+    setActionError(null);
+    try {
+      await decideEnrollmentRequest(id, status);
+      await reload();   // refetch so counters and list stay in sync
+    } catch (e) {
+      setActionError(errorMessage(e));
+    } finally {
+      setBusyId(null);
+    }
   };
 
-  const reject = (id: string) => {
-    if (!window.confirm("Reject this enrollment request?")) return;
-    // TODO: call reject-enrollment API
-    setRejected((n) => n + 1);
-    remove(id);
-  };
+  const pending = data?.requests ?? [];
 
   return (
     <div className="perf-page">
@@ -46,42 +52,71 @@ export default function Enrollment() {
         </div>
       </div>
 
+      {(error || actionError) && (
+        <div
+          className="perf-success"
+          style={{ background: "#fdeaea", color: "#c62f2f" }}
+        >
+          {error ?? actionError}
+        </div>
+      )}
+
       <div className="perf-summary">
         <div className="perf-card">
           <div className="perf-card-label">Pending</div>
-          <div className="perf-card-value">{requests.length}</div>
+          <div className="perf-card-value">{data?.pending ?? 0}</div>
         </div>
         <div className="perf-card">
-          <div className="perf-card-label">Approved (this session)</div>
-          <div className="perf-card-value">{approved}</div>
+          <div className="perf-card-label">Approved</div>
+          <div className="perf-card-value">{data?.approved ?? 0}</div>
         </div>
         <div className="perf-card">
-          <div className="perf-card-label">Rejected (this session)</div>
-          <div className="perf-card-value">{rejected}</div>
+          <div className="perf-card-label">Rejected</div>
+          <div className="perf-card-value">{data?.rejected ?? 0}</div>
         </div>
       </div>
 
+      {loading && <p className="profile-loading">Loading…</p>}
+
       <div className="card-grid">
-        {requests.map((r) => (
+        {pending.map((r) => (
           <Card
             key={r.id}
-            title={r.name}
+            title={r.full_name}
             subtitle={r.email}
             badge={{ label: "Pending", tone: "warning" }}
             footer={
               <>
-                <button className="perf-btn" onClick={() => approve(r.id)}>Approve</button>
-                <button className="perf-btn danger-outline" onClick={() => reject(r.id)}>Reject</button>
+                <button
+                  className="perf-btn"
+                  disabled={busyId === r.id}
+                  onClick={() => decide(r.id, "APPROVED")}
+                >
+                  {busyId === r.id ? "Working…" : "Approve"}
+                </button>
+                <button
+                  className="perf-btn danger-outline"
+                  disabled={busyId === r.id}
+                  onClick={() => decide(r.id, "REJECTED")}
+                >
+                  Reject
+                </button>
               </>
             }
           >
             <CardRow label="Request ID" value={r.id} />
-            <CardRow label="Applied for" value={r.className} />
-            <CardRow label="Applied on" value={r.appliedOn} />
+            <CardRow label="Phone" value={r.phone ?? "—"} />
+            <CardRow
+              label="Applied for"
+              value={r.requested_batch_name ?? "—"}
+            />
+            <CardRow label="Applied on" value={formatDate(r.applied_at)} />
           </Card>
         ))}
 
-        {requests.length === 0 && <div className="card-empty">No pending enrollment requests</div>}
+        {!loading && pending.length === 0 && (
+          <div className="card-empty">No pending enrollment requests</div>
+        )}
       </div>
     </div>
   );

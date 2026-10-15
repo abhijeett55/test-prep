@@ -101,3 +101,128 @@ export interface ChangePasswordRequest {
   current_password: string;
   new_password: string;
 }
+
+
+
+// ---- students ----
+
+export interface StudentRow {
+  id: string;
+  student_id: string;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  institute_id: string | null;
+  institute: string;
+  status: "ACTIVE" | "INACTIVE" | "BLOCKED";
+  batch_name: string | null;
+}
+
+export interface StudentDetail extends StudentRow {
+  father_name: string;
+  father_phone: string | null;
+  mother_name: string;
+  mother_phone: string | null;
+  address: string;
+  subject_ids: string[];
+  course_ids: string[];
+  teacher_ids: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+// ---- courses ----
+
+export interface CourseRow {
+  id: string;
+  course_name: string;
+  course_code: string;
+  course_description: string | null;
+  institute_id: string;
+  institute: string;
+  student_count: number;
+  teacher_count: number;
+}
+
+export interface CourseDetail {
+  id: string;
+  institute_id: string;
+  course_name: string;
+  course_code: string;
+  course_description: string | null;
+  student_ids: string[];
+  teacher_ids: string[];
+  subject_ids: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+// ---- subjects ----
+
+export interface SubjectRow {
+  id: string;
+  subject_name: string;
+  subject_code: string;
+  institute_id: string;
+  institute: string;
+  course_count: number;
+  teacher_count: number;
+}
+
+// ---- batches ----
+
+export interface BatchRow {
+  id: string;
+  batch_name: string;
+  batch_code: string;
+  institute_id: string;
+  institute: string;
+  course_id: string | null;
+  course_name: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  student_count: number;
+  teacher_count: number;
+}
+
+// ---- announcements ----
+
+export interface AnnouncementRow {
+  id: string;
+  title: string;
+  body: string;
+  scope: "INSTITUTE" | "BATCH";
+  batch_id: string | null;
+  batch_name: string | null;
+  published_at: string | null;
+  created_at: string;
+}
+
+// ---- reports ----
+
+export interface InstitutePerformance {
+  students_total: number;
+  students_active: number;
+  teachers_total: number;
+  courses_total: number;
+  batches_total: number;
+  avg_score: number | null;
+  pass_rate: number | null;
+}
+
+export interface DashboardStats {
+  institutes?: number;
+  teachers: number;
+  students: number;
+  courses: number;
+  batches: number;
+}
+
+export interface DepartmentRow {
+  id: string;
+  department_name: string;
+  institute_id: string;
+  head_teacher_id: string | null;
+  head_teacher_name: string | null;
+  teacher_count: number;
+}
