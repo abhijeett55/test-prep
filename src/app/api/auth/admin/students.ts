@@ -190,13 +190,15 @@ export interface BatchTransferRow {
   id: string;
   student_id: string;
   student_name: string;
-  from_batch_id: string;
+  from_batch_id: string | null;
   from_batch_name: string;
-  to_batch_id: string;
+  to_batch_id: string | null;
   to_batch_name: string;
-  reason: string;
+  reason: string | null;
   requested_at: string;
   status: TransferStatus;
+  decided_at: string | null;
+  decision_notes: string | null;
 }
 
 export async function listBatchTransfers(): Promise<BatchTransferRow[]> {
@@ -214,7 +216,6 @@ export async function decideBatchTransfer(
   );
   return data;
 }
-
 // ============================================================
 //  Fees
 // ============================================================

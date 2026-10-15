@@ -1,36 +1,14 @@
+import { useState } from "react";
 import Card, { CardRow, type CardTone } from "../../../../components/Card/Card";
 import { useApi } from "../../../../hooks/useApi";
-import { listBatchTransfers, decideBatchTransfer } from "../../../../api/auth/admin/students";
+import {
+  listBatchTransfers,
+  decideBatchTransfer,
+  type BatchTransferRow,
+  type TransferStatus,
+} from "../../../../api/auth/admin/students";
 import { errorMessage } from "../../../../api/client";
-import { useState } from "react";
 import "./Performance.css";
-
-type TransferStatus = "PENDING" | "APPROVED" | "REJECTED";
-
-interface BatchTransfer {
-  id: string;
-  student_name: string;
-  from_batch_name: string;
-  to_batch_name: string;
-  reason: string;
-  requested_at: string;
-  status: TransferStatus;
-}
-
-const MOCK: BatchTransfer[] = [
-  { id: "TRF-001", student_name: "Aarav Sharma", from_batch_name: "Class 10 - A", to_batch_name: "Class 10 - B", reason: "Timing clash", requested_at: "2026-10-02", status: "PENDING" },
-  // ...
-];
-
-async function load(): Promise<BatchTransfer[]> {
-  try {
-    return await listBatchTransfers();
-  } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((e as any)?.response?.status === 404) return MOCK;
-    throw e;
-  }
-}
 
 const tone: Record<TransferStatus, CardTone> = {
   PENDING: "warning",
@@ -38,19 +16,32 @@ const tone: Record<TransferStatus, CardTone> = {
   REJECTED: "danger",
 };
 
+function formatDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString(undefined, {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return iso;
+  }
+}
+
 export default function BatchTransfers() {
-  const { data, loading, error, setData } = useApi(load);
+  const { data, loading, error, reload } = useApi(listBatchTransfers);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
   const decide = async (id: string, status: "APPROVED" | "REJECTED") => {
+    if (status === "REJECTED" && !window.confirm("Reject this transfer request?")) {
+      return;
+    }
     setBusyId(id);
     setActionError(null);
     try {
       await decideBatchTransfer(id, status);
-      setData((prev) =>
-        prev ? prev.map((t) => (t.id === id ? { ...t, status } : t)) : prev
-      );
+      await reload();
     } catch (e) {
       setActionError(errorMessage(e));
     } finally {
@@ -67,12 +58,19 @@ export default function BatchTransfers() {
         </div>
       </div>
 
-      {error && <p className="profile-error">{error}</p>}
-      {actionError && <p className="profile-error">{actionError}</p>}
+      {(error || actionError) && (
+        <div
+          className="perf-success"
+          style={{ background: "#fdeaea", color: "#c62f2f" }}
+        >
+          {error ?? actionError}
+        </div>
+      )}
+
       {loading && <p className="profile-loading">Loading…</p>}
 
       <div className="card-grid">
-        {data?.map((t) => (
+        {data?.map((t: BatchTransferRow) => (
           <Card
             key={t.id}
             title={t.student_name}
@@ -100,10 +98,14 @@ export default function BatchTransfers() {
             }
           >
             <CardRow label="Request ID" value={t.id} />
-            <CardRow label="Reason" value={t.reason} />
-            <CardRow label="Requested on" value={t.requested_at} />
+            <CardRow label="Reason" value={t.reason ?? "—"} />
+            <CardRow label="Requested on" value={formatDate(t.requested_at)} />
           </Card>
         ))}
+
+        {!loading && (data?.length ?? 0) === 0 && (
+          <div className="card-empty">No transfer requests</div>
+        )}
       </div>
     </div>
   );
