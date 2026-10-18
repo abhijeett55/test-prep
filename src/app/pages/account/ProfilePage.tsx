@@ -8,11 +8,9 @@ type Field = { key: string; label: string };
 
 const PROFILE_FIELDS: Record<Role, Field[]> = {
   admin: [
-    { key: "admin_id",     label: "Admin ID" },
-    { key: "full_name",    label: "Full Name" },
-    { key: "email",        label: "Email" },
-    { key: "phone",        label: "Phone" },
-    { key: "institute_id", label: "Institute ID" },
+    { key: "admin_id",       label: "Admin ID" },
+    { key: "institute_name", label: "Institute Name" },
+    { key: "institute_id",   label: "Institute ID" },
   ],
   institute: [
     { key: "institute_id",   label: "Institute ID" },

@@ -1,23 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
-import { Plus, Search, Pencil, Eye, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Plus, Search, Pencil, Eye, X, BookOpen } from "lucide-react";
 import TeacherForm from "../../../../config/nav-user/teacher/TeacherForm";
 import type { FormValues } from "../../../../components/FormLayout/types";
 import {
   getTeacherOptions,
   listTeachers,
   createTeacher,
+  getTeacher,
   type TeacherCreate,
 } from "../../../../api/auth/teacher/teacher";
 import type {
-  TeacherOptionsResponse,
   TeacherRow,
 } from "../../../../api/types";
+import { useApi } from "../../../../hooks/useApi";
 import { errorMessage } from "../../../../api/client";
+import EditTeacherDialog from "./EditTeacherDialog";
+import AssignSubjectsDialog from "./AssignSubjectsDialog";
 import "./DefaultPage.css";
 
 const ENTRY_OPTIONS = [10, 25, 50];
 
-/** FormValues (all strings) → TeacherCreate payload. */
 function toPayload(v: FormValues): TeacherCreate {
   const trim = (s?: string) => (s ?? "").trim();
   const nullable = (s?: string) => trim(s) || null;
@@ -37,46 +39,28 @@ function toPayload(v: FormValues): TeacherCreate {
   };
 }
 
+type TeacherDetail = TeacherRow & {
+  subject_ids: string[];
+};
+
 export default function TeachersPage() {
+  const { data, loading, error, reload } = useApi(() => listTeachers());
+  const { data: options } = useApi(() => getTeacherOptions());
+
   const [showForm, setShowForm] = useState(false);
-
-  const [options, setOptions] = useState<TeacherOptionsResponse | null>(null);
-  const [teachers, setTeachers] = useState<TeacherRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
-
   const [search, setSearch] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
+
+  const [editingTeacher, setEditingTeacher] = useState<TeacherDetail | null>(null);
+  const [assigningTeacher, setAssigningTeacher] = useState<TeacherDetail | null>(null);
+  const [rowBusyId, setRowBusyId] = useState<string | null>(null);
 
   const [pendingTeacher, setPendingTeacher] = useState<FormValues | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [tempPassword, setTempPassword] = useState<string | null>(null);
 
-  /* ---------- initial fetch: options + teachers in parallel ---------- */
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      setLoadError(null);
-      try {
-        const [opts, rows] = await Promise.all([
-          getTeacherOptions(),
-          listTeachers(),
-        ]);
-        if (!cancelled) {
-          setOptions(opts);
-          setTeachers(rows);
-        }
-      } catch (err) {
-        if (!cancelled) setLoadError(errorMessage(err));
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const teachers: TeacherRow[] = data ?? [];
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -99,8 +83,8 @@ export default function TeachersPage() {
   /* ---------- form → confirmation → POST ---------- */
 
   const handleFormSubmit = async (values: FormValues) => {
-    setPendingTeacher(values);
     setSaveError(null);
+    setPendingTeacher(values);
   };
 
   const cancelPendingTeacher = () => {
@@ -115,20 +99,39 @@ export default function TeachersPage() {
     setSaveError(null);
 
     try {
-      const { temp_password, ...row } = await createTeacher(
-        toPayload(pendingTeacher)
-      );
-      // temp_password is the teacher's first-login credential.
-      // Surface it (toast / banner) before dropping it.
-      void temp_password;
-
-      setTeachers((prev) => [...prev, row]);
+      const { temp_password } = await createTeacher(toPayload(pendingTeacher));
+      setTempPassword(temp_password);
+      await reload();
       setPendingTeacher(null);
       setShowForm(false);
     } catch (err) {
       setSaveError(errorMessage(err));
     } finally {
       setSaving(false);
+    }
+  };
+
+  /* ---------- dialogs ---------- */
+
+  const openEditDialog = async (row: TeacherRow) => {
+    setRowBusyId(row.id);
+    try {
+      setEditingTeacher((await getTeacher(row.id)) as TeacherDetail);
+    } catch (err) {
+      window.alert(errorMessage(err));
+    } finally {
+      setRowBusyId(null);
+    }
+  };
+
+  const openAssignDialog = async (row: TeacherRow) => {
+    setRowBusyId(row.id);
+    try {
+      setAssigningTeacher((await getTeacher(row.id)) as TeacherDetail);
+    } catch (err) {
+      window.alert(errorMessage(err));
+    } finally {
+      setRowBusyId(null);
     }
   };
 
@@ -139,38 +142,55 @@ export default function TeachersPage() {
 
   /* ---------- render ---------- */
 
-  if (loading) {
+  if (showForm && options) {
     return (
       <div className="default-page">
-        <div className="default-empty">Loading teachers…</div>
-      </div>
-    );
-  }
-
-  if (loadError) {
-    return (
-      <div className="default-page">
-        <div className="default-empty">
-          <p>{loadError}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!options) return null;
-
-  const { institutes, subjects } = options;
-
-  return (
-    <div className="default-page">
-      {showForm ? (
         <TeacherForm
-          institutes={institutes}
-          subjects={subjects}
+          institutes={options.institutes}
+          subjects={options.subjects}
           onSubmit={handleFormSubmit}
           onCancel={() => setShowForm(false)}
         />
-      ) : teachers.length === 0 ? (
+      </div>
+    );
+  }
+
+  return (
+    <div className="default-page">
+      {error && (
+        <div
+          className="perf-success"
+          style={{ background: "#fdeaea", color: "#c62f2f", marginBottom: 12 }}
+        >
+          {error}
+        </div>
+      )}
+
+      {tempPassword && (
+        <div
+          className="perf-success"
+          style={{ marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}
+        >
+          <div>
+            <strong>Temporary password:</strong>{" "}
+            <code style={{ fontFamily: "monospace" }}>{tempPassword}</code>
+            <div style={{ fontSize: 12, opacity: 0.75, marginTop: 2 }}>
+              Share with the teacher. Shown only once.
+            </div>
+          </div>
+          <button
+            type="button"
+            className="perf-btn outline"
+            onClick={() => setTempPassword(null)}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {loading && !data && <div className="default-empty">Loading teachers…</div>}
+
+      {!loading && teachers.length === 0 && (
         <div className="default-empty">
           <p>No teachers added yet.</p>
           <button
@@ -182,7 +202,9 @@ export default function TeachersPage() {
             Add your first teacher
           </button>
         </div>
-      ) : (
+      )}
+
+      {!loading && teachers.length > 0 && (
         <div className="default-panel">
           <div className="section-bar">All Teachers</div>
 
@@ -203,13 +225,13 @@ export default function TeachersPage() {
               <thead>
                 <tr>
                   <th className="col-sno">Sr. No.</th>
+                  <th>Teacher ID</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Institute</th>
                   <th>Subject</th>
                   <th>Employee Code</th>
-                  <th>Teacher ID</th>
                   <th>Qualification</th>
                   <th className="col-actions">Actions</th>
                 </tr>
@@ -218,19 +240,38 @@ export default function TeachersPage() {
                 {visible.map((t, i) => (
                   <tr key={t.id}>
                     <td className="col-sno">{i + 1}</td>
+                    <td>{t.teacher_id}</td>
                     <td className="cell-name">{t.name}</td>
                     <td>{t.email || "—"}</td>
                     <td>{t.phone || "—"}</td>
                     <td>{t.institute || "—"}</td>
                     <td>{t.subject || "—"}</td>
                     <td>{t.employee_code || "—"}</td>
-                    <td>{t.teacher_id}</td>
                     <td>{t.qualification || "—"}</td>
                     <td className="col-actions">
-                      <button type="button" className="icon-button" title="Edit">
+                      <button
+                        type="button"
+                        className="icon-button"
+                        title="Assign subjects"
+                        disabled={rowBusyId === t.id}
+                        onClick={() => openAssignDialog(t)}
+                      >
+                        <BookOpen size={15} strokeWidth={2} />
+                      </button>
+                      <button
+                        type="button"
+                        className="icon-button"
+                        title="Edit"
+                        disabled={rowBusyId === t.id}
+                        onClick={() => openEditDialog(t)}
+                      >
                         <Pencil size={15} strokeWidth={2} />
                       </button>
-                      <button type="button" className="icon-button" title="View">
+                      <button
+                        type="button"
+                        className="icon-button"
+                        title="View"
+                      >
                         <Eye size={15} strokeWidth={2} />
                       </button>
                     </td>
@@ -283,6 +324,7 @@ export default function TeachersPage() {
         </button>
       )}
 
+      {/* --- Add confirmation --- */}
       {pendingTeacher && (
         <div className="confirm-overlay" role="dialog" aria-modal="true">
           <div className="confirm-card">
@@ -325,13 +367,13 @@ export default function TeachersPage() {
               <div className="confirm-row">
                 <span>Institute</span>
                 <strong>
-                  {lookupName(pendingTeacher.institute_id, institutes)}
+                  {lookupName(pendingTeacher.institute_id, options?.institutes ?? [])}
                 </strong>
               </div>
               <div className="confirm-row">
                 <span>Subject</span>
                 <strong>
-                  {lookupName(pendingTeacher.subject_id, subjects)}
+                  {lookupName(pendingTeacher.subject_id, options?.subjects ?? [])}
                 </strong>
               </div>
               <div className="confirm-row">
@@ -342,21 +384,9 @@ export default function TeachersPage() {
                 <span>Qualification</span>
                 <strong>{pendingTeacher.qualification || "—"}</strong>
               </div>
-              <div className="confirm-row">
-                <span>IP address</span>
-                <strong>{pendingTeacher.ip_address || "—"}</strong>
-              </div>
-              <div className="confirm-row">
-                <span>Coordinates</span>
-                <strong>
-                  {pendingTeacher.latitude && pendingTeacher.longitude
-                    ? `${pendingTeacher.latitude}, ${pendingTeacher.longitude}`
-                    : "—"}
-                </strong>
-              </div>
             </div>
 
-            {saveError && <p className="detect-error">{saveError}</p>}
+            {saveError && <p className="confirm-error">{saveError}</p>}
 
             <div className="confirm-actions">
               <button
@@ -378,6 +408,30 @@ export default function TeachersPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* --- Edit dialog --- */}
+      {editingTeacher && (
+        <EditTeacherDialog
+          teacher={editingTeacher}
+          onClose={() => setEditingTeacher(null)}
+          onSaved={() => {
+            setEditingTeacher(null);
+            reload();
+          }}
+        />
+      )}
+
+      {/* --- Assign subjects dialog --- */}
+      {assigningTeacher && (
+        <AssignSubjectsDialog
+          teacher={assigningTeacher}
+          onClose={() => setAssigningTeacher(null)}
+          onSaved={() => {
+            setAssigningTeacher(null);
+            reload();
+          }}
+        />
       )}
     </div>
   );

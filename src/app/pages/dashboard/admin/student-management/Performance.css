@@ -259,6 +259,34 @@
 
 /* ---------- Floating Add button ---------- */
 
+.add-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent, #3b4cca);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  box-shadow: 0 4px 12px rgba(59, 76, 202, 0.25);
+}
+
+.add-button:hover {
+  background: #2f3ea8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(59, 76, 202, 0.3);
+}
+
+.add-button:active {
+  transform: translateY(0);
+}
+
 .add-button-fab {
   position: fixed;
   right: 32px;

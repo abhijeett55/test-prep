@@ -28,6 +28,41 @@ export interface ListTeachersParams {
   offset?: number;
 }
 
+export interface TeacherUpdate {
+  full_name?: string;
+  email?: string | null;
+  phone?: string | null;
+  employee_code?: string | null;
+  qualification?: string | null;
+}
+
+export type TeacherDetail = TeacherRow & {
+  subject_ids: string[];
+};
+
+export async function getTeacher(id: string): Promise<TeacherDetail> {
+  const { data } = await client.get<TeacherDetail>(`/teachers/${id}`);
+  return data;
+}
+
+export async function updateTeacher(
+  id: string,
+  payload: TeacherUpdate
+): Promise<TeacherDetail> {
+  const { data } = await client.patch<TeacherDetail>(`/teachers/${id}`, payload);
+  return data;
+}
+
+export async function setTeacherSubjects(
+  id: string,
+  subjectIds: string[]
+): Promise<TeacherDetail> {
+  const { data } = await client.post<TeacherDetail>(
+    `/teachers/${id}/subjects`,
+    { subject_ids: subjectIds }
+  );
+  return data;
+}
 
 /** GET /teachers/options  (admin only) — baseURL already carries /api/v1 */
 export async function getTeacherOptions(): Promise<TeacherOptionsResponse> {

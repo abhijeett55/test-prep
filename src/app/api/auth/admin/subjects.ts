@@ -1,5 +1,6 @@
 import { client } from "../../client";
 import type { SubjectRow } from "../../types";
+export type { SubjectRow };
 
 export interface SubjectCreate {
   institute_id: string;

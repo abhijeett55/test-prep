@@ -1,5 +1,6 @@
 import { client } from "../../client";
 import type { CourseRow, CourseDetail } from "../../types";
+export type { CourseRow, CourseDetail };
 
 export interface CourseCreate {
   institute_id: string;

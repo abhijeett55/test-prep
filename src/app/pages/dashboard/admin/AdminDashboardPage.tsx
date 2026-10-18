@@ -6,6 +6,8 @@ import { adminNav } from "../../../config/dashboard/adminNav";
 import TeachersPage from "./user-management/TeachersPage";
 import StudentsPage from "./user-management/StudentsPage";
 import TestsetterPage from "./user-management/TestsetterPage";
+import CoursesPage from "./courses-management/CoursesPage";
+import InstituteProfilePage from "./institute-settings/InstituteProfilePage";
 
 import Enrollment from "./student-management/Enrollment";
 import FeeStatus from "./student-management/FeeStatus";
@@ -33,7 +35,9 @@ export default function AdminDashboardPage() {
             <Route path="student-management/fee-status" element={<FeeStatus />} />
             <Route path="student-management/batch-transfer" element={<BatchTransfer />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="courses-management/courses" element={<CoursesPage />} />
             <Route path="change-password" element={<ChangePasswordPage />} />
+            <Route path="institute-settings/profile" element={<InstituteProfilePage />} />
             <Route path="*" element={<Navigate to="/dashboard/admin" replace />} />
           </Routes>
         </main>

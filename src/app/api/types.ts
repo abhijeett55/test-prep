@@ -24,12 +24,9 @@ export interface TeacherOptionsResponse extends OptionsResponse {
 export interface AdminProfile {
   id: string;
   admin_id: string;
-  full_name: string;
-  email: string | null;
-  phone: string | null;
-  institute_id: string | null;
+  institute_id: string;
+  institute_name: string;
 }
-
 
 export interface InstituteProfile {
   id: string;
@@ -60,8 +57,9 @@ export interface InstituteRow {
   updated_at: string;
 }
 
-export interface InstituteCreated extends InstituteRow {
+export interface InstituteCreated extends InstituteProfile {
   temp_password: string;
+  admin_temp_password: string;
 }
 
 export interface TeacherRow {
@@ -69,13 +67,13 @@ export interface TeacherRow {
   name: string;
   email: string | null;
   phone: string | null;
+  institute_id: string | null;
   institute: string;
   subject: string;
   employee_code: string | null;
   teacher_id: string;
   qualification: string | null;
 }
-
 
 export interface ProviderRow {
   id: string;
@@ -102,19 +100,15 @@ export interface ChangePasswordRequest {
   new_password: string;
 }
 
-
-
-// ---- students ----
-
 export interface StudentRow {
   id: string;
   student_id: string;
   full_name: string;
   email: string;
-  phone: string | null;
+  self_phone: string | null;
   institute_id: string | null;
   institute: string;
-  status: "ACTIVE" | "INACTIVE" | "BLOCKED";
+  status: string;
   batch_name: string | null;
 }
 
@@ -124,12 +118,18 @@ export interface StudentDetail extends StudentRow {
   mother_name: string;
   mother_phone: string | null;
   address: string;
-  subject_ids: string[];
+  ip_address: string | null;
+  latitude: string | null;
+  longitude: string | null;
   course_ids: string[];
+  subject_ids: string[];
   teacher_ids: string[];
   created_at: string;
   updated_at: string;
 }
+
+
+
 
 // ---- courses ----
 
@@ -168,6 +168,7 @@ export interface SubjectRow {
   course_count: number;
   teacher_count: number;
 }
+
 
 // ---- batches ----
 

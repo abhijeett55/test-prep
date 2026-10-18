@@ -10,7 +10,7 @@ export interface InstituteUpdate {
 // ---- own institute ----
 
 export async function getMyInstitute(): Promise<InstituteProfile> {
-  const { data } = await client.get<InstituteProfile>("/institutes/me");
+  const { data } = await client.get<InstituteProfile>("/institutes/my-institute");
   return data;
 }
 
@@ -21,6 +21,17 @@ export async function updateMyInstitute(
     "/institutes/me",
     payload
   );
+  return data;
+}
+
+
+export async function listInstitutes(): Promise<InstituteProfile[]> {
+  const { data } = await client.get<InstituteProfile[]>("/institutes");
+  return data;
+}
+
+export async function getInstitute(id: string): Promise<InstituteProfile> {
+  const { data } = await client.get<InstituteProfile>(`/institutes/${id}`);
   return data;
 }
 

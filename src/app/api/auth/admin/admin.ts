@@ -1,30 +1,5 @@
 import { client } from "../../client";
-import type { AdminProfile, OptionsResponse } from "../../types";
-
-export interface AdminCreate {
-  admin_id: string;
-  full_name: string;
-  email: string;
-  phone?: string | null;
-  institute_id?: string | null;
-}
-
-export interface AdminUpdate {
-  full_name?: string;
-  email?: string;
-  phone?: string | null;
-  institute_id?: string | null;
-}
-
-export interface AdminCreated extends AdminProfile {
-  temp_password: string;
-}
-
-/** GET /admins/options */
-export async function getAdminOptions(): Promise<OptionsResponse> {
-  const { data } = await client.get<OptionsResponse>("/admins/options");
-  return data;
-}
+import type { AdminProfile } from "../../types";
 
 /** GET /admins */
 export async function listAdmins(): Promise<AdminProfile[]> {
@@ -41,21 +16,6 @@ export async function getMe(): Promise<AdminProfile> {
 /** GET /admins/{id} */
 export async function getAdmin(id: string): Promise<AdminProfile> {
   const { data } = await client.get<AdminProfile>(`/admins/${id}`);
-  return data;
-}
-
-/** POST /admins */
-export async function createAdmin(payload: AdminCreate): Promise<AdminCreated> {
-  const { data } = await client.post<AdminCreated>("/admins", payload);
-  return data;
-}
-
-/** PATCH /admins/{id} */
-export async function updateAdmin(
-  id: string,
-  payload: AdminUpdate
-): Promise<AdminProfile> {
-  const { data } = await client.patch<AdminProfile>(`/admins/${id}`, payload);
   return data;
 }
 

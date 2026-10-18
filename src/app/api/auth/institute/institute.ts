@@ -37,6 +37,7 @@ export interface UpdateInstitute {
 
 export interface InstituteCreated extends InstituteProfile {
   temp_password: string;
+  admin_temp_password: string;
 }
 
 /* ---- function bodies unchanged below this line ---- */

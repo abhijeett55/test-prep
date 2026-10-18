@@ -135,19 +135,23 @@ export default function OnboardInstitute() {
   };
 
   const copyCredentials = async () => {
-    if (!created) return;
-    const text =
-      `Institute ID: ${created.institute_id}\n` +
-      `Temporary password: ${created.temp_password}\n` +
-      `Login URL: /role`;
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* clipboard blocked — user can select manually */
-    }
-  };
+      if (!created) return;
+      const text =
+        `Institute Login\n` +
+        `  ID: ${created.institute_id}\n` +
+        `  Password: ${created.temp_password}\n\n` +
+        `Admin Login\n` +
+        `  ID: ADMIN-${created.code.toUpperCase()}\n` +
+        `  Password: ${created.admin_temp_password}\n\n` +
+        `Login URL: /role`;
+      try {
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 2000);
+      } catch {
+        /* clipboard blocked — user can select manually */
+      }
+    };
 
   const reset = () => {
     setForm(emptyForm);
@@ -177,23 +181,49 @@ export default function OnboardInstitute() {
           >
             <div>
               <strong>{created.institute_name}</strong> has been onboarded.
+
               <div
                 style={{
-                  marginTop: 8,
+                  marginTop: 12,
+                  paddingTop: 12,
+                  borderTop: "1px solid rgba(0,0,0,0.08)",
                   fontFamily: "monospace",
                   fontSize: 13,
                 }}
               >
+                <div style={{ marginBottom: 6, color: "#1e8a4c" }}>
+                  <b>Institute Login</b>
+                </div>
                 <div>
-                  Institute ID: <b>{created.institute_id}</b>
+                  ID: <b>{created.institute_id}</b>
                 </div>
                 <div>
                   Temp password: <b>{created.temp_password}</b>
                 </div>
               </div>
-              <div style={{ marginTop: 6, fontSize: 12, opacity: 0.8 }}>
-                Share these with the institute. The password is shown only
-                once — they'll be asked to change it on first login.
+
+              <div
+                style={{
+                  marginTop: 10,
+                  fontFamily: "monospace",
+                  fontSize: 13,
+                }}
+              >
+                <div style={{ marginBottom: 6, color: "#3f4fcf" }}>
+                  <b>Admin Login</b>
+                </div>
+                <div>
+                  ID: <b>ADMIN-{created.code.toUpperCase()}</b>
+                </div>
+                <div>
+                  Temp password: <b>{created.admin_temp_password}</b>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 10, fontSize: 12, opacity: 0.8 }}>
+                Share both sets with the institute. The admin uses the Admin login
+                to manage teachers, students, and courses. Passwords are shown only
+                once — they'll be asked to change on first login.
               </div>
             </div>
             <button className="perf-btn outline" onClick={copyCredentials}>

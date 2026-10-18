@@ -39,10 +39,7 @@ export const adminNav: NavItem[] = [
     label: "Courses",
     icon: BookOpen,
     children: [
-      { label: "All Courses", path: "/dashboard/admin/courses/all" },
-      { label: "Create Course", path: "/dashboard/admin/courses/create" },
-      { label: "Available Catalog", path: "/dashboard/admin/courses/catalog" },
-      { label: "Course Enrollments", path: "/dashboard/admin/courses/enrollments" },
+      { label: "All Courses", path: "/dashboard/admin/courses-management/courses" }
     ],
   },
 
@@ -87,17 +84,13 @@ export const adminNav: NavItem[] = [
       { label: "Course Performance", path: "/dashboard/admin/reports/course-performance" },
     ],
   },
-
   {
-    label: "Institute",
+    label: "Institute Settings",
     icon: Building2,
     children: [
-      { label: "Profile", path: "/dashboard/admin/institute/profile" },
-      { label: "Departments", path: "/dashboard/admin/institute/departments" },
-      { label: "Settings", path: "/dashboard/admin/institute/settings" },
+      { label: "Institute Profile", path: "/dashboard/admin/institute-settings/profile" },
     ],
   },
-
   {
     label: "My Account",
     icon: Users,

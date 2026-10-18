@@ -1,25 +1,29 @@
 import { client } from "../../client";
 import type { StudentRow, StudentDetail } from "../../types";
+export type { StudentRow, StudentDetail };
 
 // ============================================================
 //  Students — CRUD
 // ============================================================
 
 export interface StudentCreate {
-  student_id: string;
+  student_id?: string;
   full_name: string;
   email: string;
-  institute_id: string;
+  institute_id?: string | null;
   father_name: string;
   mother_name: string;
   address: string;
   self_phone?: string | null;
   father_phone?: string | null;
   mother_phone?: string | null;
-  subject_ids?: string[];
+  ip_address?: string | null;
+  latitude?: string | null;
+  longitude?: string | null;
   course_ids?: string[];
-  batch_id?: string | null;
+  subject_ids?: string[];
 }
+
 
 export interface StudentUpdate {
   full_name?: string;
@@ -33,6 +37,7 @@ export interface StudentUpdate {
   status?: "ACTIVE" | "INACTIVE" | "BLOCKED";
 }
 
+
 export interface StudentCreated extends StudentRow {
   temp_password: string;
 }
@@ -44,6 +49,17 @@ export interface ListStudentsParams {
   status?: string;
   limit?: number;
   offset?: number;
+}
+
+export interface StudentOptions {
+  institutes: { id: string; name: string }[];
+  courses: { id: string; name: string }[];
+  subjects: { id: string; name: string }[];
+}
+
+export async function getStudentOptions(): Promise<StudentOptions> {
+  const { data } = await client.get<StudentOptions>("/students/options");
+  return data;
 }
 
 export async function listStudents(
@@ -77,6 +93,17 @@ export async function deleteStudent(id: string): Promise<void> {
   await client.delete(`/students/${id}`);
 }
 
+
+export async function setStudentCourses(
+  studentId: string,
+  courseIds: string[]
+): Promise<StudentDetail> {
+  const { data } = await client.post<StudentDetail>(
+    `/students/${studentId}/courses/bulk`,
+    { course_ids: courseIds }
+  );
+  return data;
+}
 // ============================================================
 //  Enrollment (student → course)
 // ============================================================

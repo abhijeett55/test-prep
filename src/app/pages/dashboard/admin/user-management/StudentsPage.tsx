@@ -1,243 +1,180 @@
 import { useMemo, useState } from "react";
-import { Plus, Search, Pencil, Eye, X } from "lucide-react";
+import { Plus, Search, Pencil, Eye, X, GraduationCap } from "lucide-react";
 import StudentForm from "../../../../config/nav-user/student/StudentForm";
-import type { FormValues, Option } from "../../../../components/FormLayout/types";
-// import { createStudent } from "../../../../api/student/students";
+import type { FormValues } from "../../../../components/FormLayout/types";
+import {
+  listStudents,
+  createStudent,
+  getStudent,
+  getStudentOptions,
+  type StudentRow,
+  type StudentDetail,
+} from "../../../../api/auth/admin/students";
+import { useApi } from "../../../../hooks/useApi";
+import { errorMessage } from "../../../../api/client";
+import EnrollCoursesDialog from "./EnrollCoursesDialog";
+import EditStudentDialog from "./EditStudentDialog";
 import "./DefaultPage.css";
 
-const institutes: Option[] = [
-  { id: "inst-1", name: "Allen Career Institute" },
-  { id: "inst-2", name: "Physics Wallah" },
-  { id: "inst-3", name: "Aakash Institute" },
-];
+const ENTRY_OPTIONS = [10, 25, 50];
 
-const subjects: Option[] = [
-  { id: "sub-1", name: "Physics" },
-  { id: "sub-2", name: "Chemistry" },
-  { id: "sub-3", name: "Mathematics" },
-  { id: "sub-4", name: "Biology" },
-];
-
-const statuses: Option[] = [
+const STATUS_OPTIONS = [
   { id: "ACTIVE", name: "Active" },
   { id: "INACTIVE", name: "Inactive" },
   { id: "BLOCKED", name: "Blocked" },
 ];
 
-type StudentRow = {
-  id: string;
-  name: string;
-  email: string;
-  selfPhone: string;
-  institute: string;
-  status: string;
-  address: string;
-  fatherName: string;
-  fatherPhone: string;
-  motherName: string;
-  motherPhone: string;
-  ipAddress: string;
-  latitude: string;
-  longitude: string;
-  placeholder: string;
-  joinedDate: string;
-};
-
-const MOCK_STUDENTS: StudentRow[] = [
-  {
-    id: "s-1",
-    name: "Aarav Kapoor",
-    email: "aarav.kapoor@example.com",
-    selfPhone: "98100-00000",
-    institute: "Allen Career Institute",
-    status: "Active",
-    address: "Sector 12, Noida",
-    fatherName: "Rajesh Kapoor",
-    fatherPhone: "98100-11111",
-    motherName: "Sunita Kapoor",
-    motherPhone: "98100-22222",
-    ipAddress: "103.21.244.10",
-    latitude: "28.53500000",
-    longitude: "77.39100000",
-    placeholder: "",
-    joinedDate: "12-Jan-2025",
-  },
-  {
-    id: "s-2",
-    name: "Diya Nair",
-    email: "diya.nair@example.com",
-    selfPhone: "94470-00000",
-    institute: "Physics Wallah",
-    status: "Active",
-    address: "MG Road, Kochi",
-    fatherName: "Suresh Nair",
-    fatherPhone: "94470-33333",
-    motherName: "Lakshmi Nair",
-    motherPhone: "94470-44444",
-    ipAddress: "182.75.10.5",
-    latitude: "9.93120000",
-    longitude: "76.26730000",
-    placeholder: "",
-    joinedDate: "03-Mar-2025",
-  },
-  {
-    id: "s-3",
-    name: "Ishaan Verma",
-    email: "ishaan.verma@example.com",
-    selfPhone: "98290-00000",
-    institute: "Aakash Institute",
-    status: "Inactive",
-    address: "Civil Lines, Jaipur",
-    fatherName: "Anil Verma",
-    fatherPhone: "98290-55555",
-    motherName: "Pooja Verma",
-    motherPhone: "98290-66666",
-    ipAddress: "117.99.20.3",
-    latitude: "26.91240000",
-    longitude: "75.78730000",
-    placeholder: "",
-    joinedDate: "22-Jun-2024",
-  },
-];
-
-async function createStudent(v: FormValues) {
-  return {
-    id: `s-${Date.now()}`,
-    full_name: `${v.firstName ?? ""} ${v.LastName ?? ""}`.trim(),
-    email: v.email ?? "",
-    self_phone: v.phone ?? "",
-    institute_id: v.institute_id,
-    status: v.status,
-    address: v.address ?? "",
-    father_name: `${v.fatherFirstName ?? ""} ${v.fatherLastName ?? ""}`.trim(),
-    father_phone: v.fatherPhone ?? "",
-    mother_name: `${v.motherFirstName ?? ""} ${v.motherLastName ?? ""}`.trim(),
-    mother_phone: v.motherPhone ?? "",
-    ip_address: v.ip_address ?? "",
-    latitude: v.latitude ?? null,
-    longitude: v.longitude ?? null,
-    placeholder: v.placeholder ?? "",
-    created_at: new Date().toISOString(),
-  };
-}
-
-const ENTRY_OPTIONS = [10, 25, 50];
-
 export default function StudentsPage() {
+  const { data, loading, error, reload } = useApi(() => listStudents());
+  const { data: options } = useApi(() => getStudentOptions());
+
   const [showForm, setShowForm] = useState(false);
-  const [students, setStudents] = useState<StudentRow[]>(MOCK_STUDENTS);
   const [search, setSearch] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
 
-  // Holds the form values while the confirmation card is open.
-  // Nothing is added to the table until the user confirms.
+  const [editingStudent, setEditingStudent] = useState<StudentDetail | null>(null);
+  const [enrollingStudent, setEnrollingStudent] = useState<StudentDetail | null>(null);
+  const [rowBusyId, setRowBusyId] = useState<string | null>(null);
+
   const [pendingStudent, setPendingStudent] = useState<FormValues | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  const students: StudentRow[] = data ?? [];
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return students;
     return students.filter(
       (s) =>
-        s.name.toLowerCase().includes(q) ||
+        s.full_name.toLowerCase().includes(q) ||
         s.email.toLowerCase().includes(q) ||
-        s.institute.toLowerCase().includes(q)
+        s.institute.toLowerCase().includes(q) ||
+        s.student_id.toLowerCase().includes(q)
     );
   }, [students, search]);
 
   const visible = filtered.slice(0, entriesPerPage);
 
-  // Form submit no longer commits directly — it stages the values
-  // and opens the confirmation card.
+  /* ---------- form → confirmation → POST ---------- */
+
   const handleFormSubmit = async (values: FormValues) => {
     setSaveError(null);
     setPendingStudent(values);
   };
 
   const cancelPendingStudent = () => {
-    if (saving) return; // don't let them cancel mid-request
+    if (saving) return;
     setPendingStudent(null);
     setSaveError(null);
   };
 
-  // Now actually persists to the FastAPI backend (POST /students) instead of
-  // only updating local state. The row added to the table is built from the
-  // server's response, not the raw form values, so it reflects what was
-  // really saved (generated id, created_at, any server-side defaults).
   const confirmPendingStudent = async () => {
     if (!pendingStudent || saving) return;
-
-    const instituteName = institutes.find((i) => i.id === pendingStudent.institute_id)?.name ?? "";
-    // NOTE: the backend's Student schema has no subject/subjects field yet
-    // (that's a many-to-many relation on the model), so this stays a
-    // client-side-only label until that endpoint support is added.
-
     setSaving(true);
     setSaveError(null);
 
     try {
-      const created = await createStudent(pendingStudent);
+      const full_name =
+        `${pendingStudent.firstName ?? ""} ${pendingStudent.LastName ?? ""}`.trim();
+      const father_name =
+        `${pendingStudent.fatherFirstName ?? ""} ${pendingStudent.fatherLastName ?? ""}`.trim();
+      const mother_name =
+        `${pendingStudent.motherFirstName ?? ""} ${pendingStudent.motherLastName ?? ""}`.trim();
 
-      const newStudent: StudentRow = {
-        id: created.id,
-        name: created.full_name,
-        email: created.email,
-        selfPhone: created.self_phone ?? "",
-        institute: institutes.find((i) => i.id === created.institute_id)?.name ?? instituteName,
-        status: statuses.find((s) => s.id === created.status)?.name ?? created.status,
-        address: created.address,
-        fatherName: created.father_name,
-        fatherPhone: created.father_phone ?? "",
-        motherName: created.mother_name,
-        motherPhone: created.mother_phone ?? "",
-        ipAddress: created.ip_address ?? "",
-        latitude: created.latitude != null ? String(created.latitude) : "",
-        longitude: created.longitude != null ? String(created.longitude) : "",
-        placeholder: created.placeholder ?? "",
-        joinedDate: new Date(created.created_at).toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
-      };
+      await createStudent({
+        full_name,
+        email: pendingStudent.email ?? "",
+        institute_id: pendingStudent.institute_id || null,
+        father_name,
+        mother_name,
+        address: pendingStudent.address ?? "",
+        self_phone: pendingStudent.phone || null,
+        father_phone: pendingStudent.fatherPhone || null,
+        mother_phone: pendingStudent.motherPhone || null,
+        ip_address: pendingStudent.ip_address || null,
+        latitude: pendingStudent.latitude || null,
+        longitude: pendingStudent.longitude || null,
+      });
 
-      setStudents((prev) => [...prev, newStudent]);
+      await reload();
       setPendingStudent(null);
       setShowForm(false);
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Couldn't save the student. Try again.");
+      setSaveError(errorMessage(err));
     } finally {
       setSaving(false);
     }
   };
 
-  const pendingInstituteName = pendingStudent
-    ? institutes.find((i) => i.id === pendingStudent.institute_id)?.name ?? "—"
-    : "";
-  const pendingStatusName = pendingStudent
-    ? statuses.find((s) => s.id === pendingStudent.status)?.name ?? "—"
-    : "";
+  /* ---------- open dialogs ---------- */
 
-  return (
-    <div className="default-page">
-      {showForm ? (
+  const openEnrollDialog = async (row: StudentRow) => {
+    setRowBusyId(row.id);
+    try {
+      setEnrollingStudent(await getStudent(row.id));
+    } catch (err) {
+      window.alert(errorMessage(err));
+    } finally {
+      setRowBusyId(null);
+    }
+  };
+
+  const openEditDialog = async (row: StudentRow) => {
+    setRowBusyId(row.id);
+    try {
+      setEditingStudent(await getStudent(row.id));
+    } catch (err) {
+      window.alert(errorMessage(err));
+    } finally {
+      setRowBusyId(null);
+    }
+  };
+
+  /* ---------- render ---------- */
+
+  if (showForm && options) {
+    return (
+      <div className="default-page">
         <StudentForm
-          institutes={institutes}
-          subjects={subjects}
-          statuses={statuses}
+          institutes={options.institutes}
+          subjects={options.subjects}
+          statuses={STATUS_OPTIONS}
           onSubmit={handleFormSubmit}
           onCancel={() => setShowForm(false)}
         />
-      ) : students.length === 0 ? (
+      </div>
+    );
+  }
+
+  return (
+    <div className="default-page">
+      {error && (
+        <div
+          className="perf-success"
+          style={{ background: "#fdeaea", color: "#c62f2f", marginBottom: 12 }}
+        >
+          {error}
+        </div>
+      )}
+
+      {loading && !data && <div className="default-empty">Loading students…</div>}
+
+      {!loading && students.length === 0 && (
         <div className="default-empty">
           <p>No students added yet.</p>
-          <button type="button" className="add-button" onClick={() => setShowForm(true)}>
+          <button
+            type="button"
+            className="add-button"
+            onClick={() => setShowForm(true)}
+          >
             <Plus size={16} strokeWidth={2.4} />
             Add your first student
           </button>
         </div>
-      ) : (
+      )}
+
+      {!loading && students.length > 0 && (
         <div className="default-panel">
           <div className="section-bar">All Students</div>
 
@@ -258,12 +195,13 @@ export default function StudentsPage() {
               <thead>
                 <tr>
                   <th className="col-sno">Sr. No.</th>
+                  <th>Student ID</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Self Phone</th>
                   <th>Institute</th>
+                  <th>Batch</th>
                   <th>Status</th>
-                  <th>Joined</th>
                   <th className="col-actions">Actions</th>
                 </tr>
               </thead>
@@ -271,17 +209,37 @@ export default function StudentsPage() {
                 {visible.map((s, i) => (
                   <tr key={s.id}>
                     <td className="col-sno">{i + 1}</td>
-                    <td className="cell-name">{s.name}</td>
+                    <td>{s.student_id}</td>
+                    <td className="cell-name">{s.full_name}</td>
                     <td>{s.email}</td>
-                    <td>{s.selfPhone || "—"}</td>
-                    <td>{s.institute}</td>
+                    <td>{s.self_phone || "—"}</td>
+                    <td>{s.institute || "—"}</td>
+                    <td>{s.batch_name ?? "—"}</td>
                     <td>{s.status}</td>
-                    <td>{s.joinedDate}</td>
                     <td className="col-actions">
-                      <button type="button" className="icon-button" title="Edit">
+                      <button
+                        type="button"
+                        className="icon-button"
+                        title="Enroll in courses"
+                        disabled={rowBusyId === s.id}
+                        onClick={() => openEnrollDialog(s)}
+                      >
+                        <GraduationCap size={15} strokeWidth={2} />
+                      </button>
+                      <button
+                        type="button"
+                        className="icon-button"
+                        title="Edit"
+                        disabled={rowBusyId === s.id}
+                        onClick={() => openEditDialog(s)}
+                      >
                         <Pencil size={15} strokeWidth={2} />
                       </button>
-                      <button type="button" className="icon-button" title="View">
+                      <button
+                        type="button"
+                        className="icon-button"
+                        title="View"
+                      >
                         <Eye size={15} strokeWidth={2} />
                       </button>
                     </td>
@@ -316,21 +274,25 @@ export default function StudentsPage() {
             </label>
 
             <div className="default-footer-note">
-              Showing {visible.length} of {filtered.length} student{filtered.length === 1 ? "" : "s"}
+              Showing {visible.length} of {filtered.length} student
+              {filtered.length === 1 ? "" : "s"}
             </div>
           </div>
         </div>
       )}
 
-      {/* Floating action button — bottom-right, only when the form isn't already open */}
       {!showForm && students.length > 0 && (
-        <button type="button" className="add-button-fab" onClick={() => setShowForm(true)}>
+        <button
+          type="button"
+          className="add-button-fab"
+          onClick={() => setShowForm(true)}
+        >
           <Plus size={18} strokeWidth={2.6} />
           <span>Add Student</span>
         </button>
       )}
 
-      {/* Confirmation card — replaces a generic browser confirm() */}
+      {/* --- Add confirmation --- */}
       {pendingStudent && (
         <div className="confirm-overlay" role="dialog" aria-modal="true">
           <div className="confirm-card">
@@ -339,6 +301,7 @@ export default function StudentsPage() {
               className="confirm-close"
               onClick={cancelPendingStudent}
               aria-label="Close"
+              disabled={saving}
             >
               <X size={16} strokeWidth={2.2} />
             </button>
@@ -355,59 +318,21 @@ export default function StudentsPage() {
             <div className="confirm-details">
               <div className="confirm-row">
                 <span>Name</span>
-                <strong>{`${pendingStudent.firstName ?? ""} ${pendingStudent.LastName ?? ""}`.trim() || "—"}</strong>
+                <strong>
+                  {`${pendingStudent.firstName ?? ""} ${pendingStudent.LastName ?? ""}`.trim() || "—"}
+                </strong>
               </div>
               <div className="confirm-row">
                 <span>Email</span>
                 <strong>{pendingStudent.email || "—"}</strong>
               </div>
               <div className="confirm-row">
-                <span>Self Phone</span>
-                <strong>{pendingStudent.phone || "—"}</strong>
-              </div>
-              <div className="confirm-row">
                 <span>Institute</span>
-                <strong>{pendingInstituteName}</strong>
-              </div>
-              <div className="confirm-row">
-                <span>Status</span>
-                <strong>{pendingStatusName}</strong>
-              </div>
-              <div className="confirm-row">
-                <span>Father's Name</span>
-                <strong>{`${pendingStudent.fatherFirstName ?? ""} ${pendingStudent.fatherLastName ?? ""}`.trim() || "—"}</strong>
-              </div>
-              <div className="confirm-row">
-                <span>Father's Phone</span>
-                <strong>{pendingStudent.fatherPhone || "—"}</strong>
-              </div>
-              <div className="confirm-row">
-                <span>Mother's Name</span>
-                <strong>{`${pendingStudent.motherFirstName ?? ""} ${pendingStudent.motherLastName ?? ""}`.trim() || "—"}</strong>
-              </div>
-              <div className="confirm-row">
-                <span>Mother's Phone</span>
-                <strong>{pendingStudent.motherPhone || "—"}</strong>
+                <strong>{pendingStudent.institute_id || "—"}</strong>
               </div>
               <div className="confirm-row">
                 <span>Address</span>
                 <strong>{pendingStudent.address || "—"}</strong>
-              </div>
-              <div className="confirm-row">
-                <span>IP Address</span>
-                <strong>{pendingStudent.ip_address || "—"}</strong>
-              </div>
-              <div className="confirm-row">
-                <span>Latitude</span>
-                <strong>{pendingStudent.latitude || "—"}</strong>
-              </div>
-              <div className="confirm-row">
-                <span>Longitude</span>
-                <strong>{pendingStudent.longitude || "—"}</strong>
-              </div>
-              <div className="confirm-row">
-                <span>Placeholder</span>
-                <strong>{pendingStudent.placeholder || "—"}</strong>
               </div>
             </div>
 
@@ -433,6 +358,30 @@ export default function StudentsPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* --- Edit dialog --- */}
+      {editingStudent && (
+        <EditStudentDialog
+          student={editingStudent}
+          onClose={() => setEditingStudent(null)}
+          onSaved={() => {
+            setEditingStudent(null);
+            reload();
+          }}
+        />
+      )}
+
+      {/* --- Enroll courses dialog --- */}
+      {enrollingStudent && (
+        <EnrollCoursesDialog
+          student={enrollingStudent}
+          onClose={() => setEnrollingStudent(null)}
+          onSaved={() => {
+            setEnrollingStudent(null);
+            reload();
+          }}
+        />
       )}
     </div>
   );
