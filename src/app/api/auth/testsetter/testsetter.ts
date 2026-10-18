@@ -14,22 +14,22 @@ export interface TestSetterCreated extends TestSetterRow {
   temp_password: string;
 }
 
-/** GET /api/v1/testsetters/options  (admin only) */
+/** GET /testsetters/options  (admin only) */
 export async function getTestSetterOptions(): Promise<OptionsResponse> {
-  const { data } = await client.get<OptionsResponse>("/api/v1/testsetters/options");
+  const { data } = await client.get<OptionsResponse>("/testsetters/options");
   return data;
 }
 
-/** GET /api/v1/testsetters  (admin only) */
+/** GET /testsetters  (admin only) */
 export async function listTestSetters(): Promise<TestSetterRow[]> {
-  const { data } = await client.get<TestSetterRow[]>("/api/v1/testsetters");
+  const { data } = await client.get<TestSetterRow[]>("/testsetters");
   return data;
 }
 
-/** POST /api/v1/testsetters  (admin only) */
+/** POST /testsetters  (admin only) */
 export async function createTestSetter(
   payload: TestSetterCreate
 ): Promise<TestSetterCreated> {
-  const { data } = await client.post<TestSetterCreated>("/api/v1/testsetters", payload);
+  const { data } = await client.post<TestSetterCreated>("/testsetters", payload);
   return data;
 }

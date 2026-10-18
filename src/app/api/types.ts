@@ -167,6 +167,7 @@ export interface SubjectRow {
   institute: string;
   course_count: number;
   teacher_count: number;
+  created_at: string;
 }
 
 

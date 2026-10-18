@@ -3,7 +3,6 @@ import type { SubjectRow } from "../../types";
 export type { SubjectRow };
 
 export interface SubjectCreate {
-  institute_id: string;
   subject_name: string;
   subject_code: string;
 }
