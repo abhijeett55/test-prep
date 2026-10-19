@@ -22,6 +22,11 @@ import SubjectsPage from "./subject-management/SubjectsPage";
 import CreateSubjectPage from "./subject-management/CreateSubjectPage";
 import AssignCoursesPage from "./subject-management/AssignCoursesPage";
 
+import AllBatches from "./batch-management/AllBatches";
+import CreateBatch from "./batch-management/CreateBatch";
+import AssignTeachers from "./batch-management/AssignTeachers";
+import MapStudents from "./batch-management/MapStudents";
+
 import "./AdminDashboardPage.css";
 
 export default function AdminDashboardPage() {
@@ -60,6 +65,12 @@ export default function AdminDashboardPage() {
             {/* Other */}
             <Route path="profile" element={<ProfilePage />} />
             <Route path="courses-management/courses" element={<CoursesPage />} />
+
+            <Route path="batch-management/create" element={<CreateBatch />} />
+            <Route path="batch-management/all" element={<AllBatches />} />
+            <Route path="batch-management/assign-teachers" element={<AssignTeachers />} />
+            <Route path="batch-management/map-students" element={<MapStudents />} />
+            
             <Route path="change-password" element={<ChangePasswordPage />} />
             <Route path="institute-settings/profile" element={<InstituteProfilePage />} />
             <Route path="*" element={<Navigate to="/dashboard/admin" replace />} />

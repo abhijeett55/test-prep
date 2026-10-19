@@ -141,10 +141,7 @@ export async function assignSubjects(
 //  Batch transfers (student → batch)
 // ============================================================
 
-export async function transferStudentToBatch(
-  studentId: string,
-  toBatchId: string
-): Promise<StudentDetail> {
+export async function transferStudentToBatch(studentId: string, toBatchId: string) {
   const { data } = await client.post<StudentDetail>(
     `/students/${studentId}/transfer`,
     { to_batch_id: toBatchId }

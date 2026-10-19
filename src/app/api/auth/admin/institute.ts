@@ -14,13 +14,8 @@ export async function getMyInstitute(): Promise<InstituteProfile> {
   return data;
 }
 
-export async function updateMyInstitute(
-  payload: InstituteUpdate
-): Promise<InstituteProfile> {
-  const { data } = await client.patch<InstituteProfile>(
-    "/institutes/me",
-    payload
-  );
+export async function updateMyInstitute(payload: InstituteUpdate) {
+  const { data } = await client.patch<InstituteProfile>("/institutes/my-institute", payload);
   return data;
 }
 
