@@ -44,7 +44,7 @@ export default function TestSettersPage() {
   const [viewing, setViewing] = useState<TestSetterRow | null>(null);
   const [tempPassword, setTempPassword] = useState<string | null>(null);
 
-  const testSetters: TestSetterRow[] = data ?? [];
+  const testSetters = useMemo(() => data ?? [], [data]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();

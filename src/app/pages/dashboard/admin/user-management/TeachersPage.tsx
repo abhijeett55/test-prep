@@ -67,10 +67,10 @@ export default function TeachersPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [tempPassword, setTempPassword] = useState<string | null>(null);
 
-  const teachers: TeacherRow[] = data ?? [];
+  const teachers = useMemo(() => data ?? [], [data]);
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+  const q = search.trim().toLowerCase();
     if (!q) return teachers;
     return teachers.filter(
       (t) =>

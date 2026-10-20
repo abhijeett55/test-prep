@@ -85,9 +85,8 @@ export default function AdminLoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const user = await login("admin", userId, password);   // ← role added
+      const user = await login("admin", userId, password);
       navigate(ROLE_HOME_PATH[user.role]);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err) {
       setError(errorMessage(err));
     }finally {

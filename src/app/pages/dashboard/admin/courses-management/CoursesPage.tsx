@@ -45,7 +45,8 @@ export default function CoursesPage() {
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const courses: CourseRow[] = data ?? [];
+  // FIX: Define courses at the top level with useMemo
+  const courses = useMemo(() => data ?? [], [data]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -169,7 +170,6 @@ export default function CoursesPage() {
               margin: "12px 0 20px",
             }}
           >
-            {/* Institute is fixed — an admin belongs to one institute. */}
             <label
               style={{
                 gridColumn: "1 / -1",

@@ -40,7 +40,7 @@ export default function StudentsPage() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  const students: StudentRow[] = data ?? [];
+  const students = useMemo(() => data ?? [], [data]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
