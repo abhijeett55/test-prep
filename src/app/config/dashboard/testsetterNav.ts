@@ -6,8 +6,6 @@ import {
   FileStack,
   ClipboardCheck,
   Image,
-  Printer,
-  Mail,
   Users,
   Sparkles,
 } from "lucide-react";
@@ -66,8 +64,6 @@ export const testsetterNav: NavItem[] = [
       { label: "Formulas / LaTeX", path: "/dashboard/testsetter/media-library/formulas-latex", info: true },
     ],
   },
-  { label: "Print Paper", icon: Printer, path: "/dashboard/testsetter/print-paper", info: true },
-  { label: "Contact Support", icon: Mail, path: "/dashboard/testsetter/contact-support", info: true },
   {
     label: "My Account",
     icon: Users,

@@ -54,8 +54,7 @@ export default function CoursesPage() {
       (c) =>
         c.course_name.toLowerCase().includes(q) ||
         c.course_code.toLowerCase().includes(q) ||
-        (c.course_description ?? "").toLowerCase().includes(q) ||
-        c.institute.toLowerCase().includes(q)
+        (c.course_description ?? "").toLowerCase().includes(q)
     );
   }, [courses, search]);
 
@@ -398,7 +397,6 @@ export default function CoursesPage() {
                   <th className="col-sno">Sr. No.</th>
                   <th>Code</th>
                   <th>Name</th>
-                  <th>Institute</th>
                   <th>Students</th>
                   <th>Teachers</th>
                   <th>Description</th>
@@ -411,7 +409,6 @@ export default function CoursesPage() {
                     <td className="col-sno">{i + 1}</td>
                     <td>{c.course_code}</td>
                     <td className="cell-name">{c.course_name}</td>
-                    <td>{c.institute || "—"}</td>
                     <td>{c.student_count}</td>
                     <td>{c.teacher_count}</td>
                     <td title={c.course_description ?? ""}>
@@ -441,7 +438,7 @@ export default function CoursesPage() {
 
                 {visible.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="no-results">
+                    <td colSpan={7} className="no-results">
                       No courses match "{search}".
                     </td>
                   </tr>

@@ -1,50 +1,14 @@
+/* eslint-disable react-hooks/purity */
+import { useApi } from "../../../../hooks/useApi";
+import { getMyBatches } from "../../../../api/auth/teacher/teacher";
 import "./CoursesPage.css";
 
-interface ClassItem {
-  classId: string;
-  className: string;
-  section: string;
-  subject: string;
-  createdAt: string;
-  studentsEnrolled: number;
-}
-
-const classes: ClassItem[] = [
-  {
-    classId: "CLS-001",
-    className: "Class 10",
-    section: "A",
-    subject: "Mathematics",
-    createdAt: "02 Oct 2026",
-    studentsEnrolled: 45,
-  },
-  {
-    classId: "CLS-002",
-    className: "Class 10",
-    section: "B",
-    subject: "Science",
-    createdAt: "28 Sep 2026",
-    studentsEnrolled: 38,
-  },
-  {
-    classId: "CLS-003",
-    className: "Class 9",
-    section: "A",
-    subject: "Mathematics",
-    createdAt: "25 Sep 2026",
-    studentsEnrolled: 52,
-  },
-  {
-    classId: "CLS-004",
-    className: "Class 9",
-    section: "B",
-    subject: "Science",
-    createdAt: "20 Sep 2026",
-    studentsEnrolled: 41,
-  },
-];
-
 export default function ClassPage() {
+  const { data: batches, loading, error } = useApi(() => getMyBatches());
+
+  if (loading) return <div className="courses-page">Loading classes…</div>;
+  if (error) return <div className="courses-page" style={{ color: "red" }}>{error}</div>;
+
   return (
     <div className="courses-page">
       <div className="courses-header">
@@ -58,28 +22,35 @@ export default function ClassPage() {
         <table className="courses-table">
           <thead>
             <tr>
-              <th>Class ID</th>
+              <th>Class Code</th>
               <th>Class Name</th>
-              <th>Section</th>
-              <th>Assigned Subject</th>
+              <th>Course</th>
               <th>Created At</th>
               <th>Students Enrolled</th>
             </tr>
           </thead>
-
           <tbody>
-            {classes.map((cls) => (
-              <tr key={cls.classId}>
-                <td className="course-id">{cls.classId}</td>
-                <td className="course-name">{cls.className}</td>
-                <td>{cls.section}</td>
+            {(batches ?? []).map((batch) => (
+              <tr key={batch.id}>
+                <td className="course-id">{batch.batch_code}</td>
+                <td className="course-name">{batch.batch_name}</td>
                 <td>
-                  <span className="subject-badge">{cls.subject}</span>
+                  <span className="subject-badge">
+                    {batch.course_name || "No Course"}
+                  </span>
                 </td>
-                <td>{cls.createdAt}</td>
-                <td className="student-count">{cls.studentsEnrolled}</td>
+                // eslint-disable-next-line react-hooks/purity, react-hooks/purity
+                <td>{new Date(batch.start_date || Date.now()).toLocaleDateString()}</td>
+                <td className="student-count">{batch.student_count}</td>
               </tr>
             ))}
+            {batches?.length === 0 && (
+              <tr>
+                <td colSpan={5} style={{ textAlign: "center", padding: 24 }}>
+                  No classes assigned to you yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

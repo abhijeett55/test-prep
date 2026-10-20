@@ -5,27 +5,34 @@ import Navbar from "../../../components/Navbar/Navbar";
 import Footer from "../../../components/Footer/Footer";
 import { adminNav } from "../../../config/dashboard/adminNav";
 
-// Existing Imports
+// User Management
 import TeachersPage from "./user-management/TeachersPage";
 import StudentsPage from "./user-management/StudentsPage";
 import TestsetterPage from "./user-management/TestsetterPage";
-import CoursesPage from "./courses-management/CoursesPage";
-import InstituteProfilePage from "./institute-settings/InstituteProfilePage";
+
+// Student Management
 import Enrollment from "./student-management/Enrollment";
 import FeeStatus from "./student-management/FeeStatus";
 import BatchTransfer from "./student-management/BatchTransfer";
-import ProfilePage from "../../account/ProfilePage";
-import ChangePasswordPage from "../../account/ChangePasswordPage";
 
-// NEW IMPORTS FOR SUBJECTS
+// Subjects
 import SubjectsPage from "./subject-management/SubjectsPage";
 import CreateSubjectPage from "./subject-management/CreateSubjectPage";
 import AssignCoursesPage from "./subject-management/AssignCoursesPage";
 
+// Batches
 import AllBatches from "./batch-management/AllBatches";
 import CreateBatch from "./batch-management/CreateBatch";
 import AssignTeachers from "./batch-management/AssignTeachers";
 import MapStudents from "./batch-management/MapStudents";
+
+// Courses & Institute
+import CoursesPage from "./courses-management/CoursesPage";
+import InstituteProfilePage from "./institute-settings/InstituteProfilePage";
+
+// Account
+import ProfilePage from "../../account/ProfilePage";
+import ChangePasswordPage from "../../account/ChangePasswordPage";
 
 import "./AdminDashboardPage.css";
 
@@ -34,9 +41,10 @@ export default function AdminDashboardPage() {
   
   return (
     <div className="dashboard-page">
+      {/* Use user.admin_id instead of user.id to show the human-readable ID */}
       <Header 
         title="Admin Panel" 
-        userId={user?.id || "Loading..."} 
+        userId={user?.full_name || user?.id || "Admin"}
         role="Admin" 
       />
 
@@ -57,22 +65,30 @@ export default function AdminDashboardPage() {
             <Route path="student-management/fee-status" element={<FeeStatus />} />
             <Route path="student-management/batch-transfer" element={<BatchTransfer />} />
             
-            {/* Subject Management (NEW) */}
+            {/* Subject Management */}
             <Route path="subjects/all" element={<SubjectsPage />} />
             <Route path="subjects/create" element={<CreateSubjectPage />} />
             <Route path="subjects/assign" element={<AssignCoursesPage />} />
 
-            {/* Other */}
-            <Route path="profile" element={<ProfilePage />} />
+            {/* Courses */}
             <Route path="courses-management/courses" element={<CoursesPage />} />
 
+            {/* Batch Management */}
             <Route path="batch-management/create" element={<CreateBatch />} />
             <Route path="batch-management/all" element={<AllBatches />} />
             <Route path="batch-management/assign-teachers" element={<AssignTeachers />} />
             <Route path="batch-management/map-students" element={<MapStudents />} />
             
+            {/* Institute Settings */}
+            <Route path="institute/profile" element={<InstituteProfilePage />} />
+            {/* Add these two if they are still in your nav */}
+            {/* <Route path="institute/departments" element={<div>Departments — build me</div>} /> */}
+            {/* <Route path="institute/settings" element={<div>Settings — build me</div>} /> */}
+
+            {/* Account */}
+            <Route path="profile" element={<ProfilePage />} />
             <Route path="change-password" element={<ChangePasswordPage />} />
-            <Route path="institute-settings/profile" element={<InstituteProfilePage />} />
+            
             <Route path="*" element={<Navigate to="/dashboard/admin" replace />} />
           </Routes>
         </main>

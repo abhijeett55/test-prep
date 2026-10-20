@@ -2,11 +2,9 @@ import {
   LayoutGrid,
   Building2,
   UsersRound,
-  ShieldCheck,
   BarChart3,
   SlidersHorizontal,
   ScrollText,
-  Plug,
   LifeBuoy,
   Users,
   Sparkles,
@@ -38,16 +36,6 @@ export const providerNav: NavItem[] = [
   },
 
   {
-    label: "Content Governance",
-    icon: ShieldCheck,
-    children: [
-      { label: "Pending Question Banks", path: "/dashboard/provider/content-governance/pending-question-banks", badge: "New" },
-      { label: "Approved Content", path: "/dashboard/provider/content-governance/approved-content" },
-      { label: "Quality / Plagiarism Checks", path: "/dashboard/provider/content-governance/quality-checks", info: true },
-    ],
-  },
-
-  {
     label: "Analytics & Reports",
     icon: BarChart3,
     children: [
@@ -68,16 +56,6 @@ export const providerNav: NavItem[] = [
   },
 
   { label: "Audit Logs", icon: ScrollText, path: "/dashboard/provider/audit-logs", info: true },
-
-  {
-    label: "API / Integrations",
-    icon: Plug,
-    children: [
-      { label: "Payment Gateways", path: "/dashboard/provider/integrations/payment-gateways" },
-      { label: "SMS / Email Providers", path: "/dashboard/provider/integrations/sms-email-providers" },
-      { label: "API Keys", path: "/dashboard/provider/integrations/api-keys", info: true },
-    ],
-  },
 
   { label: "Support Tickets", icon: LifeBuoy, path: "/dashboard/provider/support-tickets", badge: "New" },
 

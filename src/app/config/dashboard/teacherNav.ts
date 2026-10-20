@@ -5,10 +5,8 @@ import {
   CalendarClock,
   ClipboardList,
   BarChart3,
-  Printer,
   Mail,
   Users,
-  Sparkles,
 } from "lucide-react";
 import type { NavItem } from "../../components/Navbar/types";
 
@@ -21,7 +19,6 @@ export const teacherNav: NavItem[] = [
       { label: "Courses List", path: "/dashboard/teacher/my-classes/course-list"},
       { label: "Class List", path: "/dashboard/teacher/my-classes/class-list" },
       { label: "Student List", path: "/dashboard/teacher/my-classes/student-list" },
-      { label: "Assign Students", path: "/dashboard/teacher/my-classes/assign-students", info: true },
     ],
   },
   {
@@ -61,7 +58,6 @@ export const teacherNav: NavItem[] = [
       { label: "Download Reports", path: "/dashboard/teacher/reports/download" },
     ],
   },
-  { label: "Print Paper", icon: Printer, path: "/dashboard/teacher/print-paper", info: true },
   { label: "Contact Support", icon: Mail, path: "/dashboard/teacher/contact-support", info: true },
   {
     label: "My Account",
@@ -71,5 +67,4 @@ export const teacherNav: NavItem[] = [
       { label: "Change Password", path: "/dashboard/teacher/change-password" },
     ],
   },
-  { label: "Explore Whats New", icon: Sparkles, path: "/dashboard/teacher/whats-new" },
 ];

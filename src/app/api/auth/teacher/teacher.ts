@@ -2,7 +2,11 @@ import { client } from "../../client";
 import type {
   TeacherOptionsResponse,
   TeacherRow,
+  CourseRow,
+  BatchRow,
+  StudentRow
 } from "../../types";
+
 
 export interface TeacherCreate {
   teacher_id: string;
@@ -88,5 +92,32 @@ export async function createTeacher(
   payload: TeacherCreate
 ): Promise<TeacherCreated> {
   const { data } = await client.post<TeacherCreated>("/teachers", payload);
+  return data;
+}
+
+export async function getMyCourses(): Promise<CourseRow[]> {
+  const { data } = await client.get<CourseRow[]>("/teachers/me/courses");
+  return data;
+}
+
+/** GET /teachers/me/batches */
+export async function getMyBatches(): Promise<BatchRow[]> {
+  const { data } = await client.get<BatchRow[]>("/teachers/me/batches");
+  return data;
+}
+
+/** GET /teachers/me/students */
+export async function getMyStudents(): Promise<StudentRow[]> {
+  const { data } = await client.get<StudentRow[]>("/teachers/me/students");
+  return data;
+}
+
+export async function assignStudentsToTeacher(
+  teacherId: string,
+  studentIds: string[]
+): Promise<unknown> {
+  const { data } = await client.post(`/teachers/${teacherId}/students`, {
+    student_ids: studentIds,
+  });
   return data;
 }

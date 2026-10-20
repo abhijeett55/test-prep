@@ -1,45 +1,13 @@
+import { useApi } from "../../../../hooks/useApi";
+import { getMyCourses } from "../../../../api/auth/teacher/teacher";
 import "./CoursesPage.css";
 
-interface Course {
-  courseId: string;
-  courseName: string;
-  subject: string;
-  createdAt: string;
-  studentsEnrolled: number;
-}
+export default function CoursesPage() {
+  const { data: courses, loading, error } = useApi(() => getMyCourses());
 
-const courses: Course[] = [
-  {
-    courseId: "CRS-001",
-    courseName: "Class 10 Mathematics",
-    subject: "Mathematics",
-    createdAt: "02 Oct 2026",
-    studentsEnrolled: 45,
-  },
-  {
-    courseId: "CRS-002",
-    courseName: "Class 10 Science",
-    subject: "Science",
-    createdAt: "28 Sep 2026",
-    studentsEnrolled: 38,
-  },
-  {
-    courseId: "CRS-003",
-    courseName: "Class 9 Mathematics",
-    subject: "Mathematics",
-    createdAt: "25 Sep 2026",
-    studentsEnrolled: 52,
-  },
-  {
-    courseId: "CRS-004",
-    courseName: "Class 9 Science",
-    subject: "Science",
-    createdAt: "20 Sep 2026",
-    studentsEnrolled: 41,
-  },
-];
+  if (loading) return <div className="courses-page">Loading courses…</div>;
+  if (error) return <div className="courses-page" style={{ color: "red" }}>{error}</div>;
 
-export default function CoursesList() {
   return (
     <div className="courses-page">
       <div className="courses-header">
@@ -53,38 +21,34 @@ export default function CoursesList() {
         <table className="courses-table">
           <thead>
             <tr>
-              <th>Course ID</th>
+              <th>Course Code</th>
               <th>Course Name</th>
               <th>Assigned Subject</th>
               <th>Created At</th>
               <th>Students Enrolled</th>
             </tr>
           </thead>
-
           <tbody>
-            {courses.map((course) => (
-              <tr key={course.courseId}>
-                <td className="course-id">
-                  {course.courseId}
-                </td>
-
-                <td className="course-name">
-                  {course.courseName}
-                </td>
-
+            {(courses ?? []).map((course) => (
+              <tr key={course.id}>
+                <td className="course-id">{course.course_code}</td>
+                <td className="course-name">{course.course_name}</td>
                 <td>
                   <span className="subject-badge">
-                    {course.subject}
+                    {course.course_description ? "Assigned" : "General"}
                   </span>
                 </td>
-
-                <td>{course.createdAt}</td>
-
-                <td className="student-count">
-                  {course.studentsEnrolled}
-                </td>
+                <td>{new Date(course.created_at).toLocaleDateString()}</td>
+                <td className="student-count">{course.student_count}</td>
               </tr>
             ))}
+            {courses?.length === 0 && (
+              <tr>
+                <td colSpan={5} style={{ textAlign: "center", padding: 24 }}>
+                  No courses assigned to you yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

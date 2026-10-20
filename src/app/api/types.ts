@@ -142,7 +142,9 @@ export interface CourseRow {
   institute: string;
   student_count: number;
   teacher_count: number;
+  created_at: string; // <-- Add this
 }
+
 
 export interface CourseDetail {
   id: string;

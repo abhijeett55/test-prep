@@ -1,50 +1,13 @@
+import { useApi } from "../../../../hooks/useApi";
+import { getMyStudents } from "../../../../api/auth/teacher/teacher";
 import "./CoursesPage.css";
 
-interface Student {
-  studentId: string;
-  name: string;
-  className: string;
-  email: string;
-  joinedAt: string;
-  testsTaken: number;
-}
-
-const students: Student[] = [
-  {
-    studentId: "STU-001",
-    name: "Aarav Sharma",
-    className: "Class 10 - A",
-    email: "aarav.sharma@example.com",
-    joinedAt: "02 Oct 2026",
-    testsTaken: 6,
-  },
-  {
-    studentId: "STU-002",
-    name: "Diya Verma",
-    className: "Class 10 - B",
-    email: "diya.verma@example.com",
-    joinedAt: "28 Sep 2026",
-    testsTaken: 4,
-  },
-  {
-    studentId: "STU-003",
-    name: "Rohan Patel",
-    className: "Class 9 - A",
-    email: "rohan.patel@example.com",
-    joinedAt: "25 Sep 2026",
-    testsTaken: 5,
-  },
-  {
-    studentId: "STU-004",
-    name: "Ananya Singh",
-    className: "Class 9 - B",
-    email: "ananya.singh@example.com",
-    joinedAt: "20 Sep 2026",
-    testsTaken: 3,
-  },
-];
-
 export default function StudentPage() {
+  const { data: students, loading, error } = useApi(() => getMyStudents());
+
+  if (loading) return <div className="courses-page">Loading students…</div>;
+  if (error) return <div className="courses-page" style={{ color: "red" }}>{error}</div>;
+
   return (
     <div className="courses-page">
       <div className="courses-header">
@@ -60,26 +23,32 @@ export default function StudentPage() {
             <tr>
               <th>Student ID</th>
               <th>Student Name</th>
-              <th>Class</th>
+              <th>Batch</th>
               <th>Email</th>
-              <th>Joined At</th>
-              <th>Tests Taken</th>
+              <th>Status</th>
             </tr>
           </thead>
-
           <tbody>
-            {students.map((student) => (
-              <tr key={student.studentId}>
-                <td className="course-id">{student.studentId}</td>
-                <td className="course-name">{student.name}</td>
+            {(students ?? []).map((student) => (
+              <tr key={student.id}>
+                <td className="course-id">{student.student_id}</td>
+                <td className="course-name">{student.full_name}</td>
                 <td>
-                  <span className="subject-badge">{student.className}</span>
+                  <span className="subject-badge">
+                    {student.batch_name || "Unassigned"}
+                  </span>
                 </td>
                 <td>{student.email}</td>
-                <td>{student.joinedAt}</td>
-                <td className="student-count">{student.testsTaken}</td>
+                <td>{student.status}</td>
               </tr>
             ))}
+            {students?.length === 0 && (
+              <tr>
+                <td colSpan={5} style={{ textAlign: "center", padding: 24 }}>
+                  No students assigned to you yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

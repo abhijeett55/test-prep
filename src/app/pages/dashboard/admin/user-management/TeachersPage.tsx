@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Plus, Search, Pencil, Eye, X, BookOpen } from "lucide-react";
+import { Plus, Search, Pencil, Eye, X, BookOpen, Library, Users } from "lucide-react";
 import TeacherForm from "../../../../config/nav-user/teacher/TeacherForm";
 import type { FormValues } from "../../../../components/FormLayout/types";
 import {
@@ -16,6 +16,8 @@ import { useApi } from "../../../../hooks/useApi";
 import { errorMessage } from "../../../../api/client";
 import EditTeacherDialog from "./EditTeacherDialog";
 import AssignSubjectsDialog from "./AssignSubjectsDialog";
+import AssignCoursesDialog from "./AssignCoursesDialog";
+import AssignStudentsDialog from "./AssignStudentsDialog";
 import "./DefaultPage.css";
 
 const ENTRY_OPTIONS = [10, 25, 50];
@@ -39,8 +41,10 @@ function toPayload(v: FormValues): TeacherCreate {
   };
 }
 
-type TeacherDetail = TeacherRow & {
+export type TeacherDetail = TeacherRow & {
   subject_ids: string[];
+  student_ids?: string[];
+  // course_ids?: string[]; (uncomment if your backend returns this in /teachers/{id})
 };
 
 export default function TeachersPage() {
@@ -51,8 +55,11 @@ export default function TeachersPage() {
   const [search, setSearch] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
 
+  // Dialog states
   const [editingTeacher, setEditingTeacher] = useState<TeacherDetail | null>(null);
   const [assigningTeacher, setAssigningTeacher] = useState<TeacherDetail | null>(null);
+  const [assigningCourses, setAssigningCourses] = useState<TeacherDetail | null>(null);
+  const [assigningStudents, setAssigningStudents] = useState<TeacherDetail | null>(null);
   const [rowBusyId, setRowBusyId] = useState<string | null>(null);
 
   const [pendingTeacher, setPendingTeacher] = useState<FormValues | null>(null);
@@ -113,21 +120,16 @@ export default function TeachersPage() {
 
   /* ---------- dialogs ---------- */
 
-  const openEditDialog = async (row: TeacherRow) => {
+  const openDialog = async (row: TeacherRow, type: "edit" | "subjects" | "courses" | "students") => {
     setRowBusyId(row.id);
     try {
-      setEditingTeacher((await getTeacher(row.id)) as TeacherDetail);
-    } catch (err) {
-      window.alert(errorMessage(err));
-    } finally {
-      setRowBusyId(null);
-    }
-  };
-
-  const openAssignDialog = async (row: TeacherRow) => {
-    setRowBusyId(row.id);
-    try {
-      setAssigningTeacher((await getTeacher(row.id)) as TeacherDetail);
+      // Fetch the full detail to get subject_ids, course_ids, and student_ids
+      const detail = (await getTeacher(row.id)) as TeacherDetail;
+      
+      if (type === "edit") setEditingTeacher(detail);
+      if (type === "subjects") setAssigningTeacher(detail);
+      if (type === "courses") setAssigningCourses(detail);
+      if (type === "students") setAssigningStudents(detail);
     } catch (err) {
       window.alert(errorMessage(err));
     } finally {
@@ -252,18 +254,36 @@ export default function TeachersPage() {
                       <button
                         type="button"
                         className="icon-button"
-                        title="Assign subjects"
+                        title="Assign Subjects"
                         disabled={rowBusyId === t.id}
-                        onClick={() => openAssignDialog(t)}
+                        onClick={() => openDialog(t, "subjects")}
+                      >
+                        <Library size={15} strokeWidth={2} />
+                      </button>
+                      <button
+                        type="button"
+                        className="icon-button"
+                        title="Assign Courses"
+                        disabled={rowBusyId === t.id}
+                        onClick={() => openDialog(t, "courses")}
                       >
                         <BookOpen size={15} strokeWidth={2} />
                       </button>
                       <button
                         type="button"
                         className="icon-button"
+                        title="Map Students"
+                        disabled={rowBusyId === t.id}
+                        onClick={() => openDialog(t, "students")}
+                      >
+                        <Users size={15} strokeWidth={2} />
+                      </button>
+                      <button
+                        type="button"
+                        className="icon-button"
                         title="Edit"
                         disabled={rowBusyId === t.id}
-                        onClick={() => openEditDialog(t)}
+                        onClick={() => openDialog(t, "edit")}
                       >
                         <Pencil size={15} strokeWidth={2} />
                       </button>
@@ -410,7 +430,7 @@ export default function TeachersPage() {
         </div>
       )}
 
-      {/* --- Edit dialog --- */}
+      {/* --- Dialogs --- */}
       {editingTeacher && (
         <EditTeacherDialog
           teacher={editingTeacher}
@@ -422,13 +442,34 @@ export default function TeachersPage() {
         />
       )}
 
-      {/* --- Assign subjects dialog --- */}
       {assigningTeacher && (
         <AssignSubjectsDialog
           teacher={assigningTeacher}
           onClose={() => setAssigningTeacher(null)}
           onSaved={() => {
             setAssigningTeacher(null);
+            reload();
+          }}
+        />
+      )}
+
+      {assigningCourses && (
+        <AssignCoursesDialog
+          teacher={assigningCourses}
+          onClose={() => setAssigningCourses(null)}
+          onSaved={() => {
+            setAssigningCourses(null);
+            reload();
+          }}
+        />
+      )}
+
+      {assigningStudents && (
+        <AssignStudentsDialog
+          teacher={assigningStudents}
+          onClose={() => setAssigningStudents(null)}
+          onSaved={() => {
+            setAssigningStudents(null);
             reload();
           }}
         />
