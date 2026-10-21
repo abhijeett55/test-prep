@@ -1,6 +1,6 @@
 import { client } from "../../client";
 import type { InstituteProfile } from "../../types";
-
+export type { InstituteProfile };
 export type InstituteStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
 
 export interface CreateInstitute {

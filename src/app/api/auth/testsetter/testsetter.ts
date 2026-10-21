@@ -1,5 +1,6 @@
 import { client } from "../../client";
 import type { OptionsResponse, TestSetterRow } from "../../types";
+export type { OptionsResponse, TestSetterRow };
 
 export interface TestSetterCreate {
   testsetter_id: string;

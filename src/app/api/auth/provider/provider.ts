@@ -1,6 +1,6 @@
 import { client } from "../../client";
 import type { OptionsResponse, ProviderRow } from "../../types";
-
+export type { OptionsResponse, ProviderRow };
 export interface ProviderCreate {
   provider_id: string;
   full_name: string;

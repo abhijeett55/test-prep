@@ -6,7 +6,13 @@ import type {
   BatchRow,
   StudentRow
 } from "../../types";
-
+export type {
+  TeacherOptionsResponse,
+  TeacherRow,
+  CourseRow,
+  BatchRow,
+  StudentRow
+}
 
 export interface TeacherCreate {
   teacher_id: string;
@@ -74,26 +80,31 @@ export interface WeakTopicOut {
   studentsStruggling: number;
 }
 
+/** GET /teachers/me/attempts */
 export async function getMyAttempts(): Promise<AttemptOut[]> {
   const { data } = await client.get<AttemptOut[]>("/teachers/me/attempts");
   return data;
 }
 
+/** GET /teachers/me/batch-analytics */
 export async function getMyBatchAnalytics(): Promise<BatchAnalyticsOut[]> {
   const { data } = await client.get<BatchAnalyticsOut[]>("/teachers/me/batch-analytics");
   return data;
 }
 
+/** GET /teachers/me/weak-topics  */
 export async function getMyWeakTopics(): Promise<WeakTopicOut[]> {
   const { data } = await client.get<WeakTopicOut[]>("/teachers/me/weak-topics");
   return data;
 }
 
+/** GET /teachers/{id}  */
 export async function getTeacher(id: string): Promise<TeacherDetail> {
   const { data } = await client.get<TeacherDetail>(`/teachers/${id}`);
   return data;
 }
 
+/** PATCH /teachers/{id}  (admin only)  */
 export async function updateTeacher(
   id: string,
   payload: TeacherUpdate
@@ -102,6 +113,7 @@ export async function updateTeacher(
   return data;
 }
 
+/** POST /teachers/{id}/subjects/subjectIds  (admin only) */
 export async function setTeacherSubjects(
   id: string,
   subjectIds: string[]
@@ -140,6 +152,7 @@ export async function createTeacher(
   return data;
 }
 
+/** GET /teachers/me/courses  (admin only) */
 export async function getMyCourses(): Promise<CourseRow[]> {
   const { data } = await client.get<CourseRow[]>("/teachers/me/courses");
   return data;
@@ -157,6 +170,7 @@ export async function getMyStudents(): Promise<StudentRow[]> {
   return data;
 }
 
+/** POST /teachers/{teacherId}/students */
 export async function assignStudentsToTeacher(
   teacherId: string,
   studentIds: string[]
