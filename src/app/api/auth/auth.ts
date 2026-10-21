@@ -6,11 +6,7 @@ import {
   type Role,
 } from "./roleRouting";
 
-/**
- * POST /{segment}/login
- * Body: { [idField]: userId, password }
- * baseURL already carries /api/v1.
- */
+// POST /{segment}/login
 export async function login(
   role: Role,
   userId: string,
@@ -26,10 +22,8 @@ export async function login(
   return data;
 }
 
-/**
- * POST /{segment}/change-password
- * Requires a valid token — the route uses `get_{role}_allow_temp`.
- */
+
+// POST /{segment}/change-password
 export async function changePassword(
   role: Role,
   current: string,
@@ -42,7 +36,7 @@ export async function changePassword(
   });
 }
 
-/** GET /{segment}/me */
+// GET /{segment}/me
 export async function getMe<T = unknown>(role: Role): Promise<T> {
   const segment = ROLE_API_SEGMENT[role];
   const { data } = await client.get<T>(`/${segment}/me`);

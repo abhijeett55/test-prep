@@ -100,6 +100,8 @@ export interface ChangePasswordRequest {
   new_password: string;
 }
 
+// ---- student ----
+
 export interface StudentRow {
   id: string;
   student_id: string;
@@ -128,9 +130,6 @@ export interface StudentDetail extends StudentRow {
   updated_at: string;
 }
 
-
-
-
 // ---- courses ----
 
 export interface CourseRow {
@@ -143,7 +142,7 @@ export interface CourseRow {
   student_count: number;
   teacher_count: number;
   created_at: string;
-  subjects?: string; // <-- Add this
+  subjects?: string;
 }
 
 
@@ -217,6 +216,9 @@ export interface InstitutePerformance {
   pass_rate: number | null;
 }
 
+
+// ---- dashboard ----
+
 export interface DashboardStats {
   institutes?: number;
   teachers: number;
@@ -224,6 +226,8 @@ export interface DashboardStats {
   courses: number;
   batches: number;
 }
+
+// ---- department ----
 
 export interface DepartmentRow {
   id: string;

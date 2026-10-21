@@ -23,8 +23,8 @@ client.interceptors.request.use((config) => {
   return config;
 });
 
-// ---------------------------------------------------------------- response
 
+// response
 
 client.interceptors.response.use(
   (res) => res,
@@ -34,7 +34,6 @@ client.interceptors.response.use(
       localStorage.removeItem(USER_KEY);
 
       const loginPath = appPath("/role");
-      // Compare path only (ignore query/hash) so we don't loop on /role?next=…
       if (window.location.pathname !== loginPath) {
         window.location.href = loginPath;
       }
@@ -43,7 +42,7 @@ client.interceptors.response.use(
   }
 );
 
-// ---------------------------------------------------------------- errors
+// errors
 
 export function errorMessage(err: unknown): string {
   const e = err as AxiosError<{ detail?: unknown }>;
@@ -51,13 +50,11 @@ export function errorMessage(err: unknown): string {
 
   if (typeof detail === "string") return detail;
 
-  // FastAPI's 422 body is { detail: [{ msg, loc, type }, …] }
   if (Array.isArray(detail) && detail.length) {
     const first = detail[0] as { msg?: string };
     return first?.msg ?? "Request failed";
   }
 
-  // Network-level failure: no response at all
   if (e?.code === "ERR_NETWORK") {
     return "Cannot reach the server. Check that the backend is running.";
   }

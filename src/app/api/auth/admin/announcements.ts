@@ -1,5 +1,10 @@
 import { client } from "../../client";
 import type { AnnouncementRow } from "../../types";
+export type { AnnouncementRow };
+
+/*
+  listAnnouncements, getAnnouncement, createAnnouncement, updateAnnouncement, deleteAnnouncement, publishAnnouncement
+*/
 
 export interface AnnouncementCreate {
   title: string;

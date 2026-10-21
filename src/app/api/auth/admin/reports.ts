@@ -3,26 +3,55 @@ import type {
   InstitutePerformance,
   DashboardStats,
 } from "../../types";
+export type {
+  InstitutePerformance,
+  DashboardStats,
+};
 
 export interface DateRange {
-  from?: string; // ISO date
+  from?: string;
   to?: string;
 }
 
-// ---- dashboard tile data ----
-
-export async function getDashboardStats(): Promise<DashboardStats> {
-  const { data } = await client.get<DashboardStats>("/reports/dashboard");
-  return data;
+export interface BatchComparisonRow {
+  batch_id: string;
+  batch_name: string;
+  student_count: number;
+  avg_score: number | null;
+  pass_rate: number | null;
 }
-
-// ---- institute-wide performance ----
 
 export interface InstitutePerformanceReport extends InstitutePerformance {
   trend: { date: string; avg_score: number }[];
   top_batches: { batch_name: string; avg_score: number }[];
 }
 
+export interface TeacherComparisonRow {
+  teacher_id: string;
+  full_name: string;
+  subject_count: number;
+  student_count: number;
+  avg_score: number | null;
+}
+
+export interface CoursePerformanceRow {
+  course_id: string;
+  course_name: string;
+  enrolled: number;
+  completed: number;
+  avg_score: number | null;
+  pass_rate: number | null;
+}
+
+// ---- dashboard tile data ----
+/** GET /reports/dashboard */
+export async function getDashboardStats(): Promise<DashboardStats> {
+  const { data } = await client.get<DashboardStats>("/reports/dashboard");
+  return data;
+}
+
+// ---- institute-wide performance ----
+/** GET /reports/institue-performance */
 export async function getInstitutePerformance(
   params: DateRange = {}
 ): Promise<InstitutePerformanceReport> {
@@ -34,15 +63,7 @@ export async function getInstitutePerformance(
 }
 
 // ---- batch comparison ----
-
-export interface BatchComparisonRow {
-  batch_id: string;
-  batch_name: string;
-  student_count: number;
-  avg_score: number | null;
-  pass_rate: number | null;
-}
-
+/** GET /reports/batch-comparison */
 export async function getBatchComparison(
   batchIds: string[],
   params: DateRange = {}
@@ -55,15 +76,7 @@ export async function getBatchComparison(
 }
 
 // ---- teacher comparison ----
-
-export interface TeacherComparisonRow {
-  teacher_id: string;
-  full_name: string;
-  subject_count: number;
-  student_count: number;
-  avg_score: number | null;
-}
-
+/** GET /reports/teacher-comparison */
 export async function getTeacherComparison(
   teacherIds: string[] = [],
   params: DateRange = {}
@@ -81,16 +94,7 @@ export async function getTeacherComparison(
 }
 
 // ---- course performance ----
-
-export interface CoursePerformanceRow {
-  course_id: string;
-  course_name: string;
-  enrolled: number;
-  completed: number;
-  avg_score: number | null;
-  pass_rate: number | null;
-}
-
+/** GET /reports/course-performance */
 export async function getCoursePerformance(
   params: DateRange = {}
 ): Promise<CoursePerformanceRow[]> {

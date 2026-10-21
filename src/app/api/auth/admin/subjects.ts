@@ -19,23 +19,25 @@ export interface ListSubjectsParams {
   offset?: number;
 }
 
+/** GET /subjects */
 export async function listSubjects(
   params: ListSubjectsParams = {}
 ): Promise<SubjectRow[]> {
   const { data } = await client.get<SubjectRow[]>("/subjects", { params });
   return data;
 }
-
+/** GET /subjects/${id} */
 export async function getSubject(id: string): Promise<SubjectRow> {
   const { data } = await client.get<SubjectRow>(`/subjects/${id}`);
   return data;
 }
 
+/** POST /subjects/ */
 export async function createSubject(payload: SubjectCreate): Promise<SubjectRow> {
   const { data } = await client.post<SubjectRow>("/subjects", payload);
   return data;
 }
-
+/** PATCH /subjects/${id} */
 export async function updateSubject(
   id: string,
   payload: SubjectUpdate
@@ -44,12 +46,13 @@ export async function updateSubject(
   return data;
 }
 
+/** DELETE /subjects/${id} */
 export async function deleteSubject(id: string): Promise<void> {
   await client.delete(`/subjects/${id}`);
 }
 
 // ---- assignments ----
-
+/** POST /subjects/${subjectId}/courses */
 export async function assignSubjectToCourse(
   subjectId: string,
   courseId: string
@@ -57,6 +60,7 @@ export async function assignSubjectToCourse(
   await client.post(`/subjects/${subjectId}/courses`, { course_id: courseId });
 }
 
+/** DELETE /subjects/${subjectId}/courses/courseId */
 export async function unassignSubjectFromCourse(
   subjectId: string,
   courseId: string
@@ -64,6 +68,7 @@ export async function unassignSubjectFromCourse(
   await client.delete(`/subjects/${subjectId}/courses/${courseId}`);
 }
 
+/** POST /subjects/${subjectId}/teachers */
 export async function assignSubjectToTeacher(
   subjectId: string,
   teacherId: string

@@ -1,5 +1,6 @@
 import { client } from "../../client";
 import type { AdminProfile } from "../../types";
+export type { AdminProfile };
 
 /** GET /admins */
 export async function listAdmins(): Promise<AdminProfile[]> {
@@ -7,7 +8,7 @@ export async function listAdmins(): Promise<AdminProfile[]> {
   return data;
 }
 
-/** GET /admins/me — the caller's own profile */
+/** GET /admins/me */
 export async function getMe(): Promise<AdminProfile> {
   const { data } = await client.get<AdminProfile>("/admins/me");
   return data;

@@ -1,5 +1,6 @@
 import { client } from "../../client";
 import type { BatchRow } from "../../types";
+export type { BatchRow };
 
 export interface BatchCreate {
   institute_id: string;
@@ -26,6 +27,7 @@ export interface ListBatchesParams {
   offset?: number;
 }
 
+/** GET /batches */
 export async function listBatches(
   params: ListBatchesParams = {}
 ): Promise<BatchRow[]> {
@@ -33,16 +35,19 @@ export async function listBatches(
   return data;
 }
 
+/** GET /batches/{id} */
 export async function getBatch(id: string): Promise<BatchRow> {
   const { data } = await client.get<BatchRow>(`/batches/${id}`);
   return data;
 }
 
+/** POST /batches */
 export async function createBatch(payload: BatchCreate): Promise<BatchRow> {
   const { data } = await client.post<BatchRow>("/batches", payload);
   return data;
 }
 
+/** PATCH /batches{id} */
 export async function updateBatch(
   id: string,
   payload: BatchUpdate
@@ -51,10 +56,12 @@ export async function updateBatch(
   return data;
 }
 
+/** DELETE /batches/{id} */
 export async function deleteBatch(id: string): Promise<void> {
   await client.delete(`/batches/${id}`);
 }
 
+/** POST /batches/{batchId}/teachers */
 export async function assignTeachersToBatch(
   batchId: string,
   teacherIds: string[]
@@ -66,6 +73,7 @@ export async function assignTeachersToBatch(
   return data;
 }
 
+/** DELETE /batches/{batchId}/teachers/{teacherId} */
 export async function unassignTeacherFromBatch(
   batchId: string,
   teacherId: string
@@ -73,6 +81,7 @@ export async function unassignTeacherFromBatch(
   await client.delete(`/batches/${batchId}/teachers/${teacherId}`);
 }
 
+/** POST /batches/{batchId}/students/studentIds */
 export async function mapStudentsToBatch(
   batchId: string,
   studentIds: string[]
@@ -84,6 +93,7 @@ export async function mapStudentsToBatch(
   return data;
 }
 
+/** DELETE /batches/{batchId}/students/studentId */
 export async function removeStudentFromBatch(
   batchId: string,
   studentId: string
@@ -91,6 +101,7 @@ export async function removeStudentFromBatch(
   await client.delete(`/batches/${batchId}/students/${studentId}`);
 }
 
+/** POST /batches/{batchId}/transfer/toBatchId,studentIds */
 export async function transferBatchStudents(
   fromBatchId: string,
   toBatchId: string,

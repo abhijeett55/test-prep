@@ -26,6 +26,7 @@ export interface ListCoursesParams {
   offset?: number;
 }
 
+/** GET /courses */
 export async function listCourses(
   params: ListCoursesParams = {}
 ): Promise<CourseRow[]> {
@@ -33,16 +34,18 @@ export async function listCourses(
   return data;
 }
 
+/** GET /courses/{id} */
 export async function getCourse(id: string): Promise<CourseDetail> {
   const { data } = await client.get<CourseDetail>(`/courses/${id}`);
   return data;
 }
 
+/** POST /courses */
 export async function createCourse(payload: CourseCreate): Promise<CourseDetail> {
   const { data } = await client.post<CourseDetail>("/courses", payload);
   return data;
 }
-
+/** PATCH /courses/{id} */
 export async function updateCourse(
   id: string,
   payload: CourseUpdate
@@ -51,10 +54,12 @@ export async function updateCourse(
   return data;
 }
 
+/** DELETE /courses/{id} */
 export async function deleteCourse(id: string): Promise<void> {
   await client.delete(`/courses/${id}`);
 }
 
+/** POST /courses/{courseId}/students/{student_ids} */
 export async function enrollStudentsInCourse(
   courseId: string,
   studentIds: string[]
@@ -66,6 +71,7 @@ export async function enrollStudentsInCourse(
   return data;
 }
 
+/** DELETE /courses/{courseId}/students/{studentId} */
 export async function unenrollStudentFromCourse(
   courseId: string,
   studentId: string
@@ -73,6 +79,7 @@ export async function unenrollStudentFromCourse(
   await client.delete(`/courses/${courseId}/students/${studentId}`);
 }
 
+/** POST /courses/{courseId}/teachers/{teacherid} */
 export async function assignTeachersToCourse(
   courseId: string,
   teacherIds: string[]
@@ -84,6 +91,7 @@ export async function assignTeachersToCourse(
   return data;
 }
 
+/** DELETE /courses/{courseId}/teachers/{teacherid} */
 export async function unassignTeacherFromCourse(
   courseId: string,
   teacherId: string
