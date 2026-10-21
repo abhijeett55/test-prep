@@ -30,6 +30,12 @@ import MapStudents from "./batch-management/MapStudents";
 import CoursesPage from "./courses-management/CoursesPage";
 import InstituteProfilePage from "./institute-settings/InstituteProfilePage";
 
+// Performance
+import InstitutePerformancePage from "./report-management/InstitutePerformancePage";
+import BatchComparisonPage from "./report-management/BatchComparisonPage";
+import TeacherComparisonPage from "./report-management/TeacherComparisonPage";
+import CoursePerformancePage from "./report-management/CoursePerformancePage";
+
 // Account
 import ProfilePage from "../../account/ProfilePage";
 import ChangePasswordPage from "../../account/ChangePasswordPage";
@@ -80,10 +86,15 @@ export default function AdminDashboardPage() {
             <Route path="batch-management/map-students" element={<MapStudents />} />
             
             {/* Institute Settings */}
-            <Route path="institute/profile" element={<InstituteProfilePage />} />
+            <Route path="institute-settings/profile" element={<InstituteProfilePage />} />
             {/* Add these two if they are still in your nav */}
             {/* <Route path="institute/departments" element={<div>Departments — build me</div>} /> */}
             {/* <Route path="institute/settings" element={<div>Settings — build me</div>} /> */}
+
+            <Route path="reports/institute-performance" element={<InstitutePerformancePage />} />
+            <Route path="reports/batch-comparison" element={<BatchComparisonPage />} />
+            <Route path="reports/teacher-comparison" element={<TeacherComparisonPage />} />
+            <Route path="reports/course-performance" element={<CoursePerformancePage />} />
 
             {/* Account */}
             <Route path="profile" element={<ProfilePage />} />

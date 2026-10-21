@@ -18,8 +18,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
 // ---- institute-wide performance ----
 
-export interface InstitutePerformanceReport {
-  overview: InstitutePerformance;
+export interface InstitutePerformanceReport extends InstitutePerformance {
   trend: { date: string; avg_score: number }[];
   top_batches: { batch_name: string; avg_score: number }[];
 }

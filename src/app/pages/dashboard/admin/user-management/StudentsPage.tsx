@@ -133,9 +133,10 @@ export default function StudentsPage() {
 
   /* ---------- render ---------- */
 
-  if (showForm && options) {
-    return (
-      <div className="default-page">
+  return (
+    <div className="default-page">
+      {/* FIX: Render the form and list inside the same wrapper so modals don't get skipped */}
+      {showForm && options ? (
         <StudentForm
           institutes={options.institutes}
           subjects={options.subjects}
@@ -143,153 +144,151 @@ export default function StudentsPage() {
           onSubmit={handleFormSubmit}
           onCancel={() => setShowForm(false)}
         />
-      </div>
-    );
-  }
-
-  return (
-    <div className="default-page">
-      {error && (
-        <div
-          className="perf-success"
-          style={{ background: "#fdeaea", color: "#c62f2f", marginBottom: 12 }}
-        >
-          {error}
-        </div>
-      )}
-
-      {loading && !data && <div className="default-empty">Loading students…</div>}
-
-      {!loading && students.length === 0 && (
-        <div className="default-empty">
-          <p>No students added yet.</p>
-          <button
-            type="button"
-            className="add-button"
-            onClick={() => setShowForm(true)}
-          >
-            <Plus size={16} strokeWidth={2.4} />
-            Add your first student
-          </button>
-        </div>
-      )}
-
-      {!loading && students.length > 0 && (
-        <div className="default-panel">
-          <div className="section-bar">All Students</div>
-
-          <div className="default-toolbar">
-            <div className="search-control">
-              <Search size={15} strokeWidth={2} />
-              <input
-                type="text"
-                placeholder="Search students…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+      ) : (
+        <>
+          {error && (
+            <div
+              className="perf-success"
+              style={{ background: "#fdeaea", color: "#c62f2f", marginBottom: 12 }}
+            >
+              {error}
             </div>
-          </div>
+          )}
 
-          <div className="default-table-wrap">
-            <table className="default-table">
-              <thead>
-                <tr>
-                  <th className="col-sno">Sr. No.</th>
-                  <th>Student ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Self Phone</th>
-                  <th>Institute</th>
-                  <th>Batch</th>
-                  <th>Status</th>
-                  <th className="col-actions">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visible.map((s, i) => (
-                  <tr key={s.id}>
-                    <td className="col-sno">{i + 1}</td>
-                    <td>{s.student_id}</td>
-                    <td className="cell-name">{s.full_name}</td>
-                    <td>{s.email}</td>
-                    <td>{s.self_phone || "—"}</td>
-                    <td>{s.institute || "—"}</td>
-                    <td>{s.batch_name ?? "—"}</td>
-                    <td>{s.status}</td>
-                    <td className="col-actions">
-                      <button
-                        type="button"
-                        className="icon-button"
-                        title="Enroll in courses"
-                        disabled={rowBusyId === s.id}
-                        onClick={() => openEnrollDialog(s)}
-                      >
-                        <GraduationCap size={15} strokeWidth={2} />
-                      </button>
-                      <button
-                        type="button"
-                        className="icon-button"
-                        title="Edit"
-                        disabled={rowBusyId === s.id}
-                        onClick={() => openEditDialog(s)}
-                      >
-                        <Pencil size={15} strokeWidth={2} />
-                      </button>
-                      <button
-                        type="button"
-                        className="icon-button"
-                        title="View"
-                      >
-                        <Eye size={15} strokeWidth={2} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+          {loading && !data && <div className="default-empty">Loading students…</div>}
 
-                {visible.length === 0 && (
-                  <tr>
-                    <td colSpan={9} className="no-results">
-                      No students match "{search}".
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="default-footer">
-            <label className="entries-control">
-              Show
-              <select
-                value={entriesPerPage}
-                onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+          {!loading && students.length === 0 && (
+            <div className="default-empty">
+              <p>No students added yet.</p>
+              <button
+                type="button"
+                className="add-button"
+                onClick={() => setShowForm(true)}
               >
-                {ENTRY_OPTIONS.map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-              entries
-            </label>
-
-            <div className="default-footer-note">
-              Showing {visible.length} of {filtered.length} student
-              {filtered.length === 1 ? "" : "s"}
+                <Plus size={16} strokeWidth={2.4} />
+                Add your first student
+              </button>
             </div>
-          </div>
-        </div>
-      )}
+          )}
 
-      {!showForm && students.length > 0 && (
-        <button
-          type="button"
-          className="add-button-fab"
-          onClick={() => setShowForm(true)}
-        >
-          <Plus size={18} strokeWidth={2.6} />
-          <span>Add Student</span>
-        </button>
+          {!loading && students.length > 0 && (
+            <div className="default-panel">
+              <div className="section-bar">All Students</div>
+
+              <div className="default-toolbar">
+                <div className="search-control">
+                  <Search size={15} strokeWidth={2} />
+                  <input
+                    type="text"
+                    placeholder="Search students…"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="default-table-wrap">
+                <table className="default-table">
+                  <thead>
+                    <tr>
+                      <th className="col-sno">Sr. No.</th>
+                      <th>Student ID</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Self Phone</th>
+                      <th>Institute</th>
+                      <th>Batch</th>
+                      <th>Status</th>
+                      <th className="col-actions">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visible.map((s, i) => (
+                      <tr key={s.id}>
+                        <td className="col-sno">{i + 1}</td>
+                        <td>{s.student_id}</td>
+                        <td className="cell-name">{s.full_name}</td>
+                        <td>{s.email}</td>
+                        <td>{s.self_phone || "—"}</td>
+                        <td>{s.institute || "—"}</td>
+                        <td>{s.batch_name ?? "—"}</td>
+                        <td>{s.status}</td>
+                        <td className="col-actions">
+                          <button
+                            type="button"
+                            className="icon-button"
+                            title="Enroll in courses"
+                            disabled={rowBusyId === s.id}
+                            onClick={() => openEnrollDialog(s)}
+                          >
+                            <GraduationCap size={15} strokeWidth={2} />
+                          </button>
+                          <button
+                            type="button"
+                            className="icon-button"
+                            title="Edit"
+                            disabled={rowBusyId === s.id}
+                            onClick={() => openEditDialog(s)}
+                          >
+                            <Pencil size={15} strokeWidth={2} />
+                          </button>
+                          <button
+                            type="button"
+                            className="icon-button"
+                            title="View"
+                          >
+                            <Eye size={15} strokeWidth={2} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+
+                    {visible.length === 0 && (
+                      <tr>
+                        <td colSpan={9} className="no-results">
+                          No students match "{search}".
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="default-footer">
+                <label className="entries-control">
+                  Show
+                  <select
+                    value={entriesPerPage}
+                    onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+                  >
+                    {ENTRY_OPTIONS.map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                  entries
+                </label>
+
+                <div className="default-footer-note">
+                  Showing {visible.length} of {filtered.length} student
+                  {filtered.length === 1 ? "" : "s"}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!showForm && students.length > 0 && (
+            <button
+              type="button"
+              className="add-button-fab"
+              onClick={() => setShowForm(true)}
+            >
+              <Plus size={18} strokeWidth={2.6} />
+              <span>Add Student</span>
+            </button>
+          )}
+        </>
       )}
 
       {/* --- Add confirmation --- */}
