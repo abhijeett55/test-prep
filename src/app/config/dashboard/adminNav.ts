@@ -39,7 +39,8 @@ export const adminNav: NavItem[] = [
     label: "Courses",
     icon: BookOpen,
     children: [
-      { label: "All Courses", path: "/dashboard/admin/courses-management/courses" }
+      { label: "All Courses", path: "/dashboard/admin/courses-management/courses" },
+      { label: "Map to Teachers", path: "/dashboard/admin/courses-management/map-teachers" }
     ],
   },
 

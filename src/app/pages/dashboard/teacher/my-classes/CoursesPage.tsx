@@ -35,7 +35,7 @@ export default function CoursesPage() {
                 <td className="course-name">{course.course_name}</td>
                 <td>
                   <span className="subject-badge">
-                    {course.course_description ? "Assigned" : "General"}
+                    {course.subjects || "General"}
                   </span>
                 </td>
                 <td>{new Date(course.created_at).toLocaleDateString()}</td>

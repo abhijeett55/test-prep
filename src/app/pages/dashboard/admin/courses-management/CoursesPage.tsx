@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Plus, Search, Pencil, Trash2, BookOpen } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, BookOpen, Users } from "lucide-react";
 import {
   listCourses,
   createCourse,
@@ -11,6 +11,7 @@ import type { CourseRow } from "../../../../api/types";
 import { getMyInstitute } from "../../../../api/auth/admin/institute";
 import { useApi } from "../../../../hooks/useApi";
 import { errorMessage } from "../../../../api/client";
+import AssignTeachersToCourseDialog from "./AssignTeachersToCourseDialog"; // <-- Import
 import "./DefaultPage.css";
 
 const ENTRY_OPTIONS = [10, 25, 50];
@@ -42,10 +43,11 @@ export default function CoursesPage() {
   const [pending, setPending] = useState<FormValues | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // FIX: Define courses at the top level with useMemo
+  // NEW: State for the Teacher Mapping Dialog
+  const [assigningTeachers, setAssigningTeachers] = useState<CourseRow | null>(null);
+
   const courses = useMemo(() => data ?? [], [data]);
 
   const filtered = useMemo(() => {
@@ -65,10 +67,7 @@ export default function CoursesPage() {
 
   const openCreate = () => {
     setEditingId(null);
-    setForm({
-      ...emptyForm,
-      institute_id: myInstitute?.id ?? "",
-    });
+    setForm({ ...emptyForm, institute_id: myInstitute?.id ?? "" });
     setShowForm(true);
   };
 
@@ -85,11 +84,7 @@ export default function CoursesPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      !form.institute_id ||
-      !form.course_name.trim() ||
-      !form.course_code.trim()
-    ) {
+    if (!form.institute_id || !form.course_name.trim() || !form.course_code.trim()) {
       setSaveError("Name and code are required.");
       return;
     }
@@ -142,136 +137,52 @@ export default function CoursesPage() {
   if (showForm && myInstitute) {
     return (
       <div className="default-page">
-        <form
-          className="confirm-card"
-          style={{ width: "100%", maxWidth: 720, margin: "0 auto" }}
-          onSubmit={handleSubmit}
-        >
-          <h3 className="confirm-title">
-            {editingId ? "Edit course" : "Create course"}
-          </h3>
+        <form className="confirm-card" style={{ width: "100%", maxWidth: 720, margin: "0 auto" }} onSubmit={handleSubmit}>
+          <h3 className="confirm-title">{editingId ? "Edit course" : "Create course"}</h3>
           <p className="confirm-subtitle">
-            {editingId
-              ? "Update the course details."
-              : "Add a new course to your institute."}
+            {editingId ? "Update the course details." : "Add a new course to your institute."}
           </p>
 
-          {saveError && (
-            <p className="detect-error" style={{ margin: "0 0 12px" }}>
-              {saveError}
-            </p>
-          )}
+          {saveError && <p className="detect-error" style={{ margin: "0 0 12px" }}>{saveError}</p>}
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "14px 16px",
-              margin: "12px 0 20px",
-            }}
-          >
-            <label
-              style={{
-                gridColumn: "1 / -1",
-                display: "flex",
-                flexDirection: "column",
-                gap: 4,
-              }}
-            >
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 16px", margin: "12px 0 20px" }}>
+            <label style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: 4 }}>
               <span style={{ fontSize: 12.5, color: "#6b7488" }}>Institute</span>
               <input
                 value={myInstitute.institute_name}
                 disabled
-                style={{
-                  height: 40,
-                  padding: "0 10px",
-                  border: "1px solid #d5d9e6",
-                  borderRadius: 8,
-                  fontSize: 13.5,
-                  background: "#f7f8fc",
-                  color: "#6b7488",
-                }}
+                style={{ height: 40, padding: "0 10px", border: "1px solid #d5d9e6", borderRadius: 8, fontSize: 13.5, background: "#f7f8fc", color: "#6b7488" }}
               />
             </label>
 
-            <label
-              style={{
-                gridColumn: "1 / -1",
-                display: "flex",
-                flexDirection: "column",
-                gap: 4,
-              }}
-            >
-              <span style={{ fontSize: 12.5, color: "#6b7488" }}>
-                Course name *
-              </span>
+            <label style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontSize: 12.5, color: "#6b7488" }}>Course name *</span>
               <input
                 value={form.course_name}
-                onChange={(e) =>
-                  setForm({ ...form, course_name: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, course_name: e.target.value })}
                 placeholder="e.g. Foundation Mathematics"
-                style={{
-                  height: 40,
-                  padding: "0 10px",
-                  border: "1px solid #d5d9e6",
-                  borderRadius: 8,
-                  fontSize: 13.5,
-                }}
+                style={{ height: 40, padding: "0 10px", border: "1px solid #d5d9e6", borderRadius: 8, fontSize: 13.5 }}
               />
             </label>
 
-            <label
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 4,
-              }}
-            >
-              <span style={{ fontSize: 12.5, color: "#6b7488" }}>
-                Course code *
-              </span>
+            <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontSize: 12.5, color: "#6b7488" }}>Course code *</span>
               <input
                 value={form.course_code}
-                onChange={(e) =>
-                  setForm({ ...form, course_code: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, course_code: e.target.value })}
                 placeholder="e.g. FOUND-MATH-10"
-                style={{
-                  height: 40,
-                  padding: "0 10px",
-                  border: "1px solid #d5d9e6",
-                  borderRadius: 8,
-                  fontSize: 13.5,
-                }}
+                style={{ height: 40, padding: "0 10px", border: "1px solid #d5d9e6", borderRadius: 8, fontSize: 13.5 }}
               />
             </label>
 
-            <label
-              style={{
-                gridColumn: "1 / -1",
-                display: "flex",
-                flexDirection: "column",
-                gap: 4,
-              }}
-            >
-              <span style={{ fontSize: 12.5, color: "#6b7488" }}>
-                Description
-              </span>
+            <label style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontSize: 12.5, color: "#6b7488" }}>Description</span>
               <textarea
                 value={form.course_description}
-                onChange={(e) =>
-                  setForm({ ...form, course_description: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, course_description: e.target.value })}
                 rows={3}
                 placeholder="Optional — brief summary of the course"
-                style={{
-                  padding: "10px 12px",
-                  border: "1px solid #d5d9e6",
-                  borderRadius: 8,
-                  fontSize: 13.5,
-                  resize: "vertical",
-                }}
+                style={{ padding: "10px 12px", border: "1px solid #d5d9e6", borderRadius: 8, fontSize: 13.5, resize: "vertical" }}
               />
             </label>
           </div>
@@ -289,11 +200,7 @@ export default function CoursesPage() {
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              className="confirm-btn-primary"
-              disabled={saving}
-            >
+            <button type="submit" className="confirm-btn-primary" disabled={saving}>
               {editingId ? "Save changes" : "Create course"}
             </button>
           </div>
@@ -302,45 +209,20 @@ export default function CoursesPage() {
         {pending && (
           <div className="confirm-overlay" role="dialog" aria-modal="true">
             <div className="confirm-card">
-              <div className="confirm-icon">
-                <BookOpen size={20} strokeWidth={2.4} />
-              </div>
-              <h3 className="confirm-title">
-                {editingId ? "Save changes?" : "Create this course?"}
-              </h3>
-              <p className="confirm-subtitle">
-                Please confirm before saving.
-              </p>
+              <div className="confirm-icon"><BookOpen size={20} strokeWidth={2.4} /></div>
+              <h3 className="confirm-title">{editingId ? "Save changes?" : "Create this course?"}</h3>
+              <p className="confirm-subtitle">Please confirm before saving.</p>
               <div className="confirm-details">
-                <div className="confirm-row">
-                  <span>Institute</span>
-                  <strong>{myInstitute.institute_name}</strong>
-                </div>
-                <div className="confirm-row">
-                  <span>Name</span>
-                  <strong>{pending.course_name || "—"}</strong>
-                </div>
-                <div className="confirm-row">
-                  <span>Code</span>
-                  <strong>{pending.course_code || "—"}</strong>
-                </div>
+                <div className="confirm-row"><span>Institute</span><strong>{myInstitute.institute_name}</strong></div>
+                <div className="confirm-row"><span>Name</span><strong>{pending.course_name || "—"}</strong></div>
+                <div className="confirm-row"><span>Code</span><strong>{pending.course_code || "—"}</strong></div>
               </div>
               {saveError && <p className="detect-error">{saveError}</p>}
               <div className="confirm-actions">
-                <button
-                  type="button"
-                  className="confirm-btn-secondary"
-                  onClick={() => setPending(null)}
-                  disabled={saving}
-                >
+                <button type="button" className="confirm-btn-secondary" onClick={() => setPending(null)} disabled={saving}>
                   Back
                 </button>
-                <button
-                  type="button"
-                  className="confirm-btn-primary"
-                  onClick={confirmSave}
-                  disabled={saving}
-                >
+                <button type="button" className="confirm-btn-primary" onClick={confirmSave} disabled={saving}>
                   {saving ? "Saving…" : "Confirm"}
                 </button>
               </div>
@@ -354,10 +236,7 @@ export default function CoursesPage() {
   return (
     <div className="default-page">
       {error && (
-        <div
-          className="perf-success"
-          style={{ background: "#fdeaea", color: "#c62f2f", marginBottom: 12 }}
-        >
+        <div className="perf-success" style={{ background: "#fdeaea", color: "#c62f2f", marginBottom: 12 }}>
           {error}
         </div>
       )}
@@ -399,7 +278,7 @@ export default function CoursesPage() {
                   <th>Name</th>
                   <th>Students</th>
                   <th>Teachers</th>
-                  <th>Description</th>
+                  {/* Make sure this header is present */}
                   <th className="col-actions">Actions</th>
                 </tr>
               </thead>
@@ -411,14 +290,21 @@ export default function CoursesPage() {
                     <td className="cell-name">{c.course_name}</td>
                     <td>{c.student_count}</td>
                     <td>{c.teacher_count}</td>
-                    <td title={c.course_description ?? ""}>
-                      {c.course_description || "—"}
-                    </td>
+                    
+                    {/* Make sure this cell is present */}
                     <td className="col-actions">
                       <button
                         type="button"
                         className="icon-button"
-                        title="Edit"
+                        title="Map Teachers"
+                        onClick={() => setAssigningTeachers(c)}
+                      >
+                        <Users size={15} strokeWidth={2} />
+                      </button>
+                      <button 
+                        type="button" 
+                        className="icon-button" 
+                        title="Edit" 
                         onClick={() => openEdit(c)}
                       >
                         <Pencil size={15} strokeWidth={2} />
@@ -438,7 +324,8 @@ export default function CoursesPage() {
 
                 {visible.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="no-results">
+                    {/* Change colSpan to 6 since we removed a column */}
+                    <td colSpan={6} className="no-results">
                       No courses match "{search}".
                     </td>
                   </tr>
@@ -450,10 +337,7 @@ export default function CoursesPage() {
           <div className="default-footer">
             <label className="entries-control">
               Show
-              <select
-                value={entriesPerPage}
-                onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-              >
+              <select value={entriesPerPage} onChange={(e) => setEntriesPerPage(Number(e.target.value))}>
                 {ENTRY_OPTIONS.map((n) => (
                   <option key={n} value={n}>
                     {n}
@@ -476,6 +360,18 @@ export default function CoursesPage() {
           <Plus size={18} strokeWidth={2.6} />
           <span>Create Course</span>
         </button>
+      )}
+
+      {/* NEW: Render the Dialog */}
+      {assigningTeachers && (
+        <AssignTeachersToCourseDialog
+          course={assigningTeachers}
+          onClose={() => setAssigningTeachers(null)}
+          onSaved={() => {
+            setAssigningTeachers(null);
+            reload();
+          }}
+        />
       )}
     </div>
   );

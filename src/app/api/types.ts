@@ -142,7 +142,8 @@ export interface CourseRow {
   institute: string;
   student_count: number;
   teacher_count: number;
-  created_at: string; // <-- Add this
+  created_at: string;
+  subjects?: string; // <-- Add this
 }
 
 
@@ -187,6 +188,8 @@ export interface BatchRow {
   end_date: string | null;
   student_count: number;
   teacher_count: number;
+  student_ids?: string[];
+  teacher_ids?: string[];
 }
 
 // ---- announcements ----

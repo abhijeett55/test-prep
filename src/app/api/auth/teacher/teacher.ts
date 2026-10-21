@@ -44,6 +44,51 @@ export type TeacherDetail = TeacherRow & {
   subject_ids: string[];
 };
 
+export interface AttemptOut {
+  attemptId: string;
+  student: string;
+  testName: string;
+  batch: string;
+  attemptedAt: string;
+  score: number;
+  totalMarks: number;
+  passMarks: number;
+}
+
+export interface BatchAnalyticsOut {
+  batchId: string;
+  batchName: string;
+  students: number;
+  testsConducted: number;
+  avgScore: number | null;
+  passRate: number | null;
+  topScorer: string | null;
+}
+
+export interface WeakTopicOut {
+  topicId: string;
+  topic: string;
+  subject: string;
+  batch: string;
+  accuracy: number;
+  studentsStruggling: number;
+}
+
+export async function getMyAttempts(): Promise<AttemptOut[]> {
+  const { data } = await client.get<AttemptOut[]>("/teachers/me/attempts");
+  return data;
+}
+
+export async function getMyBatchAnalytics(): Promise<BatchAnalyticsOut[]> {
+  const { data } = await client.get<BatchAnalyticsOut[]>("/teachers/me/batch-analytics");
+  return data;
+}
+
+export async function getMyWeakTopics(): Promise<WeakTopicOut[]> {
+  const { data } = await client.get<WeakTopicOut[]>("/teachers/me/weak-topics");
+  return data;
+}
+
 export async function getTeacher(id: string): Promise<TeacherDetail> {
   const { data } = await client.get<TeacherDetail>(`/teachers/${id}`);
   return data;

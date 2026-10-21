@@ -28,6 +28,7 @@ import MapStudents from "./batch-management/MapStudents";
 
 // Courses & Institute
 import CoursesPage from "./courses-management/CoursesPage";
+import MapTeachers from "./courses-management/MapTeachers";
 import InstituteProfilePage from "./institute-settings/InstituteProfilePage";
 
 // Performance
@@ -35,6 +36,10 @@ import InstitutePerformancePage from "./report-management/InstitutePerformancePa
 import BatchComparisonPage from "./report-management/BatchComparisonPage";
 import TeacherComparisonPage from "./report-management/TeacherComparisonPage";
 import CoursePerformancePage from "./report-management/CoursePerformancePage";
+
+import NewAnnouncement from "./announcements/NewAnnouncement";
+import InstituteWide from "./announcements/InstituteWide";
+import BatchSpecific from "./announcements/BatchSpecific";
 
 // Account
 import ProfilePage from "../../account/ProfilePage";
@@ -78,6 +83,7 @@ export default function AdminDashboardPage() {
 
             {/* Courses */}
             <Route path="courses-management/courses" element={<CoursesPage />} />
+            <Route path="courses-management/map-teachers" element={<MapTeachers />}/>
 
             {/* Batch Management */}
             <Route path="batch-management/create" element={<CreateBatch />} />
@@ -95,6 +101,10 @@ export default function AdminDashboardPage() {
             <Route path="reports/batch-comparison" element={<BatchComparisonPage />} />
             <Route path="reports/teacher-comparison" element={<TeacherComparisonPage />} />
             <Route path="reports/course-performance" element={<CoursePerformancePage />} />
+
+            <Route path="announcements/new" element={<NewAnnouncement />} />
+            <Route path="announcements/institute-wide" element={<InstituteWide />} />
+            <Route path="announcements/batch-specific" element={<BatchSpecific />} />
 
             {/* Account */}
             <Route path="profile" element={<ProfilePage />} />

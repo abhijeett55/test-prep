@@ -1,24 +1,13 @@
+import { useApi } from "../../../../hooks/useApi";
+import { getMyAttempts } from "../../../../api/auth/teacher/teacher";
 import "./Performance.css";
 
-interface Attempt {
-  attemptId: string;
-  student: string;
-  testName: string;
-  batch: string;
-  attemptedAt: string;
-  score: number;
-  totalMarks: number;
-  passMarks: number;
-}
-
-const attempts: Attempt[] = [
-  { attemptId: "ATT-001", student: "Aarav Sharma", testName: "Algebra Unit Test", batch: "Class 10 - A", attemptedAt: "02 Oct 2026", score: 42, totalMarks: 50, passMarks: 20 },
-  { attemptId: "ATT-002", student: "Diya Verma", testName: "Chemical Reactions Quiz", batch: "Class 10 - B", attemptedAt: "30 Sep 2026", score: 18, totalMarks: 40, passMarks: 16 },
-  { attemptId: "ATT-003", student: "Rohan Patel", testName: "Linear Equations Test", batch: "Class 9 - A", attemptedAt: "28 Sep 2026", score: 14, totalMarks: 30, passMarks: 15 },
-  { attemptId: "ATT-004", student: "Ananya Singh", testName: "Motion and Force Test", batch: "Class 9 - B", attemptedAt: "25 Sep 2026", score: 33, totalMarks: 40, passMarks: 16 },
-];
-
 export default function AttemptHistory() {
+  const { data: attempts, loading, error } = useApi(() => getMyAttempts());
+
+  if (loading) return <div className="perf-page">Loading attempts…</div>;
+  if (error) return <div className="perf-page" style={{ color: "red" }}>{error}</div>;
+
   return (
     <div className="perf-page">
       <div className="perf-header">
@@ -42,20 +31,16 @@ export default function AttemptHistory() {
             </tr>
           </thead>
           <tbody>
-            {attempts.map((a) => {
+            {(attempts ?? []).map((a) => {
               const passed = a.score >= a.passMarks;
               return (
                 <tr key={a.attemptId}>
                   <td className="perf-id">{a.attemptId}</td>
                   <td className="perf-strong">{a.student}</td>
                   <td>{a.testName}</td>
-                  <td>
-                    <span className="perf-badge">{a.batch}</span>
-                  </td>
+                  <td><span className="perf-badge">{a.batch}</span></td>
                   <td>{a.attemptedAt}</td>
-                  <td className="perf-strong">
-                    {a.score} / {a.totalMarks}
-                  </td>
+                  <td className="perf-strong">{a.score} / {a.totalMarks}</td>
                   <td>
                     <span className={`perf-badge ${passed ? "success" : "danger"}`}>
                       {passed ? "Passed" : "Failed"}
@@ -64,6 +49,9 @@ export default function AttemptHistory() {
                 </tr>
               );
             })}
+            {attempts?.length === 0 && (
+              <tr><td colSpan={7} style={{ textAlign: "center", padding: 24 }}>No attempts found.</td></tr>
+            )}
           </tbody>
         </table>
       </div>

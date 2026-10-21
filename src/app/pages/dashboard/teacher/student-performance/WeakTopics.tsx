@@ -1,21 +1,6 @@
+import { useApi } from "../../../../hooks/useApi";
+import { getMyWeakTopics } from "../../../../api/auth/teacher/teacher";
 import "./Performance.css";
-
-interface WeakTopic {
-  topicId: string;
-  topic: string;
-  subject: string;
-  batch: string;
-  accuracy: number;
-  studentsStruggling: number;
-}
-
-const topics: WeakTopic[] = [
-  { topicId: "TPC-001", topic: "Quadratic Equations", subject: "Mathematics", batch: "Class 10 - A", accuracy: 42, studentsStruggling: 21 },
-  { topicId: "TPC-002", topic: "Trigonometry", subject: "Mathematics", batch: "Class 10 - B", accuracy: 51, studentsStruggling: 17 },
-  { topicId: "TPC-003", topic: "Chemical Reactions", subject: "Science", batch: "Class 10 - B", accuracy: 58, studentsStruggling: 14 },
-  { topicId: "TPC-004", topic: "Linear Equations", subject: "Mathematics", batch: "Class 9 - A", accuracy: 63, studentsStruggling: 19 },
-  { topicId: "TPC-005", topic: "Motion and Force", subject: "Science", batch: "Class 9 - B", accuracy: 69, studentsStruggling: 11 },
-];
 
 const level = (a: number) =>
   a < 50 ? { label: "Critical", cls: "danger", bar: "low" }
@@ -23,6 +8,11 @@ const level = (a: number) =>
   : { label: "Moderate", cls: "", bar: "" };
 
 export default function WeakTopics() {
+  const { data: topics, loading, error } = useApi(() => getMyWeakTopics());
+
+  if (loading) return <div className="perf-page">Loading topics…</div>;
+  if (error) return <div className="perf-page" style={{ color: "red" }}>{error}</div>;
+
   return (
     <div className="perf-page">
       <div className="perf-header">
@@ -46,34 +36,30 @@ export default function WeakTopics() {
             </tr>
           </thead>
           <tbody>
-            {topics.map((t) => {
+            {(topics ?? []).map((t) => {
               const lv = level(t.accuracy);
               return (
                 <tr key={t.topicId}>
                   <td className="perf-id">{t.topicId}</td>
                   <td className="perf-strong">{t.topic}</td>
-                  <td>
-                    <span className="perf-badge">{t.subject}</span>
-                  </td>
+                  <td><span className="perf-badge">{t.subject}</span></td>
                   <td>{t.batch}</td>
                   <td>
                     <div className="perf-progress">
                       <div className="perf-progress-track">
-                        <div
-                          className={`perf-progress-fill ${lv.bar}`}
-                          style={{ width: `${t.accuracy}%` }}
-                        />
+                        <div className={`perf-progress-fill ${lv.bar}`} style={{ width: `${t.accuracy}%` }} />
                       </div>
                       <span className="perf-progress-text">{t.accuracy}%</span>
                     </div>
                   </td>
                   <td>{t.studentsStruggling}</td>
-                  <td>
-                    <span className={`perf-badge ${lv.cls}`}>{lv.label}</span>
-                  </td>
+                  <td><span className={`perf-badge ${lv.cls}`}>{lv.label}</span></td>
                 </tr>
               );
             })}
+            {topics?.length === 0 && (
+              <tr><td colSpan={7} style={{ textAlign: "center", padding: 24 }}>No weak topics found. Great job!</td></tr>
+            )}
           </tbody>
         </table>
       </div>
