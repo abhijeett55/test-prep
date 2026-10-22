@@ -8,11 +8,11 @@ export async function listAdmins(): Promise<AdminProfile[]> {
   return data;
 }
 
-/** GET /admins/me */
-export async function getMe(): Promise<AdminProfile> {
-  const { data } = await client.get<AdminProfile>("/admins/me");
-  return data;
-}
+// /** GET /admins/me */
+// export async function getMe(): Promise<AdminProfile> {
+//   const { data } = await client.get<AdminProfile>("/admins/me");
+//   return data;
+// }
 
 /** GET /admins/{id} */
 export async function getAdmin(id: string): Promise<AdminProfile> {

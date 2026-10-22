@@ -44,6 +44,7 @@ import BatchSpecific from "./announcements/BatchSpecific";
 // Account
 import ProfilePage from "../../account/ProfilePage";
 import ChangePasswordPage from "../../account/ChangePasswordPage";
+import AdminOverviewPage from "./AdminOverviewPage";
 
 import "./AdminDashboardPage.css";
 
@@ -64,7 +65,7 @@ export default function AdminDashboardPage() {
 
         <main className="dashboard-content">
           <Routes>
-            <Route index element={<div>Admin dashboard overview — build me</div>} />
+            <Route index element={<AdminOverviewPage />} />
 
             {/* User Management */}
             <Route path="user-management/teachers" element={<TeachersPage />} />

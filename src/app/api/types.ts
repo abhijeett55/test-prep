@@ -225,6 +225,9 @@ export interface DashboardStats {
   students: number;
   courses: number;
   batches: number;
+  pending_enrollments: number;
+  pending_fees: number;
+  pending_transfers: number;
 }
 
 // ---- department ----
