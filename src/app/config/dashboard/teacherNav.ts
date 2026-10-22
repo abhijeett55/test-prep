@@ -5,7 +5,6 @@ import {
   CalendarClock,
   ClipboardList,
   BarChart3,
-  Mail,
   Users,
 } from "lucide-react";
 import type { NavItem } from "../../components/Navbar/types";
@@ -58,7 +57,6 @@ export const teacherNav: NavItem[] = [
       { label: "Download Reports", path: "/dashboard/teacher/reports/download" },
     ],
   },
-  { label: "Contact Support", icon: Mail, path: "/dashboard/teacher/contact-support", info: true },
   {
     label: "My Account",
     icon: Users,

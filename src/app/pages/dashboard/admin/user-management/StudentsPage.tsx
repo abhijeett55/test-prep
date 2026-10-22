@@ -10,6 +10,7 @@ import {
   type StudentRow,
   type StudentDetail,
 } from "../../../../api/auth/admin/students";
+import { getMyInstitute } from "../../../../api/auth/admin/institute";
 import { useApi } from "../../../../hooks/useApi";
 import { errorMessage } from "../../../../api/client";
 import EnrollCoursesDialog from "./EnrollCoursesDialog";
@@ -41,6 +42,7 @@ export default function StudentsPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const students = useMemo(() => data ?? [], [data]);
+  const { data: myInstitute } = useApi(() => getMyInstitute());
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -136,9 +138,9 @@ export default function StudentsPage() {
   return (
     <div className="default-page">
       {/* FIX: Render the form and list inside the same wrapper so modals don't get skipped */}
-      {showForm && options ? (
+      {showForm && options && myInstitute ? (
         <StudentForm
-          institutes={options.institutes}
+          institutes={[{ id: myInstitute.id, name: myInstitute.institute_name }]} 
           subjects={options.subjects}
           statuses={STATUS_OPTIONS}
           onSubmit={handleFormSubmit}

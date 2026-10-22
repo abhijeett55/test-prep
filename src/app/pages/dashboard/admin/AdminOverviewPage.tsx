@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { getDashboardStats } from "../../../api/auth/admin/reports";
 import { errorMessage } from "../../../api/client";
-import "./AdminOverviewPage.css";
+import "../OverviewPage.css";
 
 /*
   FIELD NAMES — These map exactly to the `DashboardStats` schema in the backend.

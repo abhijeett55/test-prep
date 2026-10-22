@@ -8,7 +8,8 @@ import OnboardInstitutes from "./institute-management/OnboardInstitutes";
 import ProfilePage from "../../account/ProfilePage";
 import ChangePasswordPage from "../../account/ChangePasswordPage";
 import SuspendedInstitutes from "./institute-management/SuspendedInstitutes";
-
+import ProviderOverviewPage from "./ProviderOverviewPage";
+import "../OverviewPage.css";
 import "../DashboardPage.css";
 
 
@@ -23,8 +24,7 @@ export default function ProviderDashboardPage() {
         <main className="dashboard-content">
           <Routes>
 
-            <Route index element={<div>Provider dashboard overview — build me</div>} />
-
+            <Route index element={<ProviderOverviewPage />} />
             <Route path="institute-management/onboard-institutes" element={<OnboardInstitutes />} />
             <Route path="institute-management/all-institutes" element={<AllInstitutes />} />
             <Route path="institute-management/suspended-institutes" element={<SuspendedInstitutes />} />

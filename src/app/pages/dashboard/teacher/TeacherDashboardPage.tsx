@@ -22,6 +22,7 @@ import MyScheduledTests from "./my-scheduled-tests/MyScheduledTests";
 import CompletedTests from "./tests/CompletedTests";
 import CreateTests from "./tests/CreateTests";
 import ScheduledTests from "./tests/ScheduledTests";
+import TeacherOverviewPage from "./TeacherOverviewPage";
 
 import "../DashboardPage.css";
 
@@ -38,7 +39,7 @@ export default function TeacherDashboardPage() {
           {/* admin content */}
           <Routes>
             {/* / -> renders at /dashboard/admin itself */}
-            <Route index element={<div>Admin dashboard overview — build me</div>} />
+            <Route index element={<TeacherOverviewPage />} />
 
             <Route path="my-classes/course-list" element={<CoursesPage />} />
             <Route path="my-classes/class-list" element={<ClassPage />} />
