@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { X, UserCheck } from "lucide-react";
 import { getCourse, assignTeachersToCourse } from "../../../../api/auth/admin/courses";
 import { listTeachers } from "../../../../api/auth/teacher/teacher";
-import type { CourseRow, TeacherRow } from "../../../../api/types";
+import { getMyInstitute } from "../../../../api/auth/admin/institute";
+import type { CourseRow, TeacherRow, InstituteProfile } from "../../../../api/types";
 import { errorMessage } from "../../../../api/client";
-import "./DefaultPage.css"; // or the CSS you use for modals
+import "./DefaultPage.css"; 
 
 type Props = {
   course: CourseRow;
@@ -13,7 +14,8 @@ type Props = {
 };
 
 export default function AssignTeachersToCourseDialog({ course, onClose, onSaved }: Props) {
-  const [teachers, setTeachers] = useState<TeacherRow[]>([]);
+  const [allTeachers, setAllTeachers] = useState<TeacherRow[]>([]);
+  const [myInstitute, setMyInstitute] = useState<InstituteProfile | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -22,12 +24,14 @@ export default function AssignTeachersToCourseDialog({ course, onClose, onSaved 
   useEffect(() => {
     (async () => {
       try {
-        // 1. Fetch all teachers
-        const allTeachers = await listTeachers();
-        setTeachers(allTeachers);
-
-        // 2. Fetch the course detail to get currently assigned teacher IDs
-        const detail = await getCourse(course.id);
+        const [teachersData, instituteData, detail] = await Promise.all([
+          listTeachers(),
+          getMyInstitute(),
+          getCourse(course.id)
+        ]);
+        
+        setAllTeachers(teachersData);
+        setMyInstitute(instituteData);
         setSelected(new Set(detail.teacher_ids));
       } catch (e) {
         setError(errorMessage(e));
@@ -36,6 +40,11 @@ export default function AssignTeachersToCourseDialog({ course, onClose, onSaved 
       }
     })();
   }, [course.id]);
+
+  const teachers = useMemo(() => {
+    if (!allTeachers || !myInstitute) return [];
+    return allTeachers.filter(t => t.institute_id === myInstitute.id);
+  }, [allTeachers, myInstitute]);
 
   const toggle = (id: string) => {
     setSelected((prev) => {

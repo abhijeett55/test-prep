@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Plus, Search, Pencil, Trash2, BookOpen, Users } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, BookOpen, Users, GraduationCap } from "lucide-react";
 import {
   listCourses,
   createCourse,
@@ -11,7 +11,8 @@ import type { CourseRow } from "../../../../api/types";
 import { getMyInstitute } from "../../../../api/auth/admin/institute";
 import { useApi } from "../../../../hooks/useApi";
 import { errorMessage } from "../../../../api/client";
-import AssignTeachersToCourseDialog from "./AssignTeachersToCourseDialog"; // <-- Import
+import AssignTeachersToCourseDialog from "./AssignTeachersToCourseDialog"; // <-- The dialog!
+import EnrollStudentsDialog from "./EnrollStudentsDialog";
 import "./DefaultPage.css";
 
 const ENTRY_OPTIONS = [10, 25, 50];
@@ -45,8 +46,8 @@ export default function CoursesPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // NEW: State for the Teacher Mapping Dialog
   const [assigningTeachers, setAssigningTeachers] = useState<CourseRow | null>(null);
+  const [assigningStudents, setAssigningStudents] = useState<CourseRow | null>(null);
 
   const courses = useMemo(() => data ?? [], [data]);
 
@@ -219,12 +220,8 @@ export default function CoursesPage() {
               </div>
               {saveError && <p className="detect-error">{saveError}</p>}
               <div className="confirm-actions">
-                <button type="button" className="confirm-btn-secondary" onClick={() => setPending(null)} disabled={saving}>
-                  Back
-                </button>
-                <button type="button" className="confirm-btn-primary" onClick={confirmSave} disabled={saving}>
-                  {saving ? "Saving…" : "Confirm"}
-                </button>
+                <button type="button" className="confirm-btn-secondary" onClick={() => setPending(null)} disabled={saving}>Back</button>
+                <button type="button" className="confirm-btn-primary" onClick={confirmSave} disabled={saving}>{saving ? "Saving…" : "Confirm"}</button>
               </div>
             </div>
           </div>
@@ -278,7 +275,6 @@ export default function CoursesPage() {
                   <th>Name</th>
                   <th>Students</th>
                   <th>Teachers</th>
-                  {/* Make sure this header is present */}
                   <th className="col-actions">Actions</th>
                 </tr>
               </thead>
@@ -291,8 +287,15 @@ export default function CoursesPage() {
                     <td>{c.student_count}</td>
                     <td>{c.teacher_count}</td>
                     
-                    {/* Make sure this cell is present */}
                     <td className="col-actions">
+                      <button
+                        type="button"
+                        className="icon-button"
+                        title="Enroll Students"
+                        onClick={() => setAssigningStudents(c)}
+                      >
+                        <GraduationCap size={15} strokeWidth={2} />
+                      </button>
                       <button
                         type="button"
                         className="icon-button"
@@ -324,7 +327,6 @@ export default function CoursesPage() {
 
                 {visible.length === 0 && (
                   <tr>
-                    {/* Change colSpan to 6 since we removed a column */}
                     <td colSpan={6} className="no-results">
                       No courses match "{search}".
                     </td>
@@ -362,13 +364,24 @@ export default function CoursesPage() {
         </button>
       )}
 
-      {/* NEW: Render the Dialog */}
+      {/* --- Modals --- */}
       {assigningTeachers && (
         <AssignTeachersToCourseDialog
           course={assigningTeachers}
           onClose={() => setAssigningTeachers(null)}
           onSaved={() => {
             setAssigningTeachers(null);
+            reload();
+          }}
+        />
+      )}
+      
+      {assigningStudents && (
+        <EnrollStudentsDialog
+          course={assigningStudents}
+          onClose={() => setAssigningStudents(null)}
+          onSaved={() => {
+            setAssigningStudents(null);
             reload();
           }}
         />

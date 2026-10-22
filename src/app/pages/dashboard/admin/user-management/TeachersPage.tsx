@@ -12,6 +12,7 @@ import {
 import type {
   TeacherRow,
 } from "../../../../api/types";
+import { getMyInstitute } from "../../../../api/auth/admin/institute"; // <-- ADDED
 import { useApi } from "../../../../hooks/useApi";
 import { errorMessage } from "../../../../api/client";
 import EditTeacherDialog from "./EditTeacherDialog";
@@ -44,18 +45,17 @@ function toPayload(v: FormValues): TeacherCreate {
 export type TeacherDetail = TeacherRow & {
   subject_ids: string[];
   student_ids?: string[];
-  // course_ids?: string[]; (uncomment if your backend returns this in /teachers/{id})
 };
 
 export default function TeachersPage() {
   const { data, loading, error, reload } = useApi(() => listTeachers());
   const { data: options } = useApi(() => getTeacherOptions());
+  const { data: myInstitute } = useApi(() => getMyInstitute()); // <-- FETCH ADMIN INSTITUTE
 
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
 
-  // Dialog states
   const [editingTeacher, setEditingTeacher] = useState<TeacherDetail | null>(null);
   const [assigningTeacher, setAssigningTeacher] = useState<TeacherDetail | null>(null);
   const [assigningCourses, setAssigningCourses] = useState<TeacherDetail | null>(null);
@@ -67,10 +67,15 @@ export default function TeachersPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [tempPassword, setTempPassword] = useState<string | null>(null);
 
-  const teachers = useMemo(() => data ?? [], [data]);
+  // FILTER TEACHERS TO ONLY SHOW THOSE IN THE ADMIN'S INSTITUTE
+  const teachers = useMemo(() => {
+    const allTeachers = data ?? [];
+    if (!myInstitute) return [];
+    return allTeachers.filter(t => t.institute_id === myInstitute.id);
+  }, [data, myInstitute]);
 
   const filtered = useMemo(() => {
-  const q = search.trim().toLowerCase();
+    const q = search.trim().toLowerCase();
     if (!q) return teachers;
     return teachers.filter(
       (t) =>
@@ -123,9 +128,7 @@ export default function TeachersPage() {
   const openDialog = async (row: TeacherRow, type: "edit" | "subjects" | "courses" | "students") => {
     setRowBusyId(row.id);
     try {
-      // Fetch the full detail to get subject_ids, course_ids, and student_ids
       const detail = (await getTeacher(row.id)) as TeacherDetail;
-      
       if (type === "edit") setEditingTeacher(detail);
       if (type === "subjects") setAssigningTeacher(detail);
       if (type === "courses") setAssigningCourses(detail);
@@ -144,11 +147,11 @@ export default function TeachersPage() {
 
   /* ---------- render ---------- */
 
-  if (showForm && options) {
+  if (showForm && options && myInstitute) {
     return (
       <div className="default-page">
         <TeacherForm
-          institutes={options.institutes}
+          institutes={[{ id: myInstitute.id, name: myInstitute.institute_name }]} // <-- PASS ONLY ADMIN INSTITUTE
           subjects={options.subjects}
           onSubmit={handleFormSubmit}
           onCancel={() => setShowForm(false)}

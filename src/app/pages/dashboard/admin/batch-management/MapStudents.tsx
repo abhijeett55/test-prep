@@ -2,13 +2,14 @@ import { useMemo, useState } from "react";
 import { useApi } from "../../../../hooks/useApi";
 import { listBatches, mapStudentsToBatch, getBatch } from "../../../../api/auth/admin/batches";
 import { listStudents } from "../../../../api/auth/admin/students";
+import { getMyInstitute } from "../../../../api/auth/admin/institute";
 import { errorMessage } from "../../../../api/client";
-import type { StudentRow } from "../../../../api/types";
 import "./DefaultPage.css";
 
 export default function MapStudents() {
-  const { data: batches, loading: loadingBatches } = useApi(() => listBatches());
+  const { data: allBatches, loading: loadingBatches } = useApi(() => listBatches());
   const { data: allStudents, loading: loadingStudents } = useApi(() => listStudents());
+  const { data: myInstitute } = useApi(() => getMyInstitute());
 
   const [selectedBatch, setSelectedBatch] = useState<string>("");
   const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
@@ -18,9 +19,18 @@ export default function MapStudents() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const students: StudentRow[] = useMemo(() => allStudents ?? [], [allStudents]);
+  // Filter students to only show those in this institute
+  const students = useMemo(() => {
+    if (!allStudents || !myInstitute) return [];
+    return allStudents.filter(s => s.institute_id === myInstitute.id);
+  }, [allStudents, myInstitute]);
 
-  // When a batch is selected, fetch its current students to pre-check the boxes
+  // Filter batches to only show those in this institute
+  const batches = useMemo(() => {
+    if (!allBatches || !myInstitute) return [];
+    return allBatches.filter(b => b.institute_id === myInstitute.id);
+  }, [allBatches, myInstitute]);
+
   const handleBatchChange = async (batchId: string) => {
     setSelectedBatch(batchId);
     setSuccess(false);
@@ -33,10 +43,7 @@ export default function MapStudents() {
 
     setFetchingBatch(true);
     try {
-      // Note: Assuming your getBatch endpoint returns student_ids
-      // If it doesn't, you'll need to update your backend BatchRowOut schema.
       const batchDetails = await getBatch(batchId);
-      // If your backend returns student_ids:
       if (batchDetails && batchDetails.student_ids) {
         setSelectedStudents(new Set(batchDetails.student_ids));
       } else {
@@ -101,7 +108,7 @@ export default function MapStudents() {
               disabled={loadingBatches}
             >
               <option value="">Choose a batch...</option>
-              {batches?.map(b => (
+              {batches.map(b => (
                 <option key={b.id} value={b.id}>
                   {b.batch_name} ({b.batch_code})
                 </option>
@@ -132,21 +139,12 @@ export default function MapStudents() {
                     <label 
                       key={s.id} 
                       style={{ 
-                        display: "flex", 
-                        alignItems: "center", 
-                        gap: 10, 
-                        padding: "10px 14px", 
+                        display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", 
                         border: `1px solid ${selectedStudents.has(s.id) ? "#3b4cca" : "#e6e9f0"}`, 
-                        borderRadius: 8, 
-                        cursor: "pointer",
-                        background: selectedStudents.has(s.id) ? "#e8ebfd" : "#fff"
+                        borderRadius: 8, cursor: "pointer", background: selectedStudents.has(s.id) ? "#e8ebfd" : "#fff"
                       }}
                     >
-                      <input 
-                        type="checkbox" 
-                        checked={selectedStudents.has(s.id)} 
-                        onChange={() => toggleStudent(s.id)} 
-                      />
+                      <input type="checkbox" checked={selectedStudents.has(s.id)} onChange={() => toggleStudent(s.id)} />
                       <div>
                         <div style={{ fontWeight: 600, fontSize: 13.5 }}>{s.full_name}</div>
                         <div style={{ fontSize: 12, color: "#6b7488" }}>{s.student_id}</div>

@@ -282,3 +282,13 @@ export async function getStudentFees(
 export async function sendFeeReminder(studentId: string): Promise<void> {
   await client.post(`/students/${studentId}/fees/reminder`);
 }
+
+/** POST /students/bulk-assign */
+export async function bulkAssignStudents(payload: {
+  student_ids: string[];
+  subject_ids?: string[];
+  teacher_ids?: string[];
+}): Promise<{ message: string }> {
+  const { data } = await client.post<{ message: string }>("/students/bulk-assign", payload);
+  return data;
+}

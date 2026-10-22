@@ -1,24 +1,35 @@
 import { useMemo, useState } from "react";
 import { useApi } from "../../../../hooks/useApi";
-import { listBatches, assignTeachersToBatch, getBatch } from "../../../../api/auth/admin/batches";
-import { listTeachers } from "../../../../api/auth/teacher/teacher";
+import { listBatches, mapStudentsToBatch, getBatch } from "../../../../api/auth/admin/batches";
+import { listStudents } from "../../../../api/auth/admin/students";
+import { getMyInstitute } from "../../../../api/auth/admin/institute";
 import { errorMessage } from "../../../../api/client";
-import type { TeacherRow } from "../../../../api/types";
 import "./DefaultPage.css";
 
-export default function MapTeachers() {
-  const { data: batches, loading: loadingBatches } = useApi(() => listBatches());
-  const { data: allTeachers, loading: loadingTeachers } = useApi(() => listTeachers());
+export default function MapStudents() {
+  const { data: allBatches, loading: loadingBatches } = useApi(() => listBatches());
+  const { data: allStudents, loading: loadingStudents } = useApi(() => listStudents());
+  const { data: myInstitute } = useApi(() => getMyInstitute());
 
   const [selectedBatch, setSelectedBatch] = useState<string>("");
-  const [selectedTeachers, setSelectedTeachers] = useState<Set<string>>(new Set());
+  const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
   
   const [fetchingBatch, setFetchingBatch] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const teachers: TeacherRow[] = useMemo(() => allTeachers ?? [], [allTeachers]);
+  // FIX: Filter students to only show those in this institute
+  const students = useMemo(() => {
+    if (!allStudents || !myInstitute) return [];
+    return allStudents.filter(s => s.institute_id === myInstitute.id);
+  }, [allStudents, myInstitute]);
+
+  // FIX: Filter batches to only show those in this institute
+  const batches = useMemo(() => {
+    if (!allBatches || !myInstitute) return [];
+    return allBatches.filter(b => b.institute_id === myInstitute.id);
+  }, [allBatches, myInstitute]);
 
   const handleBatchChange = async (batchId: string) => {
     setSelectedBatch(batchId);
@@ -26,19 +37,17 @@ export default function MapTeachers() {
     setError(null);
     
     if (!batchId) {
-      setSelectedTeachers(new Set());
+      setSelectedStudents(new Set());
       return;
     }
 
     setFetchingBatch(true);
     try {
       const batchDetails = await getBatch(batchId);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (batchDetails && (batchDetails as any).teacher_ids) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setSelectedTeachers(new Set((batchDetails as any).teacher_ids));
+      if (batchDetails && batchDetails.student_ids) {
+        setSelectedStudents(new Set(batchDetails.student_ids));
       } else {
-        setSelectedTeachers(new Set());
+        setSelectedStudents(new Set());
       }
     } catch (err) {
       setError(errorMessage(err));
@@ -47,8 +56,8 @@ export default function MapTeachers() {
     }
   };
 
-  const toggleTeacher = (id: string) => {
-    setSelectedTeachers((prev) => {
+  const toggleStudent = (id: string) => {
+    setSelectedStudents((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -63,7 +72,7 @@ export default function MapTeachers() {
     setSuccess(false);
 
     try {
-      await assignTeachersToBatch(selectedBatch, Array.from(selectedTeachers));
+      await mapStudentsToBatch(selectedBatch, Array.from(selectedStudents));
       setSuccess(true);
     } catch (err) {
       setError(errorMessage(err));
@@ -75,7 +84,7 @@ export default function MapTeachers() {
   return (
     <div className="default-page">
       <div className="default-panel">
-        <div className="section-bar">Assign Teachers to Batch</div>
+        <div className="section-bar">Map Students to Batch</div>
         
         <div style={{ padding: 24 }}>
           {error && (
@@ -86,7 +95,7 @@ export default function MapTeachers() {
           
           {success && (
             <div className="perf-success" style={{ marginBottom: 16 }}>
-              Teachers assigned successfully!
+              Students mapped successfully!
             </div>
           )}
 
@@ -99,7 +108,7 @@ export default function MapTeachers() {
               disabled={loadingBatches}
             >
               <option value="">Choose a batch...</option>
-              {batches?.map(b => (
+              {batches.map(b => (
                 <option key={b.id} value={b.id}>
                   {b.batch_name} ({b.batch_code})
                 </option>
@@ -110,12 +119,12 @@ export default function MapTeachers() {
           {selectedBatch && (
             <>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                <span style={{ fontWeight: 600, fontSize: 14 }}>Select Teachers</span>
-                <span style={{ fontSize: 13, color: "#6b7488" }}>{selectedTeachers.size} selected</span>
+                <span style={{ fontWeight: 600, fontSize: 14 }}>Select Students</span>
+                <span style={{ fontSize: 13, color: "#6b7488" }}>{selectedStudents.size} selected</span>
               </div>
 
-              {fetchingBatch || loadingTeachers ? (
-                <p style={{ color: "#6b7488", padding: "20px 0" }}>Loading teachers…</p>
+              {fetchingBatch || loadingStudents ? (
+                <p style={{ color: "#6b7488", padding: "20px 0" }}>Loading students…</p>
               ) : (
                 <div style={{ 
                   display: "grid", 
@@ -126,33 +135,33 @@ export default function MapTeachers() {
                   marginBottom: 24,
                   paddingRight: 8
                 }}>
-                  {teachers.map((t) => (
+                  {students.map((s) => (
                     <label 
-                      key={t.id} 
+                      key={s.id} 
                       style={{ 
                         display: "flex", 
                         alignItems: "center", 
                         gap: 10, 
                         padding: "10px 14px", 
-                        border: `1px solid ${selectedTeachers.has(t.id) ? "#3b4cca" : "#e6e9f0"}`, 
+                        border: `1px solid ${selectedStudents.has(s.id) ? "#3b4cca" : "#e6e9f0"}`, 
                         borderRadius: 8, 
                         cursor: "pointer",
-                        background: selectedTeachers.has(t.id) ? "#e8ebfd" : "#fff"
+                        background: selectedStudents.has(s.id) ? "#e8ebfd" : "#fff"
                       }}
                     >
                       <input 
                         type="checkbox" 
-                        checked={selectedTeachers.has(t.id)} 
-                        onChange={() => toggleTeacher(t.id)} 
+                        checked={selectedStudents.has(s.id)} 
+                        onChange={() => toggleStudent(s.id)} 
                       />
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: 13.5 }}>{t.name}</div>
-                        <div style={{ fontSize: 12, color: "#6b7488" }}>{t.teacher_id}</div>
+                        <div style={{ fontWeight: 600, fontSize: 13.5 }}>{s.full_name}</div>
+                        <div style={{ fontSize: 12, color: "#6b7488" }}>{s.student_id}</div>
                       </div>
                     </label>
                   ))}
-                  {teachers.length === 0 && (
-                    <p style={{ color: "#6b7488" }}>No teachers found in this institute.</p>
+                  {students.length === 0 && (
+                    <p style={{ color: "#6b7488" }}>No students found in this institute.</p>
                   )}
                 </div>
               )}
@@ -161,7 +170,7 @@ export default function MapTeachers() {
                 <button 
                   className="confirm-btn-primary" 
                   onClick={handleSave} 
-                  disabled={saving || fetchingBatch || loadingTeachers}
+                  disabled={saving || fetchingBatch || loadingStudents}
                 >
                   {saving ? "Saving…" : "Save Mappings"}
                 </button>

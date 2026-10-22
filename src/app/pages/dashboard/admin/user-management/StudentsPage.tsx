@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Plus, Search, Pencil, Eye, X, GraduationCap } from "lucide-react";
+import { Plus, Search, Pencil, Eye, X, GraduationCap, BookOpen } from "lucide-react";
 import StudentForm from "../../../../config/nav-user/student/StudentForm";
 import type { FormValues } from "../../../../components/FormLayout/types";
 import {
@@ -15,6 +15,7 @@ import { useApi } from "../../../../hooks/useApi";
 import { errorMessage } from "../../../../api/client";
 import EnrollCoursesDialog from "./EnrollCoursesDialog";
 import EditStudentDialog from "./EditStudentDialog";
+import AssignSubjectsToStudentDialog from "./AssignSubjectsToStudentDialog";
 import "./DefaultPage.css";
 
 const ENTRY_OPTIONS = [10, 25, 50];
@@ -28,6 +29,7 @@ const STATUS_OPTIONS = [
 export default function StudentsPage() {
   const { data, loading, error, reload } = useApi(() => listStudents());
   const { data: options } = useApi(() => getStudentOptions());
+  const { data: myInstitute } = useApi(() => getMyInstitute());
 
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState("");
@@ -35,14 +37,19 @@ export default function StudentsPage() {
 
   const [editingStudent, setEditingStudent] = useState<StudentDetail | null>(null);
   const [enrollingStudent, setEnrollingStudent] = useState<StudentDetail | null>(null);
+  const [assigningSubjects, setAssigningSubjects] = useState<StudentDetail | null>(null);
   const [rowBusyId, setRowBusyId] = useState<string | null>(null);
 
   const [pendingStudent, setPendingStudent] = useState<FormValues | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  const students = useMemo(() => data ?? [], [data]);
-  const { data: myInstitute } = useApi(() => getMyInstitute());
+  // FILTER STUDENTS TO ONLY SHOW THOSE IN THE ADMIN'S INSTITUTE
+  const students = useMemo(() => {
+    const allStudents = data ?? [];
+    if (!myInstitute) return [];
+    return allStudents.filter(s => s.institute_id === myInstitute.id);
+  }, [data, myInstitute]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -51,7 +58,7 @@ export default function StudentsPage() {
       (s) =>
         s.full_name.toLowerCase().includes(q) ||
         s.email.toLowerCase().includes(q) ||
-        s.institute.toLowerCase().includes(q) ||
+        (s.institute ?? "").toLowerCase().includes(q) ||
         s.student_id.toLowerCase().includes(q)
     );
   }, [students, search]);
@@ -111,21 +118,13 @@ export default function StudentsPage() {
 
   /* ---------- open dialogs ---------- */
 
-  const openEnrollDialog = async (row: StudentRow) => {
+  const openDialog = async (row: StudentRow, type: "edit" | "enroll" | "subjects") => {
     setRowBusyId(row.id);
     try {
-      setEnrollingStudent(await getStudent(row.id));
-    } catch (err) {
-      window.alert(errorMessage(err));
-    } finally {
-      setRowBusyId(null);
-    }
-  };
-
-  const openEditDialog = async (row: StudentRow) => {
-    setRowBusyId(row.id);
-    try {
-      setEditingStudent(await getStudent(row.id));
+      const detail = await getStudent(row.id);
+      if (type === "edit") setEditingStudent(detail);
+      if (type === "enroll") setEnrollingStudent(detail);
+      if (type === "subjects") setAssigningSubjects(detail);
     } catch (err) {
       window.alert(errorMessage(err));
     } finally {
@@ -137,7 +136,6 @@ export default function StudentsPage() {
 
   return (
     <div className="default-page">
-      {/* FIX: Render the form and list inside the same wrapper so modals don't get skipped */}
       {showForm && options && myInstitute ? (
         <StudentForm
           institutes={[{ id: myInstitute.id, name: myInstitute.institute_name }]} 
@@ -149,10 +147,7 @@ export default function StudentsPage() {
       ) : (
         <>
           {error && (
-            <div
-              className="perf-success"
-              style={{ background: "#fdeaea", color: "#c62f2f", marginBottom: 12 }}
-            >
+            <div className="perf-success" style={{ background: "#fdeaea", color: "#c62f2f", marginBottom: 12 }}>
               {error}
             </div>
           )}
@@ -162,11 +157,7 @@ export default function StudentsPage() {
           {!loading && students.length === 0 && (
             <div className="default-empty">
               <p>No students added yet.</p>
-              <button
-                type="button"
-                className="add-button"
-                onClick={() => setShowForm(true)}
-              >
+              <button type="button" className="add-button" onClick={() => setShowForm(true)}>
                 <Plus size={16} strokeWidth={2.4} />
                 Add your first student
               </button>
@@ -200,6 +191,7 @@ export default function StudentsPage() {
                       <th>Self Phone</th>
                       <th>Institute</th>
                       <th>Batch</th>
+                      <th>Subjects</th>
                       <th>Status</th>
                       <th className="col-actions">Actions</th>
                     </tr>
@@ -214,6 +206,7 @@ export default function StudentsPage() {
                         <td>{s.self_phone || "—"}</td>
                         <td>{s.institute || "—"}</td>
                         <td>{s.batch_name ?? "—"}</td>
+                        <td>{s.subjects || "—"}</td>
                         <td>{s.status}</td>
                         <td className="col-actions">
                           <button
@@ -221,16 +214,25 @@ export default function StudentsPage() {
                             className="icon-button"
                             title="Enroll in courses"
                             disabled={rowBusyId === s.id}
-                            onClick={() => openEnrollDialog(s)}
+                            onClick={() => openDialog(s, "enroll")}
                           >
                             <GraduationCap size={15} strokeWidth={2} />
                           </button>
                           <button
                             type="button"
                             className="icon-button"
+                            title="Assign Subjects"
+                            disabled={rowBusyId === s.id}
+                            onClick={() => openDialog(s, "subjects")}
+                          >
+                            <BookOpen size={15} strokeWidth={2} />
+                          </button>
+                          <button
+                            type="button"
+                            className="icon-button"
                             title="Edit"
                             disabled={rowBusyId === s.id}
-                            onClick={() => openEditDialog(s)}
+                            onClick={() => openDialog(s, "edit")}
                           >
                             <Pencil size={15} strokeWidth={2} />
                           </button>
@@ -247,7 +249,7 @@ export default function StudentsPage() {
 
                     {visible.length === 0 && (
                       <tr>
-                        <td colSpan={9} className="no-results">
+                        <td colSpan={10} className="no-results">
                           No students match "{search}".
                         </td>
                       </tr>
@@ -259,33 +261,22 @@ export default function StudentsPage() {
               <div className="default-footer">
                 <label className="entries-control">
                   Show
-                  <select
-                    value={entriesPerPage}
-                    onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                  >
+                  <select value={entriesPerPage} onChange={(e) => setEntriesPerPage(Number(e.target.value))}>
                     {ENTRY_OPTIONS.map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
+                      <option key={n} value={n}>{n}</option>
                     ))}
                   </select>
                   entries
                 </label>
-
                 <div className="default-footer-note">
-                  Showing {visible.length} of {filtered.length} student
-                  {filtered.length === 1 ? "" : "s"}
+                  Showing {visible.length} of {filtered.length} student{filtered.length === 1 ? "" : "s"}
                 </div>
               </div>
             </div>
           )}
 
           {!showForm && students.length > 0 && (
-            <button
-              type="button"
-              className="add-button-fab"
-              onClick={() => setShowForm(true)}
-            >
+            <button type="button" className="add-button-fab" onClick={() => setShowForm(true)}>
               <Plus size={18} strokeWidth={2.6} />
               <span>Add Student</span>
             </button>
@@ -293,96 +284,37 @@ export default function StudentsPage() {
         </>
       )}
 
-      {/* --- Add confirmation --- */}
+      {/* --- Modals --- */}
       {pendingStudent && (
         <div className="confirm-overlay" role="dialog" aria-modal="true">
           <div className="confirm-card">
-            <button
-              type="button"
-              className="confirm-close"
-              onClick={cancelPendingStudent}
-              aria-label="Close"
-              disabled={saving}
-            >
+            <button type="button" className="confirm-close" onClick={cancelPendingStudent} disabled={saving}>
               <X size={16} strokeWidth={2.2} />
             </button>
-
-            <div className="confirm-icon">
-              <Plus size={20} strokeWidth={2.4} />
-            </div>
-
+            <div className="confirm-icon"><Plus size={20} strokeWidth={2.4} /></div>
             <h3 className="confirm-title">Add this student?</h3>
-            <p className="confirm-subtitle">
-              Please confirm the details before adding them to the list.
-            </p>
-
+            <p className="confirm-subtitle">Please confirm the details before adding them to the list.</p>
             <div className="confirm-details">
-              <div className="confirm-row">
-                <span>Name</span>
-                <strong>
-                  {`${pendingStudent.firstName ?? ""} ${pendingStudent.LastName ?? ""}`.trim() || "—"}
-                </strong>
-              </div>
-              <div className="confirm-row">
-                <span>Email</span>
-                <strong>{pendingStudent.email || "—"}</strong>
-              </div>
-              <div className="confirm-row">
-                <span>Institute</span>
-                <strong>{pendingStudent.institute_id || "—"}</strong>
-              </div>
-              <div className="confirm-row">
-                <span>Address</span>
-                <strong>{pendingStudent.address || "—"}</strong>
-              </div>
+              <div className="confirm-row"><span>Name</span><strong>{`${pendingStudent.firstName ?? ""} ${pendingStudent.LastName ?? ""}`.trim() || "—"}</strong></div>
+              <div className="confirm-row"><span>Email</span><strong>{pendingStudent.email || "—"}</strong></div>
             </div>
-
             {saveError && <p className="confirm-error">{saveError}</p>}
-
             <div className="confirm-actions">
-              <button
-                type="button"
-                className="confirm-btn-secondary"
-                onClick={cancelPendingStudent}
-                disabled={saving}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="confirm-btn-primary"
-                onClick={confirmPendingStudent}
-                disabled={saving}
-              >
-                {saving ? "Saving…" : "Yes, add student"}
-              </button>
+              <button type="button" className="confirm-btn-secondary" onClick={cancelPendingStudent} disabled={saving}>Cancel</button>
+              <button type="button" className="confirm-btn-primary" onClick={confirmPendingStudent} disabled={saving}>{saving ? "Saving…" : "Yes, add"}</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* --- Edit dialog --- */}
       {editingStudent && (
-        <EditStudentDialog
-          student={editingStudent}
-          onClose={() => setEditingStudent(null)}
-          onSaved={() => {
-            setEditingStudent(null);
-            reload();
-          }}
-        />
+        <EditStudentDialog student={editingStudent} onClose={() => setEditingStudent(null)} onSaved={() => { setEditingStudent(null); reload(); }} />
       )}
-
-      {/* --- Enroll courses dialog --- */}
       {enrollingStudent && (
-        <EnrollCoursesDialog
-          student={enrollingStudent}
-          onClose={() => setEnrollingStudent(null)}
-          onSaved={() => {
-            setEnrollingStudent(null);
-            reload();
-          }}
-        />
+        <EnrollCoursesDialog student={enrollingStudent} onClose={() => setEnrollingStudent(null)} onSaved={() => { setEnrollingStudent(null); reload(); }} />
+      )}
+      {assigningSubjects && (
+        <AssignSubjectsToStudentDialog student={assigningSubjects} onClose={() => setAssigningSubjects(null)} onSaved={() => { setAssigningSubjects(null); reload(); }} />
       )}
     </div>
   );

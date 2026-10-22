@@ -9,6 +9,7 @@ import {
   type TestSetterCreate,
 } from "../../../../api/auth/testsetter/testsetter";
 import type { TestSetterRow } from "../../../../api/types";
+import { getMyInstitute } from "../../../../api/auth/admin/institute"; // <-- ADDED
 import { useApi } from "../../../../hooks/useApi";
 import { errorMessage } from "../../../../api/client";
 import "./DefaultPage.css";
@@ -32,6 +33,7 @@ function toPayload(v: FormValues): TestSetterCreate {
 export default function TestSettersPage() {
   const { data, loading, error, reload } = useApi(() => listTestSetters());
   const { data: options } = useApi(() => getTestSetterOptions());
+  const { data: myInstitute } = useApi(() => getMyInstitute()); // <-- FETCH ADMIN INSTITUTE
 
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState("");
@@ -44,7 +46,12 @@ export default function TestSettersPage() {
   const [viewing, setViewing] = useState<TestSetterRow | null>(null);
   const [tempPassword, setTempPassword] = useState<string | null>(null);
 
-  const testSetters = useMemo(() => data ?? [], [data]);
+  // FILTER TEST SETTERS TO ONLY SHOW THOSE IN THE ADMIN'S INSTITUTE
+  const testSetters = useMemo(() => {
+    const allTestSetters = data ?? [];
+    if (!myInstitute) return [];
+    return allTestSetters.filter(t => t.institute === myInstitute.institute_name);
+  }, [data, myInstitute]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -99,12 +106,12 @@ export default function TestSettersPage() {
 
   /* ---------- render ---------- */
 
-  if (showForm && options) {
+  if (showForm && options && myInstitute) {
     return (
       <div className="default-page">
         <TestsetterForm
-          institutes={options.institutes}
-          subjects={[]} // If your backend doesn't have testsetter subjects yet, leave empty
+          institutes={[{ id: myInstitute.id, name: myInstitute.institute_name }]} // <-- PASS ONLY ADMIN INSTITUTE
+          subjects={[]}
           onSubmit={handleFormSubmit}
           onCancel={() => setShowForm(false)}
         />

@@ -5,9 +5,7 @@ import {
   BarChart3,
   SlidersHorizontal,
   ScrollText,
-  LifeBuoy,
   Users,
-  Sparkles,
 } from "lucide-react";
 import type { NavItem } from "../../components/Navbar/types";
 
@@ -18,10 +16,9 @@ export const providerNav: NavItem[] = [
     label: "Institute Management",
     icon: Building2,
     children: [
-      { label: "Onboard Institute", path: "/dashboard/provider/institute-management/onboard-institutes", info: true },
+      { label: "Onboard Institute", path: "/dashboard/provider/institute-management/onboard-institutes" },
       { label: "All Institutes", path: "/dashboard/provider/institute-management/all-institutes" },
       { label: "Suspended Institutes", path: "/dashboard/provider/institute-management/suspended-institutes" },
-      { label: "Pending Admin Approvals", path: "/dashboard/provider/institute-management/pending-admin-approvals", badge: "New" },
     ],
   },
 
@@ -31,7 +28,6 @@ export const providerNav: NavItem[] = [
     children: [
       { label: "Search Users", path: "/dashboard/provider/institute-management/search" },
       { label: "All Institutes' Users", path: "/dashboard/provider/institute-management/all-institutes-users" },
-      { label: "Impersonate for Support", path: "/dashboard/provider/institute-management/impersonate", info: true },
     ],
   },
 
@@ -40,7 +36,7 @@ export const providerNav: NavItem[] = [
     icon: BarChart3,
     children: [
       { label: "Platform Usage", path: "/dashboard/provider/analytics/platform-usage" },
-      { label: "Revenue", path: "/dashboard/provider/analytics/revenue", info: true },
+      { label: "Revenue", path: "/dashboard/provider/analytics/revenue"},
       { label: "Churn", path: "/dashboard/provider/analytics/churn" },
     ],
   },
@@ -57,8 +53,6 @@ export const providerNav: NavItem[] = [
 
   { label: "Audit Logs", icon: ScrollText, path: "/dashboard/provider/audit-logs", info: true },
 
-  { label: "Support Tickets", icon: LifeBuoy, path: "/dashboard/provider/support-tickets", badge: "New" },
-
   {
     label: "My Account",
     icon: Users,
@@ -67,6 +61,4 @@ export const providerNav: NavItem[] = [
       { label: "Change Password", path: "/dashboard/provider/change-password" },
     ],
   },
-
-  { label: "Explore Whats New", icon: Sparkles, path: "/dashboard/provider/whats-new" },
 ];

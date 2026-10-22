@@ -112,6 +112,7 @@ export interface StudentRow {
   institute: string;
   status: string;
   batch_name: string | null;
+  subjects?: string;
 }
 
 export interface StudentDetail extends StudentRow {

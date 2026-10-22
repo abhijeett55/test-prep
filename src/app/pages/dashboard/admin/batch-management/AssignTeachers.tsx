@@ -1,77 +1,180 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useApi } from "../../../../hooks/useApi";
-import { listBatches, assignTeachersToBatch } from "../../../../api/auth/admin/batches";
+import { listBatches, assignTeachersToBatch, getBatch } from "../../../../api/auth/admin/batches";
 import { listTeachers } from "../../../../api/auth/teacher/teacher";
+import { getMyInstitute } from "../../../../api/auth/admin/institute";
 import { errorMessage } from "../../../../api/client";
 import "./DefaultPage.css";
 
 export default function AssignTeachers() {
-  const { data: batches, loading, reload } = useApi(() => listBatches());
-  const { data: teachers } = useApi(() => listTeachers());
-  
-  const [selectedBatch, setSelectedBatch] = useState<string | null>(null);
+  const { data: allBatches, loading: loadingBatches } = useApi(() => listBatches());
+  const { data: allTeachers, loading: loadingTeachers } = useApi(() => listTeachers());
+  const { data: myInstitute } = useApi(() => getMyInstitute());
+
+  const [selectedBatch, setSelectedBatch] = useState<string>("");
   const [selectedTeachers, setSelectedTeachers] = useState<Set<string>>(new Set());
+  
+  const [fetchingBatch, setFetchingBatch] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  // FIX: Filter teachers to only show those in this institute
+  const teachers = useMemo(() => {
+    if (!allTeachers || !myInstitute) return [];
+    return allTeachers.filter(t => t.institute_id === myInstitute.id);
+  }, [allTeachers, myInstitute]);
+
+  // FIX: Filter batches to only show those in this institute
+  const batches = useMemo(() => {
+    if (!allBatches || !myInstitute) return [];
+    return allBatches.filter(b => b.institute_id === myInstitute.id);
+  }, [allBatches, myInstitute]);
+
+  const handleBatchChange = async (batchId: string) => {
+    setSelectedBatch(batchId);
+    setSuccess(false);
+    setError(null);
+    
+    if (!batchId) {
+      setSelectedTeachers(new Set());
+      return;
+    }
+
+    setFetchingBatch(true);
+    try {
+      const batchDetails = await getBatch(batchId);
+      if (batchDetails && batchDetails.teacher_ids) {
+        setSelectedTeachers(new Set(batchDetails.teacher_ids));
+      } else {
+        setSelectedTeachers(new Set());
+      }
+    } catch (err) {
+      setError(errorMessage(err));
+    } finally {
+      setFetchingBatch(false);
+    }
+  };
+
+  const toggleTeacher = (id: string) => {
+    setSelectedTeachers((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const handleSave = async () => {
     if (!selectedBatch) return;
     setSaving(true);
+    setError(null);
+    setSuccess(false);
+
     try {
       await assignTeachersToBatch(selectedBatch, Array.from(selectedTeachers));
-      alert("Teachers assigned successfully!");
-      setSelectedBatch(null);
-      reload();
+      setSuccess(true);
     } catch (err) {
-      alert(errorMessage(err));
+      setError(errorMessage(err));
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <div className="default-page">Loading…</div>;
-
   return (
     <div className="default-page">
       <div className="default-panel">
         <div className="section-bar">Assign Teachers to Batch</div>
+        
         <div style={{ padding: 24 }}>
-          <label style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 24 }}>
-            <span style={{ fontWeight: 600 }}>Select Batch</span>
+          {error && (
+            <div className="perf-success" style={{ background: "#fdeaea", color: "#c62f2f", marginBottom: 16 }}>
+              {error}
+            </div>
+          )}
+          
+          {success && (
+            <div className="perf-success" style={{ marginBottom: 16 }}>
+              Teachers assigned successfully!
+            </div>
+          )}
+
+          <label style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 24, maxWidth: 400 }}>
+            <span style={{ fontWeight: 600, fontSize: 14 }}>Select Batch</span>
             <select 
-              className="courses-select" 
-              value={selectedBatch || ""} 
-              onChange={(e) => setSelectedBatch(e.target.value)}
+              className="perf-input" 
+              value={selectedBatch} 
+              onChange={(e) => handleBatchChange(e.target.value)}
+              disabled={loadingBatches}
             >
-              <option value="">Choose a batch…</option>
-              {batches?.map(b => (
-                <option key={b.id} value={b.id}>{b.batch_name} ({b.batch_code})</option>
+              <option value="">Choose a batch...</option>
+              {batches.map(b => (
+                <option key={b.id} value={b.id}>
+                  {b.batch_name} ({b.batch_code})
+                </option>
               ))}
             </select>
           </label>
 
           {selectedBatch && (
             <>
-              <span style={{ fontWeight: 600 }}>Select Teachers</span>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 12, marginBottom: 24, maxHeight: 300, overflowY: "auto" }}>
-                {teachers?.map(t => (
-                  <label key={t.id} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <input 
-                      type="checkbox" 
-                      checked={selectedTeachers.has(t.id)}
-                      onChange={(e) => {
-                        const next = new Set(selectedTeachers);
-                        if (e.target.checked) next.add(t.id);
-                        else next.delete(t.id);
-                        setSelectedTeachers(next);
-                      }} 
-                    />
-                    {t.name} ({t.email})
-                  </label>
-                ))}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <span style={{ fontWeight: 600, fontSize: 14 }}>Select Teachers</span>
+                <span style={{ fontSize: 13, color: "#6b7488" }}>{selectedTeachers.size} selected</span>
               </div>
-              <button className="confirm-btn-primary" onClick={handleSave} disabled={saving}>
-                {saving ? "Saving…" : "Save Assignments"}
-              </button>
+
+              {fetchingBatch || loadingTeachers ? (
+                <p style={{ color: "#6b7488", padding: "20px 0" }}>Loading teachers…</p>
+              ) : (
+                <div style={{ 
+                  display: "grid", 
+                  gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", 
+                  gap: 12, 
+                  maxHeight: 400, 
+                  overflowY: "auto",
+                  marginBottom: 24,
+                  paddingRight: 8
+                }}>
+                  {teachers.map((t) => (
+                    <label 
+                      key={t.id} 
+                      style={{ 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: 10, 
+                        padding: "10px 14px", 
+                        border: `1px solid ${selectedTeachers.has(t.id) ? "#3b4cca" : "#e6e9f0"}`, 
+                        borderRadius: 8, 
+                        cursor: "pointer",
+                        background: selectedTeachers.has(t.id) ? "#e8ebfd" : "#fff"
+                      }}
+                    >
+                      <input 
+                        type="checkbox" 
+                        checked={selectedTeachers.has(t.id)} 
+                        onChange={() => toggleTeacher(t.id)} 
+                      />
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: 13.5 }}>{t.name}</div>
+                        <div style={{ fontSize: 12, color: "#6b7488" }}>{t.teacher_id}</div>
+                      </div>
+                    </label>
+                  ))}
+                  {teachers.length === 0 && (
+                    <p style={{ color: "#6b7488" }}>No teachers found in this institute.</p>
+                  )}
+                </div>
+              )}
+
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <button 
+                  className="confirm-btn-primary" 
+                  onClick={handleSave} 
+                  disabled={saving || fetchingBatch || loadingTeachers}
+                >
+                  {saving ? "Saving…" : "Save Mappings"}
+                </button>
+              </div>
             </>
           )}
         </div>

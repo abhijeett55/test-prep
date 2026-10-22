@@ -3,13 +3,11 @@ import Card, { CardRow } from "../../../../components/Card/Card";
 import { useApi } from "../../../../hooks/useApi";
 import { listSubjects, deleteSubject, type SubjectRow } from "../../../../api/auth/admin/subjects";
 import { errorMessage } from "../../../../api/client";
-import CreateSubjectDialog from "./CreateSubjectDialog";
 import "../student-management/Performance.css";
 
 export default function SubjectsPage() {
   // We pass an empty object to listSubjects for default params
   const { data, loading, error, reload } = useApi(() => listSubjects({}));
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
@@ -29,9 +27,7 @@ export default function SubjectsPage() {
           <h1>All Subjects</h1>
           <p>Manage the subjects available in your institute</p>
         </div>
-        <button className="perf-btn" onClick={() => setIsCreateOpen(true)}>
-          + Create Subject
-        </button>
+        {/* The Create button is removed because it has its own route in the sidebar */}
       </div>
 
       {(error || actionError) && (
@@ -60,16 +56,11 @@ export default function SubjectsPage() {
         ))}
 
         {!loading && (data?.length ?? 0) === 0 && (
-          <div className="card-empty">No subjects found. Create one!</div>
+          <div className="card-empty">
+            No subjects found. Use the "Create Subject" tab in the sidebar to add one.
+          </div>
         )}
       </div>
-
-      {isCreateOpen && (
-        <CreateSubjectDialog 
-          onClose={() => setIsCreateOpen(false)} 
-          onSuccess={reload} 
-        />
-      )}
     </div>
   );
 }
