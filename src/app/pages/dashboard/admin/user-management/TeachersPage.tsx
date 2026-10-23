@@ -12,7 +12,7 @@ import {
 import type {
   TeacherRow,
 } from "../../../../api/types";
-import { getMyInstitute } from "../../../../api/auth/admin/institute"; // <-- ADDED
+import { getMyInstitute } from "../../../../api/auth/admin/institute";
 import { useApi } from "../../../../hooks/useApi";
 import { errorMessage } from "../../../../api/client";
 import EditTeacherDialog from "./EditTeacherDialog";
@@ -50,7 +50,7 @@ export type TeacherDetail = TeacherRow & {
 export default function TeachersPage() {
   const { data, loading, error, reload } = useApi(() => listTeachers());
   const { data: options } = useApi(() => getTeacherOptions());
-  const { data: myInstitute } = useApi(() => getMyInstitute()); // <-- FETCH ADMIN INSTITUTE
+  const { data: myInstitute } = useApi(() => getMyInstitute());
 
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState("");
@@ -67,7 +67,6 @@ export default function TeachersPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [tempPassword, setTempPassword] = useState<string | null>(null);
 
-  // FILTER TEACHERS TO ONLY SHOW THOSE IN THE ADMIN'S INSTITUTE
   const teachers = useMemo(() => {
     const allTeachers = data ?? [];
     if (!myInstitute) return [];
@@ -147,207 +146,206 @@ export default function TeachersPage() {
 
   /* ---------- render ---------- */
 
-  if (showForm && options && myInstitute) {
-    return (
-      <div className="default-page">
+  return (
+    <div className="default-page">
+      {/* REMOVED THE EARLY RETURN. USING TERNARY INSTEAD */}
+      {showForm && options && myInstitute ? (
         <TeacherForm
-          institutes={[{ id: myInstitute.id, name: myInstitute.institute_name }]} // <-- PASS ONLY ADMIN INSTITUTE
+          institutes={[{ id: myInstitute.id, name: myInstitute.institute_name }]} 
           subjects={options.subjects}
           onSubmit={handleFormSubmit}
           onCancel={() => setShowForm(false)}
         />
-      </div>
-    );
-  }
-
-  return (
-    <div className="default-page">
-      {error && (
-        <div
-          className="perf-success"
-          style={{ background: "#fdeaea", color: "#c62f2f", marginBottom: 12 }}
-        >
-          {error}
-        </div>
-      )}
-
-      {tempPassword && (
-        <div
-          className="perf-success"
-          style={{ marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}
-        >
-          <div>
-            <strong>Temporary password:</strong>{" "}
-            <code style={{ fontFamily: "monospace" }}>{tempPassword}</code>
-            <div style={{ fontSize: 12, opacity: 0.75, marginTop: 2 }}>
-              Share with the teacher. Shown only once.
+      ) : (
+        <>
+          {error && (
+            <div
+              className="perf-success"
+              style={{ background: "#fdeaea", color: "#c62f2f", marginBottom: 12 }}
+            >
+              {error}
             </div>
-          </div>
-          <button
-            type="button"
-            className="perf-btn outline"
-            onClick={() => setTempPassword(null)}
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
+          )}
 
-      {loading && !data && <div className="default-empty">Loading teachers…</div>}
-
-      {!loading && teachers.length === 0 && (
-        <div className="default-empty">
-          <p>No teachers added yet.</p>
-          <button
-            type="button"
-            className="add-button"
-            onClick={() => setShowForm(true)}
-          >
-            <Plus size={16} strokeWidth={2.4} />
-            Add your first teacher
-          </button>
-        </div>
-      )}
-
-      {!loading && teachers.length > 0 && (
-        <div className="default-panel">
-          <div className="section-bar">All Teachers</div>
-
-          <div className="default-toolbar">
-            <div className="search-control">
-              <Search size={15} strokeWidth={2} />
-              <input
-                type="text"
-                placeholder="Search teachers…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="default-table-wrap">
-            <table className="default-table">
-              <thead>
-                <tr>
-                  <th className="col-sno">Sr. No.</th>
-                  <th>Teacher ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Institute</th>
-                  <th>Subject</th>
-                  <th>Employee Code</th>
-                  <th>Qualification</th>
-                  <th className="col-actions">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visible.map((t, i) => (
-                  <tr key={t.id}>
-                    <td className="col-sno">{i + 1}</td>
-                    <td>{t.teacher_id}</td>
-                    <td className="cell-name">{t.name}</td>
-                    <td>{t.email || "—"}</td>
-                    <td>{t.phone || "—"}</td>
-                    <td>{t.institute || "—"}</td>
-                    <td>{t.subject || "—"}</td>
-                    <td>{t.employee_code || "—"}</td>
-                    <td>{t.qualification || "—"}</td>
-                    <td className="col-actions">
-                      <button
-                        type="button"
-                        className="icon-button"
-                        title="Assign Subjects"
-                        disabled={rowBusyId === t.id}
-                        onClick={() => openDialog(t, "subjects")}
-                      >
-                        <Library size={15} strokeWidth={2} />
-                      </button>
-                      <button
-                        type="button"
-                        className="icon-button"
-                        title="Assign Courses"
-                        disabled={rowBusyId === t.id}
-                        onClick={() => openDialog(t, "courses")}
-                      >
-                        <BookOpen size={15} strokeWidth={2} />
-                      </button>
-                      <button
-                        type="button"
-                        className="icon-button"
-                        title="Map Students"
-                        disabled={rowBusyId === t.id}
-                        onClick={() => openDialog(t, "students")}
-                      >
-                        <Users size={15} strokeWidth={2} />
-                      </button>
-                      <button
-                        type="button"
-                        className="icon-button"
-                        title="Edit"
-                        disabled={rowBusyId === t.id}
-                        onClick={() => openDialog(t, "edit")}
-                      >
-                        <Pencil size={15} strokeWidth={2} />
-                      </button>
-                      <button
-                        type="button"
-                        className="icon-button"
-                        title="View"
-                      >
-                        <Eye size={15} strokeWidth={2} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-
-                {visible.length === 0 && (
-                  <tr>
-                    <td colSpan={10} className="no-results">
-                      No teachers match "{search}".
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="default-footer">
-            <label className="entries-control">
-              Show
-              <select
-                value={entriesPerPage}
-                onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+          {tempPassword && (
+            <div
+              className="perf-success"
+              style={{ marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <div>
+                <strong>Temporary password:</strong>{" "}
+                <code style={{ fontFamily: "monospace" }}>{tempPassword}</code>
+                <div style={{ fontSize: 12, opacity: 0.75, marginTop: 2 }}>
+                  Share with the teacher. Shown only once.
+                </div>
+              </div>
+              <button
+                type="button"
+                className="perf-btn outline"
+                onClick={() => setTempPassword(null)}
               >
-                {ENTRY_OPTIONS.map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-              entries
-            </label>
-
-            <div className="default-footer-note">
-              Showing {visible.length} of {filtered.length} teacher
-              {filtered.length === 1 ? "" : "s"}
+                Dismiss
+              </button>
             </div>
-          </div>
-        </div>
+          )}
+
+          {loading && !data && <div className="default-empty">Loading teachers…</div>}
+
+          {!loading && teachers.length === 0 && (
+            <div className="default-empty">
+              <p>No teachers added yet.</p>
+              <button
+                type="button"
+                className="add-button"
+                onClick={() => setShowForm(true)}
+              >
+                <Plus size={16} strokeWidth={2.4} />
+                Add your first teacher
+              </button>
+            </div>
+          )}
+
+          {!loading && teachers.length > 0 && (
+            <div className="default-panel">
+              <div className="section-bar">All Teachers</div>
+
+              <div className="default-toolbar">
+                <div className="search-control">
+                  <Search size={15} strokeWidth={2} />
+                  <input
+                    type="text"
+                    placeholder="Search teachers…"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="default-table-wrap">
+                <table className="default-table">
+                  <thead>
+                    <tr>
+                      <th className="col-sno">Sr. No.</th>
+                      <th>Teacher ID</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Institute</th>
+                      <th>Subject</th>
+                      <th>Employee Code</th>
+                      <th>Qualification</th>
+                      <th className="col-actions">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visible.map((t, i) => (
+                      <tr key={t.id}>
+                        <td className="col-sno">{i + 1}</td>
+                        <td>{t.teacher_id}</td>
+                        <td className="cell-name">{t.name}</td>
+                        <td>{t.email || "—"}</td>
+                        <td>{t.phone || "—"}</td>
+                        <td>{t.institute || "—"}</td>
+                        <td>{t.subject || "—"}</td>
+                        <td>{t.employee_code || "—"}</td>
+                        <td>{t.qualification || "—"}</td>
+                        <td className="col-actions">
+                          <button
+                            type="button"
+                            className="icon-button"
+                            title="Assign Subjects"
+                            disabled={rowBusyId === t.id}
+                            onClick={() => openDialog(t, "subjects")}
+                          >
+                            <Library size={15} strokeWidth={2} />
+                          </button>
+                          <button
+                            type="button"
+                            className="icon-button"
+                            title="Assign Courses"
+                            disabled={rowBusyId === t.id}
+                            onClick={() => openDialog(t, "courses")}
+                          >
+                            <BookOpen size={15} strokeWidth={2} />
+                          </button>
+                          <button
+                            type="button"
+                            className="icon-button"
+                            title="Map Students"
+                            disabled={rowBusyId === t.id}
+                            onClick={() => openDialog(t, "students")}
+                          >
+                            <Users size={15} strokeWidth={2} />
+                          </button>
+                          <button
+                            type="button"
+                            className="icon-button"
+                            title="Edit"
+                            disabled={rowBusyId === t.id}
+                            onClick={() => openDialog(t, "edit")}
+                          >
+                            <Pencil size={15} strokeWidth={2} />
+                          </button>
+                          <button
+                            type="button"
+                            className="icon-button"
+                            title="View"
+                          >
+                            <Eye size={15} strokeWidth={2} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+
+                    {visible.length === 0 && (
+                      <tr>
+                        <td colSpan={10} className="no-results">
+                          No teachers match "{search}".
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="default-footer">
+                <label className="entries-control">
+                  Show
+                  <select
+                    value={entriesPerPage}
+                    onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+                  >
+                    {ENTRY_OPTIONS.map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                  entries
+                </label>
+
+                <div className="default-footer-note">
+                  Showing {visible.length} of {filtered.length} teacher
+                  {filtered.length === 1 ? "" : "s"}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!showForm && teachers.length > 0 && (
+            <button
+              type="button"
+              className="add-button-fab"
+              onClick={() => setShowForm(true)}
+            >
+              <Plus size={18} strokeWidth={2.6} />
+              <span>Add Teacher</span>
+            </button>
+          )}
+        </>
       )}
 
-      {!showForm && teachers.length > 0 && (
-        <button
-          type="button"
-          className="add-button-fab"
-          onClick={() => setShowForm(true)}
-        >
-          <Plus size={18} strokeWidth={2.6} />
-          <span>Add Teacher</span>
-        </button>
-      )}
-
-      {/* --- Add confirmation --- */}
+      {/* --- Add confirmation (Now it will actually show!) --- */}
       {pendingTeacher && (
         <div className="confirm-overlay" role="dialog" aria-modal="true">
           <div className="confirm-card">
