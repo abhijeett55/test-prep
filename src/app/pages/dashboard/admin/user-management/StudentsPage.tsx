@@ -6,7 +6,6 @@ import {
   listStudents,
   createStudent,
   getStudent,
-  getStudentOptions,
   type StudentRow,
   type StudentDetail,
 } from "../../../../api/auth/admin/students";
@@ -28,7 +27,6 @@ const STATUS_OPTIONS = [
 
 export default function StudentsPage() {
   const { data, loading, error, reload } = useApi(() => listStudents());
-  const { data: options } = useApi(() => getStudentOptions());
   const { data: myInstitute } = useApi(() => getMyInstitute());
 
   const [showForm, setShowForm] = useState(false);
@@ -84,12 +82,11 @@ export default function StudentsPage() {
     setSaveError(null);
 
     try {
-      const full_name =
-        `${pendingStudent.firstName ?? ""} ${pendingStudent.LastName ?? ""}`.trim();
-      const father_name =
-        `${pendingStudent.fatherFirstName ?? ""} ${pendingStudent.fatherLastName ?? ""}`.trim();
-      const mother_name =
-        `${pendingStudent.motherFirstName ?? ""} ${pendingStudent.motherLastName ?? ""}`.trim();
+      // FIXED: Mapping to the exact fields from studentFormConfig
+      const full_name = pendingStudent.fullName ?? "";
+      const father_name = pendingStudent.fatherFullName ?? "";
+      // Combining mother's first and last name based on your config
+      const mother_name = `${pendingStudent.motherFullName ?? ""} ${pendingStudent.motherLastName ?? ""}`.trim();
 
       await createStudent({
         full_name,
@@ -136,10 +133,10 @@ export default function StudentsPage() {
 
   return (
     <div className="default-page">
-      {showForm && options && myInstitute ? (
+      {showForm && myInstitute ? (
         <StudentForm
           institutes={[{ id: myInstitute.id, name: myInstitute.institute_name }]} 
-          subjects={options.subjects}
+          // REMOVED: subjects prop
           statuses={STATUS_OPTIONS}
           onSubmit={handleFormSubmit}
           onCancel={() => setShowForm(false)}
@@ -295,7 +292,8 @@ export default function StudentsPage() {
             <h3 className="confirm-title">Add this student?</h3>
             <p className="confirm-subtitle">Please confirm the details before adding them to the list.</p>
             <div className="confirm-details">
-              <div className="confirm-row"><span>Name</span><strong>{`${pendingStudent.firstName ?? ""} ${pendingStudent.LastName ?? ""}`.trim() || "—"}</strong></div>
+              {/* FIXED: Using fullName instead of firstName/LastName */}
+              <div className="confirm-row"><span>Name</span><strong>{pendingStudent.fullName || "—"}</strong></div>
               <div className="confirm-row"><span>Email</span><strong>{pendingStudent.email || "—"}</strong></div>
             </div>
             {saveError && <p className="confirm-error">{saveError}</p>}

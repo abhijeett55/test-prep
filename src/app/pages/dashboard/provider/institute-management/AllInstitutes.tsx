@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
+import { Plus, X } from "lucide-react";
 import {
   listInstitutes,
   updateInstitute,
   type InstituteStatus,
+  createInstitute,
 } from "../../../../api/auth/institute/institute";
 import type { InstituteProfile } from "../../../../api/types";
 import { errorMessage } from "../../../../api/client";
+import type { FormValues } from "../../../../components/FormLayout/types";
+import InstituteForm from "../../../../config/nav-user/institute/InstituteForm";
 import "./Performance.css";
 
 function formatDate(iso: string): string {
@@ -38,6 +42,12 @@ export default function AllInstitutes() {
 
   const [busyId, setBusyId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  // --- NEW FORM STATES ---
+  const [showForm, setShowForm] = useState(false);
+  const [pendingInstitute, setPendingInstitute] = useState<FormValues | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const fetchInstitutes = async () => {
     setLoading(true);
@@ -103,13 +113,92 @@ export default function AllInstitutes() {
     }
   };
 
+  // --- NEW: FORM SUBMIT LOGIC ---
+  const handleFormSubmit = (values: FormValues) => {
+    setSaveError(null);
+    setPendingInstitute(values);
+  };
+
+  const confirmAddInstitute = async () => {
+    if (!pendingInstitute || saving) return;
+    setSaving(true);
+    setSaveError(null);
+
+    try {
+      // MAP TO YOUR ACTUAL API PAYLOAD
+      await createInstitute({
+        institute_name: pendingInstitute.institute_name ?? "",
+        code: pendingInstitute.code ?? "",
+        email: pendingInstitute.email ?? "",
+        phone: pendingInstitute.phone ?? "",
+        address: pendingInstitute.address ?? "",
+      });
+
+      await fetchInstitutes();
+      setPendingInstitute(null);
+      setShowForm(false);
+    } catch (err) {
+      setSaveError(errorMessage(err));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // --- RENDER FORM INSTEAD OF TABLE IF SHOWFORM IS TRUE ---
+  if (showForm) {
+    return (
+      <div className="perf-page">
+        <InstituteForm
+          onSubmit={handleFormSubmit}
+          onCancel={() => setShowForm(false)}
+        />
+        {/* Confirmation Modal */}
+        {pendingInstitute && (
+          <div className="confirm-overlay" role="dialog" aria-modal="true">
+            <div className="confirm-card">
+              <button
+                type="button"
+                className="confirm-close"
+                onClick={() => setPendingInstitute(null)}
+                disabled={saving}
+              >
+                <X size={16} strokeWidth={2.2} />
+              </button>
+              <div className="confirm-icon"><Plus size={20} strokeWidth={2.4} /></div>
+              <h3 className="confirm-title">Add this institute?</h3>
+              <p className="confirm-subtitle">Please confirm the details before adding.</p>
+              <div className="confirm-details">
+                <div className="confirm-row"><span>Name</span><strong>{pendingInstitute.institute_name || "—"}</strong></div>
+                <div className="confirm-row"><span>Code</span><strong>{pendingInstitute.code || "—"}</strong></div>
+                <div className="confirm-row"><span>Email</span><strong>{pendingInstitute.email || "—"}</strong></div>
+              </div>
+              {saveError && <p className="confirm-error">{saveError}</p>}
+              <div className="confirm-actions">
+                <button type="button" className="confirm-btn-secondary" onClick={() => setPendingInstitute(null)} disabled={saving}>Cancel</button>
+                <button type="button" className="confirm-btn-primary" onClick={confirmAddInstitute} disabled={saving}>{saving ? "Saving…" : "Yes, add"}</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // --- STANDARD TABLE RENDER ---
   return (
     <div className="perf-page">
-      <div className="perf-header">
+      <div className="perf-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
           <h1>All Institutes</h1>
           <p>Institutes registered on the platform</p>
         </div>
+        <button
+          className="perf-btn primary"
+          onClick={() => setShowForm(true)}
+          style={{ display: "flex", alignItems: "center", gap: "6px" }}
+        >
+          <Plus size={16} /> Add Institute
+        </button>
       </div>
 
       <div className="perf-filters">
@@ -157,67 +246,45 @@ export default function AllInstitutes() {
 
             {!loading && loadError && (
               <tr>
-                <td
-                  colSpan={8}
-                  style={{ textAlign: "center", padding: 24, color: "#c62f2f" }}
-                >
+                <td colSpan={8} style={{ textAlign: "center", padding: 24, color: "#c62f2f" }}>
                   {loadError}{" "}
-                  <button
-                    className="perf-btn outline"
-                    style={{ marginLeft: 12 }}
-                    onClick={fetchInstitutes}
-                  >
+                  <button className="perf-btn outline" style={{ marginLeft: 12 }} onClick={fetchInstitutes}>
                     Retry
                   </button>
                 </td>
               </tr>
             )}
 
-            {!loading &&
-              !loadError &&
-              visible.map((i) => {
-                const isSuspended = i.status === "SUSPENDED";
-                const busy = busyId === i.id;
-                return (
-                  <tr key={i.id}>
-                    <td className="perf-id">{i.institute_id}</td>
-                    <td className="perf-strong">{i.institute_name}</td>
-                    <td>{i.code}</td>
-                    <td>{i.email}</td>
-                    <td>{i.phone || "—"}</td>
-                    <td>
-                      <StatusBadge status={i.status} />
-                    </td>
-                    <td>{formatDate(i.created_at)}</td>
-                    <td>
-                      {isSuspended ? (
-                        <button
-                          className="perf-btn outline"
-                          onClick={() => handleReactivate(i)}
-                          disabled={busy}
-                        >
-                          {busy ? "Working…" : "Reactivate"}
-                        </button>
-                      ) : (
-                        <button
-                          className="perf-btn danger-outline"
-                          onClick={() => handleSuspend(i)}
-                          disabled={busy}
-                        >
-                          {busy ? "Working…" : "Suspend"}
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
+            {!loading && !loadError && visible.map((i) => {
+              const isSuspended = i.status === "SUSPENDED";
+              const busy = busyId === i.id;
+              return (
+                <tr key={i.id}>
+                  <td className="perf-id">{i.institute_id}</td>
+                  <td className="perf-strong">{i.institute_name}</td>
+                  <td>{i.code}</td>
+                  <td>{i.email}</td>
+                  <td>{i.phone || "—"}</td>
+                  <td><StatusBadge status={i.status} /></td>
+                  <td>{formatDate(i.created_at)}</td>
+                  <td>
+                    {isSuspended ? (
+                      <button className="perf-btn outline" onClick={() => handleReactivate(i)} disabled={busy}>
+                        {busy ? "Working…" : "Reactivate"}
+                      </button>
+                    ) : (
+                      <button className="perf-btn danger-outline" onClick={() => handleSuspend(i)} disabled={busy}>
+                        {busy ? "Working…" : "Suspend"}
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
 
             {!loading && !loadError && visible.length === 0 && (
               <tr>
-                <td
-                  colSpan={8}
-                  style={{ textAlign: "center", color: "#6b7280", padding: 24 }}
-                >
+                <td colSpan={8} style={{ textAlign: "center", color: "#6b7280", padding: 24 }}>
                   {search ? `No institutes match "${search}".` : "No institutes yet."}
                 </td>
               </tr>

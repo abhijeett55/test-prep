@@ -16,7 +16,6 @@ export const providerNav: NavItem[] = [
     label: "Institute Management",
     icon: Building2,
     children: [
-      { label: "Onboard Institute", path: "/dashboard/provider/institute-management/onboard-institutes" },
       { label: "All Institutes", path: "/dashboard/provider/institute-management/all-institutes" },
       { label: "Suspended Institutes", path: "/dashboard/provider/institute-management/suspended-institutes" },
     ],

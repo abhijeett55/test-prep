@@ -4,7 +4,6 @@ import Navbar from "../../../components/Navbar/Navbar";
 import Footer from "../../../components/Footer/Footer";
 import { providerNav } from "../../../config/dashboard/providerNav";
 import AllInstitutes from "./institute-management/AllInstitutes";
-import OnboardInstitutes from "./institute-management/OnboardInstitutes";
 import ProfilePage from "../../account/ProfilePage";
 import ChangePasswordPage from "../../account/ChangePasswordPage";
 import SuspendedInstitutes from "./institute-management/SuspendedInstitutes";
@@ -25,7 +24,6 @@ export default function ProviderDashboardPage() {
           <Routes>
 
             <Route index element={<ProviderOverviewPage />} />
-            <Route path="institute-management/onboard-institutes" element={<OnboardInstitutes />} />
             <Route path="institute-management/all-institutes" element={<AllInstitutes />} />
             <Route path="institute-management/suspended-institutes" element={<SuspendedInstitutes />} />
             <Route path="*" element={<Navigate to="/dashboard/provider" replace />} />

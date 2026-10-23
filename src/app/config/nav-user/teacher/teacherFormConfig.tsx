@@ -31,9 +31,9 @@ export const teacherFormConfig: FormConfig = {
         lngField: "longitude",
       },
       fields: [
-        { name: "ip_address", label: "IP address", type: "text", placeholder: "Auto-detected or enter manually" },
-        { name: "latitude", label: "Latitude", type: "text", placeholder: "e.g. 28.61393910" },
-        { name: "longitude", label: "Longitude", type: "text", placeholder: "e.g. 77.20902120" },
+        { name: "ip_address", label: "IP address", type: "hidden", placeholder: "Auto-detected or enter manually" },
+        { name: "latitude", label: "Latitude", type: "hidden", placeholder: "e.g. 28.61393910" },
+        { name: "longitude", label: "Longitude", type: "hidden", placeholder: "e.g. 77.20902120" },
       ],
     },
   ],

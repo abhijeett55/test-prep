@@ -6,9 +6,8 @@ type FormLayoutProps = {
   config: FormConfig;
   values: FormValues;
   onChange: (name: string, value: string) => void;
-  /** Options for every "select" field, keyed by that field's optionsKey. */
   optionsMap?: Record<string, Option[]>;
-  /** Which field names are required to enable submit, beyond each field's own `required`. */
+  
   onSubmit: (values: FormValues) => void | Promise<void>;
   onCancel?: () => void;
 };
@@ -22,7 +21,7 @@ export default function FormLayout({
   onCancel,
 }: FormLayoutProps) {
   const [submitting, setSubmitting] = useState(false);
-  const [locating, setLocating] = useState<string | null>(null); // section title being located
+  const [locating, setLocating] = useState<string | null>(null);
   const [locateError, setLocateError] = useState<string | null>(null);
 
   const requiredFields = config.sections.flatMap((s) =>
@@ -86,23 +85,36 @@ export default function FormLayout({
         <div className="form-layout-section" key={section.title}>
           <div className="section-header-row">
             <h3>{section.title}</h3>
-            {section.geoDetect && (
-              <button
-                type="button"
-                className="detect-button"
-                onClick={() =>
-                  detectLocation(
-                    section.title,
-                    section.geoDetect!.ipField,
-                    section.geoDetect!.latField,
-                    section.geoDetect!.lngField
-                  )
-                }
-                disabled={locating === section.title}
-              >
-                {locating === section.title ? "Detecting…" : "Auto-detect"}
-              </button>
-            )}
+            {section.geoDetect && (() => {
+              // Check if the values already exist in the form state
+              const isDetected = Boolean(
+                values[section.geoDetect.ipField] || values[section.geoDetect.latField]
+              );
+
+              return (
+                <button
+                  type="button"
+                  className="detect-button"
+                  onClick={() =>
+                    detectLocation(
+                      section.title,
+                      section.geoDetect!.ipField,
+                      section.geoDetect!.latField,
+                      section.geoDetect!.lngField
+                    )
+                  }
+                  // Optional: disable the button if it's already detected so they can't spam it
+                  disabled={locating === section.title || isDetected} 
+                  style={isDetected ? { borderColor: "#16a34a", color: "#16a34a", background: "#f0fdf4" } : {}}
+                >
+                  {locating === section.title 
+                    ? "Detecting…" 
+                    : isDetected 
+                      ? "Detected ✓" 
+                      : "Auto-detect"}
+                </button>
+              );
+            })()}
           </div>
 
           {section.geoDetect && locateError && (
@@ -110,39 +122,53 @@ export default function FormLayout({
           )}
 
           <div className="form-layout-grid">
-            {section.fields.map((field) => (
-              <div className={`field${field.type === "textarea" ? " full" : ""}`}
-                key={field.name}>
-                <label htmlFor={field.name}>{field.label}</label>
-
-                {field.type === "select" ? (
-                  <select
-                    id={field.name}
-                    value={values[field.name] ?? ""}
-                    onChange={handleChange(field.name)}
-                    required={field.required}
-                  >
-                    <option value="" disabled={field.required}>
-                      {field.emptyOptionLabel ?? "Select…"}
-                    </option>
-                    {(optionsMap[field.optionsKey ?? ""] ?? []).map((opt) => (
-                      <option key={opt.id} value={opt.id}>
-                        {opt.name}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
+            {section.fields.map((field) => {
+              // If the field is marked as hidden, render ONLY the hidden input and skip the label/UI
+              if (field.type === "hidden") {
+                return (
                   <input
-                    id={field.name}
-                    type={field.type}
+                    key={field.name}
+                    type="hidden"
+                    name={field.name}
                     value={values[field.name] ?? ""}
                     onChange={handleChange(field.name)}
-                    placeholder={field.placeholder}
-                    required={field.required}
                   />
-                )}
-              </div>
-            ))}
+                );
+              }
+
+              return (
+                <div className={`field${field.type === "textarea" ? " full" : ""}`} key={field.name}>
+                  <label htmlFor={field.name}>{field.label}</label>
+
+                  {field.type === "select" ? (
+                    <select
+                      id={field.name}
+                      value={values[field.name] ?? ""}
+                      onChange={handleChange(field.name)}
+                      required={field.required}
+                    >
+                      <option value="" disabled={field.required}>
+                        {field.emptyOptionLabel ?? "Select…"}
+                      </option>
+                      {(optionsMap[field.optionsKey ?? ""] ?? []).map((opt) => (
+                        <option key={opt.id} value={opt.id}>
+                          {opt.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      id={field.name}
+                      type={field.type}
+                      value={values[field.name] ?? ""}
+                      onChange={handleChange(field.name)}
+                      placeholder={field.placeholder}
+                      required={field.required}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {i < config.sections.length - 1 && <div className="section-divider" />}

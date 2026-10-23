@@ -5,7 +5,6 @@ import { buildInitialValues, type Option, type FormValues } from "../../../compo
 
 type AddStudentFormProps = {
   institutes: Option[];
-  subjects: Option[];
   statuses: Option[];
   onSubmit: (values: FormValues) => void | Promise<void>;
   onCancel?: () => void;
@@ -13,7 +12,6 @@ type AddStudentFormProps = {
 
 export default function StudentForm({
   institutes,
-  subjects,
   statuses,
   onSubmit,
   onCancel,
@@ -25,7 +23,7 @@ export default function StudentForm({
       config={studentFormConfig}
       values={values}
       onChange={(name, value) => setValues((prev) => ({ ...prev, [name]: value }))}
-      optionsMap={{ institutes, subjects, statuses }}
+      optionsMap={{ institutes, statuses }}
       onSubmit={onSubmit}
       onCancel={onCancel}
     />

@@ -8,15 +8,12 @@ export const studentFormConfig: FormConfig = {
     {
       title: "Account details",
       fields: [
-        { name: "firstName", label: "First name", type: "text", required: true },
-        { name: "LastName", label: "Last name", type: "text", required: true },
+        { name: "fullName", label: "Full name", type: "text", required: true },
         { name: "email", label: "Email", type: "email", required: true },
-        { name: "phone", label: "Phone", type: "text" },
-        { name: "fatherFirstName", label: "Father First name", type: "text", required: true },
-        { name: "fatherLastName", label: "Father Last name", type: "text", required: true },
+        { name: "phone", label: "Phone", type: "text", required: true },
+        { name: "fatherFullName", label: "Father Full name", type: "text", required: true },
         { name: "fatherPhone", label: "Phone", type: "text" },
-        { name: "motherFirstName", label: "Mother First name", type: "text", required: true },
-        { name: "motherLastName", label: "Mother Last name", type: "text", required: true },
+        { name: "motherFullName", label: "Mother Full name", type: "text", required: true },
         { name: "motherPhone", label: "Phone", type: "text" },
         { name: "address", label: "Address", type: "text", required: true },
       ],
@@ -32,21 +29,12 @@ export const studentFormConfig: FormConfig = {
           emptyOptionLabel: "Select institute",
         },
         {
-          name: "subject_ids",
-          label: "Subjects",
-          type: "select",
-          optionsKey: "subjects",
-          emptyOptionLabel: "Not assigned yet",
-        },
-        {
           name: "status",
           label: "Status",
           type: "select",
           optionsKey: "statuses",
           emptyOptionLabel: "Select status",
         },
-        // NEW: mirrors the `placeholder` column on the Student model.
-        // Rename `name`/`label` once you decide what this field actually holds.
         {
           name: "placeholder",
           label: "Placeholder",
@@ -66,19 +54,19 @@ export const studentFormConfig: FormConfig = {
         {
           name: "ip_address",
           label: "IP address",
-          type: "text",
+          type: "hidden",
           placeholder: "Auto-filled on detect",
         },
         {
           name: "latitude",
           label: "Latitude",
-          type: "text",
+          type: "hidden",
           placeholder: "Auto-filled on detect",
         },
         {
           name: "longitude",
           label: "Longitude",
-          type: "text",
+          type: "hidden",
           placeholder: "Auto-filled on detect",
         },
       ],
