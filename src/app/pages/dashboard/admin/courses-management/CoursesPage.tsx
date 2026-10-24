@@ -13,7 +13,7 @@ import { useApi } from "../../../../hooks/useApi";
 import { errorMessage } from "../../../../api/client";
 import AssignTeachersToCourseDialog from "./AssignTeachersToCourseDialog"; // <-- The dialog!
 import EnrollStudentsDialog from "./EnrollStudentsDialog";
-import "./DefaultPage.css";
+import "../DefaultPage.css";
 
 const ENTRY_OPTIONS = [10, 25, 50];
 

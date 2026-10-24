@@ -8,7 +8,7 @@ import {
   type FeeStatusValue,
 } from "../../../../api/auth/admin/students";
 import { errorMessage } from "../../../../api/client";
-import "./Performance.css";
+import "../DefaultPage.css";
 
 const rupees = (n: number) => `₹${Number(n).toLocaleString("en-IN")}`;
 

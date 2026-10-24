@@ -10,6 +10,7 @@ export const testsetterFormConfig: FormConfig = {
       fields: [
         { name: "fullName", label: "Full name", type: "text", required: true },
         { name: "email", label: "Email", type: "email", required: true },
+        { name: "phone", label: "Phone number", type: "text", required: false },
         { name: "testsetter_id", label: "Test Setter ID", type: "text", required: true },
       ],
     },
@@ -24,20 +25,7 @@ export const testsetterFormConfig: FormConfig = {
           optionsKey: "institutes",
           emptyOptionLabel: "Select institute",
         },
-        {
-          name: "subject_id",
-          label: "Subject",
-          type: "select",
-          optionsKey: "subjects",
-          emptyOptionLabel: "Not assigned yet",
-        },
         { name: "employee_code", label: "Employee code", type: "text" },
-        {
-          name: "qualification",
-          label: "Qualification",
-          type: "text",
-          placeholder: "e.g. M.Sc. Physics",
-        },
       ],
     },
   ],

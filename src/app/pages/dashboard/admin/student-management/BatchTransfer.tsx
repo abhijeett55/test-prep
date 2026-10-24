@@ -8,7 +8,7 @@ import {
   type TransferStatus,
 } from "../../../../api/auth/admin/students";
 import { errorMessage } from "../../../../api/client";
-import "./Performance.css";
+import "../DefaultPage.css";
 
 const tone: Record<TransferStatus, CardTone> = {
   PENDING: "warning",

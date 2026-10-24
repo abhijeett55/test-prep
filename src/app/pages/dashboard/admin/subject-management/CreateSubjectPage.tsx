@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createSubject, type SubjectCreate } from "../../../../api/auth/admin/subjects";
 import { errorMessage } from "../../../../api/client";
-import "../student-management/Performance.css";
+import "../DefaultPage.css";
 
 export default function CreateSubjectPage() {
   const navigate = useNavigate();

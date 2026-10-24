@@ -3,7 +3,7 @@ import { X, BookOpen } from "lucide-react";
 import { listCourses, assignTeachersToCourse } from "../../../../api/auth/admin/courses";
 import type { CourseRow, TeacherRow } from "../../../../api/types";
 import { errorMessage } from "../../../../api/client";
-import "./DefaultPage.css";
+import "../DefaultPage.css";
 
 type Props = {
   teacher: TeacherRow;

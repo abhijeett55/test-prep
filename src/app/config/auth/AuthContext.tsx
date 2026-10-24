@@ -51,17 +51,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
 
       async login(role, userId, password) {
-        // 👇 single call — API layer handles the role → endpoint mapping
+        // 1. API layer handles the role → endpoint mapping
         const data = await apiLogin(role, userId, password);
 
         localStorage.setItem(TOKEN_KEY, data.access_token);
 
+        // 2. FIX: Use the role returned by the backend (data.role). 
+        // Fallback to the passed-in role just in case it's missing.
+        const actualRole = (data.role || role) as Role;
+
         const authUser: AuthUser = {
           id: userId,
-          role,
+          role: actualRole, // <--- Now it saves the real role
           full_name: data.full_name,
           must_change_password: data.must_change_password,
         };
+        
         localStorage.setItem(USER_KEY, JSON.stringify(authUser));
         setUser(authUser);
         return authUser;

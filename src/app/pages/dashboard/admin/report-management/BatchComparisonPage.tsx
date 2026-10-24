@@ -1,6 +1,6 @@
 import { useApi } from "../../../../hooks/useApi";
 import { getBatchComparison } from "../../../../api/auth/admin/reports";
-import "./CoursesPage.css";
+import "../DefaultPage.css";
 
 export default function BatchComparisonPage() {
   const { data, loading, error } = useApi(() => getBatchComparison([]));

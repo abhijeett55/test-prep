@@ -6,7 +6,7 @@ import {
   type TeacherUpdate,
 } from "../../../../api/auth/teacher/teacher";
 import { errorMessage } from "../../../../api/client";
-import "./DefaultPage.css";
+import "../DefaultPage.css";
 
 type Props = {
   teacher: TeacherDetail;

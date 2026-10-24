@@ -3,7 +3,7 @@ import Card, { CardRow } from "../../../../components/Card/Card";
 import { useApi } from "../../../../hooks/useApi";
 import { listSubjects, deleteSubject, type SubjectRow } from "../../../../api/auth/admin/subjects";
 import { errorMessage } from "../../../../api/client";
-import "../student-management/Performance.css";
+import "../DefaultPage.css";
 
 export default function SubjectsPage() {
   // We pass an empty object to listSubjects for default params
@@ -50,7 +50,8 @@ export default function SubjectsPage() {
               </button>
             }
           >
-            <CardRow label="Subject ID" value={sub.id} />
+            
+            {/* Optional: Since you had it, I'll leave "Created On" but you can add "Courses" or "Teachers" here if you want */}
             <CardRow label="Created On" value={new Date(sub.created_at).toLocaleDateString()} />
           </Card>
         ))}

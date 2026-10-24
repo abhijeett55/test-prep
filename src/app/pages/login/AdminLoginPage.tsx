@@ -86,7 +86,11 @@ export default function AdminLoginPage() {
     setSubmitting(true);
     try {
       const user = await login("admin", userId, password);
-      navigate(ROLE_HOME_PATH[user.role]);
+      if (user.must_change_password) {
+        navigate(`/dashboard/${user.role}/change-password`);
+      } else {
+        navigate(ROLE_HOME_PATH[user.role]);
+      }
     } catch (err) {
       setError(errorMessage(err));
     }finally {
@@ -97,10 +101,6 @@ export default function AdminLoginPage() {
   return (
     <div className="login-page">
       <Ribbon />
-
-      <header className="login-header">
-        <h1 className="app-title">TestPrep</h1>
-      </header>
 
       <main className="login-main">
         <section className="login-card" aria-label="Sign in">
@@ -113,7 +113,7 @@ export default function AdminLoginPage() {
               )}
 
               <div className="field">
-                <label htmlFor="userId">User ID</label>
+                <label htmlFor="userId">Admin ID</label>
                 <input
                   id="userId"
                   type="text"

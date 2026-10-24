@@ -24,6 +24,7 @@ export default function ChangePasswordPage() {
   const canSubmit =
     current !== "" && longEnough && passwordsMatch && !busy;
 
+ 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!canSubmit) return;
@@ -32,13 +33,13 @@ export default function ChangePasswordPage() {
     setBusy(true);
     try {
       const segment = ROLE_API_SEGMENT[user!.role];
-      await client.post(`/api/v1/${segment}/change-password`, {
+      
+      await client.post(`/${segment}/change-password`, {
         current_password: current,
         new_password: next,
       });
 
       setOk(true);
-      // Force a clean re-login with the new password.
       setTimeout(() => {
         logout();
         navigate("/role", { replace: true });

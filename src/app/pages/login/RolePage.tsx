@@ -62,15 +62,11 @@ export default function RolePage() {
     <div className="role-page">
       <div className="role-banner">
         <span className="role-banner-logo">Test Prep</span>
-        <span className="role-banner-sub">(Online Exam Platform)</span>
+        <span className="role-banner-sub">(Online Education Platform)</span>
       </div>
 
       <main className="role-main">
         <h1 className="role-title">Welcome to Test Prep</h1>
-        <p className="role-subtitle">
-          A digital platform for Admins, Test Setters, Teachers and Providers to
-          create, schedule and analyse online tests on one common platform.
-        </p>
 
         <div className="role-grid">
           {roles.map((role) => {

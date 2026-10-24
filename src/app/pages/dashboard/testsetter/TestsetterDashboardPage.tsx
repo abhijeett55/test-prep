@@ -5,6 +5,10 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import ChangePasswordPage from "../../account/ChangePasswordPage";
 import Footer from "../../../components/Footer/Footer";
 import { testsetterNav } from "../../../config/dashboard/testsetterNav";
+import CreateTest from "./test-builder/CreateTest";
+import MyTests from "./test-builder/MyTests";
+import SectionsMarkingScheme from "./test-builder/SectionsMarkingScheme";
+import NegativeMarkingRules from "./test-builder/NegativeMarkingRules";
 import "../DashboardPage.css";
 
 
@@ -19,6 +23,10 @@ export default function TestsetterDashboardPage() {
         <main className="dashboard-content">
           <Routes>
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="test-builder/create" element={<CreateTest />} />
+          <Route path="test-builder/my-tests" element={<MyTests />} />
+          <Route path="test-builder/sections-marking-scheme" element={<SectionsMarkingScheme />} />
+          <Route path="test-builder/negative-marking-rules" element={<NegativeMarkingRules />} />
           <Route path="change-password" element={<ChangePasswordPage />} />
           <Route path="*" element={<Navigate to="/dashboard/testsetter" replace />} />
         </Routes>

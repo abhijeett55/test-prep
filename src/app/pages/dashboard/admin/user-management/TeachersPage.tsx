@@ -19,7 +19,7 @@ import EditTeacherDialog from "./EditTeacherDialog";
 import AssignSubjectsDialog from "./AssignSubjectsDialog";
 import AssignCoursesDialog from "./AssignCoursesDialog";
 import AssignStudentsDialog from "./AssignStudentsDialog";
-import "./DefaultPage.css";
+import "../DefaultPage.css";
 
 const ENTRY_OPTIONS = [10, 25, 50];
 
@@ -61,7 +61,7 @@ export default function TeachersPage() {
   const [assigningCourses, setAssigningCourses] = useState<TeacherDetail | null>(null);
   const [assigningStudents, setAssigningStudents] = useState<TeacherDetail | null>(null);
   const [rowBusyId, setRowBusyId] = useState<string | null>(null);
-
+  const [viewingTeacher, setViewingTeacher] = useState<TeacherRow | null>(null); 
   const [pendingTeacher, setPendingTeacher] = useState<FormValues | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -290,6 +290,7 @@ export default function TeachersPage() {
                             type="button"
                             className="icon-button"
                             title="View"
+                            onClick={() => setViewingTeacher(t)}
                           >
                             <Eye size={15} strokeWidth={2} />
                           </button>
@@ -474,6 +475,36 @@ export default function TeachersPage() {
             reload();
           }}
         />
+      )}
+    {viewingTeacher && (
+      <div className="confirm-overlay" role="dialog" aria-modal="true" onClick={() => setViewingTeacher(null)}>
+          <div className="confirm-card" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="confirm-close" onClick={() => setViewingTeacher(null)}>
+              <X size={16} strokeWidth={2.2} />
+            </button>
+            <div className="confirm-icon">
+              <Eye size={20} strokeWidth={2.2} />
+            </div>
+            <h3 className="confirm-title">{viewingTeacher.name}</h3>
+            <p className="confirm-subtitle">Teacher details</p>
+
+            <div className="confirm-details">
+              <div className="confirm-row"><span>Teacher ID</span><strong>{viewingTeacher.teacher_id || "—"}</strong></div>
+              <div className="confirm-row"><span>Email</span><strong>{viewingTeacher.email || "—"}</strong></div>
+              <div className="confirm-row"><span>Phone</span><strong>{viewingTeacher.phone || "—"}</strong></div>
+              <div className="confirm-row"><span>Institute</span><strong>{viewingTeacher.institute || "—"}</strong></div>
+              <div className="confirm-row"><span>Subject</span><strong>{viewingTeacher.subject || "—"}</strong></div>
+              <div className="confirm-row"><span>Employee Code</span><strong>{viewingTeacher.employee_code || "—"}</strong></div>
+              <div className="confirm-row"><span>Qualification</span><strong>{viewingTeacher.qualification || "—"}</strong></div>
+            </div>
+
+            <div className="confirm-actions">
+              <button type="button" className="confirm-btn-secondary" onClick={() => setViewingTeacher(null)}>
+                Close
+              </button>
+            </div>
+          </div>
+      </div>
       )}
     </div>
   );

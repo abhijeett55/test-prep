@@ -1,6 +1,6 @@
 import { useApi } from "../../../../hooks/useApi";
 import { getMyInstitute } from "../../../../api/auth/admin/institute";
-import "../student-management/Performance.css"; // or your preferred styling
+import "../DefaultPage.css";
 
 export default function InstituteProfilePage() {
   const { data: institute, loading, error } = useApi(() => getMyInstitute());

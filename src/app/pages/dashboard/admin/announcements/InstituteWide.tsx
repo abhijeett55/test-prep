@@ -1,7 +1,7 @@
 import { useApi } from "../../../../hooks/useApi";
 import { listAnnouncements, publishAnnouncement } from "../../../../api/auth/admin/announcements";
 import { errorMessage } from "../../../../api/client";
-import "../courses-management/DefaultPage.css";
+import "../DefaultPage.css";
 
 export default function InstituteWide() {
   const { data: announcements, loading, reload } = useApi(() => listAnnouncements({ scope: "INSTITUTE" }));

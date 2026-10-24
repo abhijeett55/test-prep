@@ -5,14 +5,12 @@ import { buildInitialValues, type Option, type FormValues } from "../../../compo
 
 type AddTestSetterFormProps = {
   institutes: Option[];
-  subjects: Option[];
   onSubmit: (values: FormValues) => void | Promise<void>;
   onCancel?: () => void;
 };
 
 export default function TestSetterForm({
   institutes,
-  subjects,
   onSubmit,
   onCancel,
 }: AddTestSetterFormProps) {
@@ -23,7 +21,7 @@ export default function TestSetterForm({
       config={testsetterFormConfig}
       values={values}
       onChange={(name, value) => setValues((prev) => ({ ...prev, [name]: value }))}
-      optionsMap={{ institutes, subjects }}
+      optionsMap={{ institutes }}
       onSubmit={onSubmit}
       onCancel={onCancel}
     />

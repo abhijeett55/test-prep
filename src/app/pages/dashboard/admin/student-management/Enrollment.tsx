@@ -6,7 +6,7 @@ import {
   decideEnrollmentRequest,
 } from "../../../../api/auth/admin/students";
 import { errorMessage } from "../../../../api/client";
-import "./Performance.css";
+import "../DefaultPage.css";
 
 function formatDate(iso: string): string {
   try {

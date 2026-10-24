@@ -4,7 +4,7 @@ import { listSubjects } from "../../../../api/auth/admin/subjects";
 import { assignSubjects } from "../../../../api/auth/admin/students";
 import type { SubjectRow, StudentDetail } from "../../../../api/types";
 import { errorMessage } from "../../../../api/client";
-import "./DefaultPage.css";
+import "../DefaultPage.css";
 
 type Props = {
   student: StudentDetail;

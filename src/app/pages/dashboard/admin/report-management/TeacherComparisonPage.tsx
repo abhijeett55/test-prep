@@ -1,6 +1,6 @@
 import { useApi } from "../../../../hooks/useApi";
 import { getTeacherComparison } from "../../../../api/auth/admin/reports";
-import "./CoursesPage.css";
+import "../DefaultPage.css";
 
 export default function TeacherComparisonPage() {
   const { data, loading, error } = useApi(() => getTeacherComparison([]));

@@ -4,7 +4,7 @@ import { listStudents } from "../../../../api/auth/admin/students";
 import { assignStudentsToTeacher } from "../../../../api/auth/teacher/teacher";
 import type { StudentRow } from "../../../../api/types";
 import { errorMessage } from "../../../../api/client";
-import "./DefaultPage.css";
+import "../DefaultPage.css";
 
 type Props = {
   // Make student_ids optional to match the TeacherDetail type

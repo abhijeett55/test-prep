@@ -5,7 +5,7 @@ import { listTeachers } from "../../../../api/auth/teacher/teacher";
 import { bulkAssignStudents } from "../../../../api/auth/admin/students";
 import type { SubjectRow, TeacherRow } from "../../../../api/types";
 import { errorMessage } from "../../../../api/client";
-import "./DefaultPage.css";
+import "../DefaultPage.css";
 
 type Props = {
   studentIds: string[];

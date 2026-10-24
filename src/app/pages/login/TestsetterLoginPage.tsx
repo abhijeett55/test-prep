@@ -83,10 +83,15 @@ export default function LoginPage() {
 
     setError(null);
     setSubmitting(true);
-    try {
-      const user = await login("testsetter", userId, password);
+   try {
+    const user = await login("testsetter", userId, password);
+  
+    if (user.must_change_password) {
+      navigate(`/dashboard/${user.role}/change-password`);
+    } else {
       navigate(ROLE_HOME_PATH[user.role]);
-    } 
+    }
+  } 
      catch (err) {
       setError(errorMessage(err));
     }
@@ -99,10 +104,6 @@ export default function LoginPage() {
     <div className="login-page">
       <Ribbon />
  
-      <header className="login-header">
-        <h1 className="app-title">TestPrep</h1>
-      </header>
- 
       <main className="login-main">
         <section className="login-card" aria-label="Sign in">
           <div className="login-card-body">
@@ -114,7 +115,7 @@ export default function LoginPage() {
               )}
  
               <div className="field">
-                <label htmlFor="userId">User ID</label>
+                <label htmlFor="userId">TestSetter ID</label>
                 <input
                   id="userId"
                   type="text"

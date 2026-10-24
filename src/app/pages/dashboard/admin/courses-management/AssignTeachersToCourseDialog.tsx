@@ -5,7 +5,7 @@ import { listTeachers } from "../../../../api/auth/teacher/teacher";
 import { getMyInstitute } from "../../../../api/auth/admin/institute";
 import type { CourseRow, TeacherRow, InstituteProfile } from "../../../../api/types";
 import { errorMessage } from "../../../../api/client";
-import "./DefaultPage.css"; 
+import "../DefaultPage.css"; 
 
 type Props = {
   course: CourseRow;

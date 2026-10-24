@@ -6,7 +6,7 @@ import {
   type StudentUpdate,
 } from "../../../../api/auth/admin/students";
 import { errorMessage } from "../../../../api/client";
-import "./DefaultPage.css";
+import "../DefaultPage.css";
 
 type Props = {
   student: StudentDetail;

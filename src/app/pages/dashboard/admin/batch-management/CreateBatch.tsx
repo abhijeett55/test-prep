@@ -4,7 +4,7 @@ import { useApi } from "../../../../hooks/useApi";
 import { createBatch } from "../../../../api/auth/admin/batches";
 import { listCourses } from "../../../../api/auth/admin/courses";
 import { errorMessage } from "../../../../api/client";
-import "./DefaultPage.css";
+import "../DefaultPage.css";
 
 export default function CreateBatch() {
   const navigate = useNavigate();

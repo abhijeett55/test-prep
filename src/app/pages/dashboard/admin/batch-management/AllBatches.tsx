@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { useApi } from "../../../../hooks/useApi";
 import { listBatches } from "../../../../api/auth/admin/batches";
-import "./DefaultPage.css";
+import "../DefaultPage.css";
 
 export default function AllBatches() {
   const { data: batches, loading, error } = useApi(() => listBatches());

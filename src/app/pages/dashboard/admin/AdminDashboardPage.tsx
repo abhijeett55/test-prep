@@ -74,7 +74,7 @@ export default function AdminDashboardPage() {
             <Route path="user-management/teachers" element={<TeachersPage />} />
             <Route path="user-management/testsetters" element={<TestsetterPage />} />
             <Route path="user-management/students" element={<StudentsPage />} />
-            <Route path="user-management/assign-teachers-students" element={<AssignTeachersToStudentsPage />} />
+            <Route path="user-management/map-teacher-students" element={<AssignTeachersToStudentsPage />} />
             
             {/* Student Management */}
             <Route path="student-management/enrollment" element={<Enrollment />} />
@@ -84,19 +84,19 @@ export default function AdminDashboardPage() {
             {/* Subjects */}
             <Route path="subjects/all" element={<SubjectsPage />} />
             <Route path="subjects/create" element={<CreateSubjectPage />} />
-            <Route path="subjects/assign" element={<AssignCoursesPage />} />
-            <Route path="subjects/assign-students-subjects" element={<AssignSubjectsToStudentsPage />} />
-            <Route path="subjects/assign-teachers-subjects" element={<AssignTeachersToSubjectPage />} />
+            <Route path="subjects/map-courses-subjects" element={<AssignCoursesPage />} />
+            <Route path="subjects/map-students-subjects" element={<AssignSubjectsToStudentsPage />} />
+            <Route path="subjects/map-teachers-subjects" element={<AssignTeachersToSubjectPage />} />
 
             {/* Courses */}
             <Route path="courses-management/courses" element={<CoursesPage />} />
-            <Route path="courses-management/assign-teachers-courses" element={<AssignTeachersToCoursesPage />} />
+            <Route path="courses-management/map-teachers-courses" element={<AssignTeachersToCoursesPage />} />
 
             {/* Batch Management */}
             <Route path="batch-management/create" element={<CreateBatch />} />
             <Route path="batch-management/all" element={<AllBatches />} />
-            <Route path="batch-management/assign-teachers-batch" element={<AssignTeachers />} />
-            <Route path="batch-management/assign-students-batch" element={<MapStudents />} />
+            <Route path="batch-management/map-teachers-batch" element={<AssignTeachers />} />
+            <Route path="batch-management/map-students-batch" element={<MapStudents />} />
             
             {/* Reports */}
             <Route path="reports/institute-performance" element={<InstitutePerformancePage />} />

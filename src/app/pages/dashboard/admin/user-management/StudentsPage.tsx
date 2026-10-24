@@ -15,7 +15,7 @@ import { errorMessage } from "../../../../api/client";
 import EnrollCoursesDialog from "./EnrollCoursesDialog";
 import EditStudentDialog from "./EditStudentDialog";
 import AssignSubjectsToStudentDialog from "./AssignSubjectsToStudentDialog";
-import "./DefaultPage.css";
+import "../DefaultPage.css";
 
 const ENTRY_OPTIONS = [10, 25, 50];
 
@@ -36,6 +36,10 @@ export default function StudentsPage() {
   const [editingStudent, setEditingStudent] = useState<StudentDetail | null>(null);
   const [enrollingStudent, setEnrollingStudent] = useState<StudentDetail | null>(null);
   const [assigningSubjects, setAssigningSubjects] = useState<StudentDetail | null>(null);
+  
+  // ADDED: State for viewing
+  const [viewingStudent, setViewingStudent] = useState<StudentDetail | null>(null); 
+  
   const [rowBusyId, setRowBusyId] = useState<string | null>(null);
 
   const [pendingStudent, setPendingStudent] = useState<FormValues | null>(null);
@@ -82,10 +86,8 @@ export default function StudentsPage() {
     setSaveError(null);
 
     try {
-      // FIXED: Mapping to the exact fields from studentFormConfig
       const full_name = pendingStudent.fullName ?? "";
       const father_name = pendingStudent.fatherFullName ?? "";
-      // Combining mother's first and last name based on your config
       const mother_name = `${pendingStudent.motherFullName ?? ""} ${pendingStudent.motherLastName ?? ""}`.trim();
 
       await createStudent({
@@ -115,13 +117,15 @@ export default function StudentsPage() {
 
   /* ---------- open dialogs ---------- */
 
-  const openDialog = async (row: StudentRow, type: "edit" | "enroll" | "subjects") => {
+  // ADDED "view" to the type union
+  const openDialog = async (row: StudentRow, type: "edit" | "enroll" | "subjects" | "view") => {
     setRowBusyId(row.id);
     try {
       const detail = await getStudent(row.id);
       if (type === "edit") setEditingStudent(detail);
       if (type === "enroll") setEnrollingStudent(detail);
       if (type === "subjects") setAssigningSubjects(detail);
+      if (type === "view") setViewingStudent(detail); // <--- ADDED THIS
     } catch (err) {
       window.alert(errorMessage(err));
     } finally {
@@ -136,7 +140,6 @@ export default function StudentsPage() {
       {showForm && myInstitute ? (
         <StudentForm
           institutes={[{ id: myInstitute.id, name: myInstitute.institute_name }]} 
-          // REMOVED: subjects prop
           statuses={STATUS_OPTIONS}
           onSubmit={handleFormSubmit}
           onCancel={() => setShowForm(false)}
@@ -237,6 +240,8 @@ export default function StudentsPage() {
                             type="button"
                             className="icon-button"
                             title="View"
+                            disabled={rowBusyId === s.id}
+                            onClick={() => openDialog(s, "view")} // <--- ADDED CLICK HANDLER
                           >
                             <Eye size={15} strokeWidth={2} />
                           </button>
@@ -281,7 +286,7 @@ export default function StudentsPage() {
         </>
       )}
 
-      {/* --- Modals --- */}
+      {/* --- Add Confirmation Modal --- */}
       {pendingStudent && (
         <div className="confirm-overlay" role="dialog" aria-modal="true">
           <div className="confirm-card">
@@ -292,7 +297,6 @@ export default function StudentsPage() {
             <h3 className="confirm-title">Add this student?</h3>
             <p className="confirm-subtitle">Please confirm the details before adding them to the list.</p>
             <div className="confirm-details">
-              {/* FIXED: Using fullName instead of firstName/LastName */}
               <div className="confirm-row"><span>Name</span><strong>{pendingStudent.fullName || "—"}</strong></div>
               <div className="confirm-row"><span>Email</span><strong>{pendingStudent.email || "—"}</strong></div>
             </div>
@@ -300,6 +304,43 @@ export default function StudentsPage() {
             <div className="confirm-actions">
               <button type="button" className="confirm-btn-secondary" onClick={cancelPendingStudent} disabled={saving}>Cancel</button>
               <button type="button" className="confirm-btn-primary" onClick={confirmPendingStudent} disabled={saving}>{saving ? "Saving…" : "Yes, add"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- View Details Modal (NEW) --- */}
+      {viewingStudent && (
+        <div className="confirm-overlay" role="dialog" aria-modal="true" onClick={() => setViewingStudent(null)}>
+          <div className="confirm-card" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="confirm-close" onClick={() => setViewingStudent(null)}>
+              <X size={16} strokeWidth={2.2} />
+            </button>
+            <div className="confirm-icon">
+              <Eye size={20} strokeWidth={2.2} />
+            </div>
+            <h3 className="confirm-title">{viewingStudent.full_name}</h3>
+            <p className="confirm-subtitle">Student details</p>
+
+            <div className="confirm-details" style={{ maxHeight: "60vh", overflowY: "auto" }}>
+              <div className="confirm-row"><span>Student ID</span><strong>{viewingStudent.student_id || "—"}</strong></div>
+              <div className="confirm-row"><span>Email</span><strong>{viewingStudent.email || "—"}</strong></div>
+              <div className="confirm-row"><span>Self Phone</span><strong>{viewingStudent.self_phone || "—"}</strong></div>
+              <div className="confirm-row"><span>Institute</span><strong>{viewingStudent.institute || "—"}</strong></div>
+              <div className="confirm-row"><span>Batch</span><strong>{viewingStudent.batch_name || "—"}</strong></div>
+              <div className="confirm-row"><span>Subjects</span><strong>{viewingStudent.subjects || "—"}</strong></div>
+              <div className="confirm-row"><span>Status</span><strong>{viewingStudent.status || "—"}</strong></div>
+              <div className="confirm-row"><span>Father's Name</span><strong>{viewingStudent.father_name || "—"}</strong></div>
+              <div className="confirm-row"><span>Father's Phone</span><strong>{viewingStudent.father_phone || "—"}</strong></div>
+              <div className="confirm-row"><span>Mother's Name</span><strong>{viewingStudent.mother_name || "—"}</strong></div>
+              <div className="confirm-row"><span>Mother's Phone</span><strong>{viewingStudent.mother_phone || "—"}</strong></div>
+              <div className="confirm-row"><span>Address</span><strong style={{ textAlign: "right" }}>{viewingStudent.address || "—"}</strong></div>
+            </div>
+
+            <div className="confirm-actions">
+              <button type="button" className="confirm-btn-secondary" onClick={() => setViewingStudent(null)}>
+                Close
+              </button>
             </div>
           </div>
         </div>

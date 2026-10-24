@@ -22,7 +22,7 @@ export const adminNav: NavItem[] = [
       { label: "Teachers", path: "/dashboard/admin/user-management/teachers" },
       { label: "Test Setters", path: "/dashboard/admin/user-management/testsetters" },
       { label: "Students", path: "/dashboard/admin/user-management/students" },
-      { label: "Assign Teachers to Students", path: "/dashboard/admin/user-management/assign-teachers-students" },
+      { label: "Map Teacher to Students", path: "/dashboard/admin/user-management/map-teacher-students" },
     ],
   },
 
@@ -41,7 +41,7 @@ export const adminNav: NavItem[] = [
     icon: BookOpen,
     children: [
       { label: "All Courses", path: "/dashboard/admin/courses-management/courses" },
-      { label: "Assign Teachers", path: "/dashboard/admin/courses-management/assign-teachers-courses" }
+      { label: "Map Teachers to Courses", path: "/dashboard/admin/courses-management/map-teachers-courses" }
     ],
   },
 
@@ -51,9 +51,9 @@ export const adminNav: NavItem[] = [
     children: [
       { label: "All Subjects", path: "/dashboard/admin/subjects/all" },
       { label: "Create Subject", path: "/dashboard/admin/subjects/create" },
-      { label: "Assign to Courses", path: "/dashboard/admin/subjects/assign" },
-      { label: "Assign Subjects to Students", path: "/dashboard/admin/subjects/assign-students-subjects" },
-      { label: "Assign Teachers to Subject", path: "/dashboard/admin/subjects/assign-teachers-subjects" },
+      { label: "Map Courses to subjects", path: "/dashboard/admin/subjects/map-courses-subjects" },
+      { label: "Map Subjects to Students", path: "/dashboard/admin/subjects/map-students-subjects" },
+      { label: "Map Teachers to Subjects", path: "/dashboard/admin/subjects/map-teachers-subjects" },
     ],
   },
 
@@ -63,8 +63,8 @@ export const adminNav: NavItem[] = [
     children: [
       { label: "Create Batch", path: "/dashboard/admin/batch-management/create" },
       { label: "All Batches", path: "/dashboard/admin/batch-management/all" },
-      { label: "Assign Teachers", path: "/dashboard/admin/batch-management/assign-teachers-batch" },
-      { label: "Assign Students", path: "/dashboard/admin/batch-management/assign-students-batch" },
+      { label: "Map Batch to Teachers", path: "/dashboard/admin/batch-management/map-teachers-batch" },
+      { label: "Map Batch to Students", path: "/dashboard/admin/batch-management/map-students-batch" },
     ],
   },
 

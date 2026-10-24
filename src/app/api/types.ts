@@ -241,3 +241,83 @@ export interface DepartmentRow {
   head_teacher_name: string | null;
   teacher_count: number;
 }
+
+
+// api/auth/testsetter/types.ts
+
+export interface Option {
+  id: string;
+  name: string;
+}
+
+export interface BatchOption extends Option {
+  course_id: string | null;
+}
+
+export interface TestBuilderOptions {
+  courses: Option[];
+  batches: BatchOption[];
+  subjects: Option[];
+  teachers: Option[];
+}
+
+export interface TestSection {
+  id: string;
+  test_id: string;
+  name: string;
+  total_questions: number;
+  marks_per_question: number;
+  has_negative_marking: boolean;
+  negative_marks_value: number | null;
+  negative_marks_type: "ABSOLUTE" | "PERCENTAGE" | null;
+}
+
+export interface Test {
+  id: string;
+  testsetter_id: string;
+  institute_id: string;
+  course_id: string;
+  batch_id: string;
+  subject_id: string;
+  teacher_id: string;
+  title: string;
+  description: string | null;
+  duration_minutes: number;
+  scheduled_at: string | null;
+  total_marks: number;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  created_at: string;
+  updated_at: string;
+  sections?: TestSection[];
+}
+
+export interface TestRow {
+  id: string;
+  title: string;
+  subject_id: string;
+  batch_id: string;
+  total_marks: number;
+  duration_minutes: number;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  created_at: string;
+}
+
+export interface CreateTestPayload {
+  course_id: string;
+  batch_id: string;
+  subject_id: string;
+  teacher_id: string;
+  title: string;
+  description?: string;
+  duration_minutes: number;
+  scheduled_at?: string;
+}
+
+export interface CreateSectionPayload {
+  name: string;
+  total_questions: number;
+  marks_per_question: number;
+  has_negative_marking: boolean;
+  negative_marks_value?: number | null;
+  negative_marks_type?: "ABSOLUTE" | "PERCENTAGE" | null;
+}

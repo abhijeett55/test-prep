@@ -1,6 +1,6 @@
 import { useApi } from "../../../../hooks/useApi";
 import { getCoursePerformance } from "../../../../api/auth/admin/reports";
-import "./CoursesPage.css";
+import "../DefaultPage.css";
 
 export default function CoursePerformancePage() {
   const { data, loading, error } = useApi(() => getCoursePerformance());

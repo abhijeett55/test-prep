@@ -4,7 +4,7 @@ import { getCourse, enrollStudentsInCourse } from "../../../../api/auth/admin/co
 import { listStudents } from "../../../../api/auth/admin/students";
 import type { CourseRow, StudentRow } from "../../../../api/types";
 import { errorMessage } from "../../../../api/client";
-import "./DefaultPage.css";
+import "../DefaultPage.css";
 
 type Props = {
   course: CourseRow;
