@@ -14,9 +14,12 @@ export interface BatchCreate {
 export interface BatchUpdate {
   batch_name?: string;
   batch_code?: string;
-  course_id?: string;
+  course_id?: string | null;
   start_date?: string | null;
   end_date?: string | null;
+  student_ids?: string[];
+  teacher_ids?: string[];
+  subject_ids?: string[];
 }
 
 export interface ListBatchesParams {

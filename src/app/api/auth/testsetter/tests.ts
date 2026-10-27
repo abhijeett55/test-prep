@@ -64,3 +64,11 @@ export async function deleteTestSection(
 ): Promise<void> {
   await client.delete(`/testsetters/tests/${testId}/sections/${sectionId}`);
 }
+
+/** PATCH /testsetters/tests/{id}/publish */
+export async function publishTest(testId: string): Promise<TestRow> {
+  const { data } = await client.patch<TestRow>(`/testsetters/tests/${testId}/publish`);
+  return data;
+}
+
+export const listApprovedPapers = () => client.get("/question-papers/approved").then(r => r.data);

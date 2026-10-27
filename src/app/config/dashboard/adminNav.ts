@@ -41,7 +41,8 @@ export const adminNav: NavItem[] = [
     icon: BookOpen,
     children: [
       { label: "All Courses", path: "/dashboard/admin/courses-management/courses" },
-      { label: "Map Teachers to Courses", path: "/dashboard/admin/courses-management/map-teachers-courses" }
+      { label: "Map Teachers to Courses", path: "/dashboard/admin/courses-management/map-teachers-courses" },
+      { label: "Map Subjects to Courses", path: "/dashboard/admin/courses/assign-subjects" },
     ],
   },
 
@@ -63,6 +64,8 @@ export const adminNav: NavItem[] = [
     children: [
       { label: "Create Batch", path: "/dashboard/admin/batch-management/create" },
       { label: "All Batches", path: "/dashboard/admin/batch-management/all" },
+      { label: "Map Batch to Courses", path: "/dashboard/admin/batches/assign-course" },
+      { label: "Map Batch to Subjects", path: "/dashboard/admin/batches/assign-subjects" },
       { label: "Map Batch to Teachers", path: "/dashboard/admin/batch-management/map-teachers-batch" },
       { label: "Map Batch to Students", path: "/dashboard/admin/batch-management/map-students-batch" },
     ],

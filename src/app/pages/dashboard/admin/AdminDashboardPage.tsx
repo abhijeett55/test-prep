@@ -4,6 +4,8 @@ import Header from "../../../components/Header/Header";
 import Navbar from "../../../components/Navbar/Navbar";
 import Footer from "../../../components/Footer/Footer";
 import { adminNav } from "../../../config/dashboard/adminNav";
+import AssignSubjectsToCoursesPage from "./courses-management/AssignSubjectsToCoursesPage";
+import AssignSubjectsToBatch from "./batch-management/AssignSubjectsToBatch";
 
 // User Management
 import TeachersPage from "./user-management/TeachersPage";
@@ -28,6 +30,8 @@ import AllBatches from "./batch-management/AllBatches";
 import CreateBatch from "./batch-management/CreateBatch";
 import AssignTeachers from "./batch-management/AssignTeachers";
 import MapStudents from "./batch-management/MapStudents";
+import AssignCourseToBatch from "./batch-management/AssignCourseToBatch";
+
 
 // Courses & Institute
 import CoursesPage from "./courses-management/CoursesPage";
@@ -91,12 +95,14 @@ export default function AdminDashboardPage() {
             {/* Courses */}
             <Route path="courses-management/courses" element={<CoursesPage />} />
             <Route path="courses-management/map-teachers-courses" element={<AssignTeachersToCoursesPage />} />
-
+            <Route path="courses/assign-subjects" element={<AssignSubjectsToCoursesPage />} />
             {/* Batch Management */}
             <Route path="batch-management/create" element={<CreateBatch />} />
             <Route path="batch-management/all" element={<AllBatches />} />
             <Route path="batch-management/map-teachers-batch" element={<AssignTeachers />} />
             <Route path="batch-management/map-students-batch" element={<MapStudents />} />
+            <Route path="batches/assign-course" element={<AssignCourseToBatch />} />
+            <Route path="batches/assign-subjects" element={<AssignSubjectsToBatch />} />
             
             {/* Reports */}
             <Route path="reports/institute-performance" element={<InstitutePerformancePage />} />

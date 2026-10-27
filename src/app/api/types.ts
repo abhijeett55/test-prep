@@ -190,6 +190,7 @@ export interface BatchRow {
   teacher_count: number;
   student_ids?: string[];
   teacher_ids?: string[];
+  subject_ids?: string[];
 }
 
 // ---- announcements ----
@@ -301,18 +302,16 @@ export interface TestRow {
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   created_at: string;
 }
-
 export interface CreateTestPayload {
+  paper_id?: string;
   course_id: string;
   batch_id: string;
-  subject_id: string;
-  teacher_id: string;
+  subject_ids: string[];
   title: string;
   description?: string;
   duration_minutes: number;
-  scheduled_at?: string;
+  scheduled_at?: string | null;
 }
-
 export interface CreateSectionPayload {
   name: string;
   total_questions: number;
@@ -320,4 +319,12 @@ export interface CreateSectionPayload {
   has_negative_marking: boolean;
   negative_marks_value?: number | null;
   negative_marks_type?: "ABSOLUTE" | "PERCENTAGE" | null;
+}
+
+export interface QuestionRow {
+  id: string;
+  question_text: string;
+  options: string[];
+  correct_answer: string;
+  status: string;
 }

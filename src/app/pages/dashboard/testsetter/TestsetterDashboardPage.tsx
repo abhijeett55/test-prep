@@ -9,6 +9,9 @@ import CreateTest from "./test-builder/CreateTest";
 import MyTests from "./test-builder/MyTests";
 import SectionsMarkingScheme from "./test-builder/SectionsMarkingScheme";
 import NegativeMarkingRules from "./test-builder/NegativeMarkingRules";
+import AddQuestion from "./question-bank/AddQuestion";
+import PendingReview from "./question-bank/PendingReview";
+import QuestionBulkUpload from "./question-bank/QuestionBulkUpload";
 import "../DashboardPage.css";
 
 
@@ -25,6 +28,9 @@ export default function TestsetterDashboardPage() {
           <Route path="profile" element={<ProfilePage />} />
           <Route path="test-builder/create" element={<CreateTest />} />
           <Route path="test-builder/my-tests" element={<MyTests />} />
+          <Route path="question-bank/add" element={<AddQuestion />} />
+          <Route path="question-bank/all" element={<QuestionBulkUpload />} />
+          <Route path="question-bank/pending-review" element={<PendingReview />} />
           <Route path="test-builder/sections-marking-scheme" element={<SectionsMarkingScheme />} />
           <Route path="test-builder/negative-marking-rules" element={<NegativeMarkingRules />} />
           <Route path="change-password" element={<ChangePasswordPage />} />
